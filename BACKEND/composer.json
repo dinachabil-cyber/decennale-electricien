@@ -9,12 +9,10 @@
         "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
-<<<<<<< HEAD
-=======
         "doctrine/doctrine-bundle": "^3.2",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6",
->>>>>>> d94e20d84ccf633d4a2b62929d4bbdb750bfd1e8
+
         "nelmio/cors-bundle": "^2.6",
         "symfony/console": "8.0.*",
         "symfony/dotenv": "8.0.*",

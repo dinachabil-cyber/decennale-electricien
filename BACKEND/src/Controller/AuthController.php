@@ -112,16 +112,8 @@ class AuthController extends AbstractController
     }
 
     #[Route('/api/admin/stats', name: 'admin_stats', methods: ['GET'])]
-    public function getStats(
-        Request $request,
-        EntityManagerInterface $em,
-        AuthMiddleware $authMiddleware
-    ): JsonResponse {
-        $authResponse = $authMiddleware->requireAuth($request, $em);
-        if ($authResponse instanceof JsonResponse) {
-            return $authResponse;
-        }
-
+    public function getStats(EntityManagerInterface $em): JsonResponse
+    {
         $leadRepo = $em->getRepository(\App\Entity\Lead::class);
         $pageRepo = $em->getRepository(\App\Entity\Page::class);
         

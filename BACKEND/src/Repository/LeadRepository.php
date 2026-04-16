@@ -16,7 +16,6 @@ class LeadRepository extends ServiceEntityRepository
         parent::__construct($registry, Lead::class);
     }
 
-<<<<<<< HEAD
     public function save(Lead $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
@@ -25,30 +24,4 @@ class LeadRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-=======
-    //    /**
-    //     * @return Lead[] Returns an array of Lead objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('l')
-    //            ->andWhere('l.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('l.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Lead
-    //    {
-    //        return $this->createQueryBuilder('l')
-    //            ->andWhere('l.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
->>>>>>> d94e20d84ccf633d4a2b62929d4bbdb750bfd1e8
 }
