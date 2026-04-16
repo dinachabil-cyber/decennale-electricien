@@ -9,19 +9,31 @@
         "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
+<<<<<<< HEAD
+=======
+        "doctrine/doctrine-bundle": "^3.2",
+        "doctrine/doctrine-migrations-bundle": "^4.0",
+        "doctrine/orm": "^3.6",
+>>>>>>> d94e20d84ccf633d4a2b62929d4bbdb750bfd1e8
         "nelmio/cors-bundle": "^2.6",
         "symfony/console": "8.0.*",
         "symfony/dotenv": "8.0.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "8.0.*",
+        "symfony/routing": "8.0.*",
         "symfony/runtime": "8.0.*",
+        "symfony/security-bundle": "8.0.*",
         "symfony/yaml": "8.0.*"
     },
     "require-dev": {
+<<<<<<< HEAD
         "doctrine/doctrine-bundle": "^3.2",
         "doctrine/doctrine-fixtures-bundle": "^4.3",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6"
+=======
+        "symfony/maker-bundle": "^1.67"
+>>>>>>> d94e20d84ccf633d4a2b62929d4bbdb750bfd1e8
     },
     "config": {
         "allow-plugins": {

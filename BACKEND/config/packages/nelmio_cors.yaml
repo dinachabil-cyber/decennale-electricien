@@ -1,10 +1,18 @@
 nelmio_cors:
     defaults:
+<<<<<<< HEAD
         origin_regex: true
         allow_origin: ['^https?://localhost:[0-9]+', '^http://localhost:3000', '^https://ecennale-electricien-backend.ddev.site', '^http://ecennale-electricien-backend.ddev.site']
+=======
+        allow_origin: ['*']
+>>>>>>> d94e20d84ccf633d4a2b62929d4bbdb750bfd1e8
         allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
         allow_headers: ['Content-Type', 'Authorization']
         expose_headers: ['Link']
         max_age: 3600
     paths:
+<<<<<<< HEAD
         '^/api/': null
+=======
+        '^/': null
+>>>>>>> d94e20d84ccf633d4a2b62929d4bbdb750bfd1e8

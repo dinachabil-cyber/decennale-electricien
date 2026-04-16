@@ -2,16 +2,21 @@
 
 namespace App\Controller;
 
+<<<<<<< HEAD
 use App\Entity\Admin;
 use App\Entity\Lead;
 use App\Middleware\AuthMiddleware;
 use App\Repository\LeadRepository;
+=======
+use App\Entity\Lead;
+>>>>>>> d94e20d84ccf633d4a2b62929d4bbdb750bfd1e8
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
+<<<<<<< HEAD
 #[Route('/api')]
 class LeadController extends AbstractController
 {
@@ -130,3 +135,32 @@ class LeadController extends AbstractController
         ]);
     }
 }
+=======
+class LeadController extends AbstractController
+{
+    #[Route('/api/leads', name: 'create_lead', methods: ['POST'])]
+    public function createLead(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['name']) || !isset($data['email']) || !isset($data['phone'])) {
+            return new JsonResponse(['error' => 'Missing required fields'], 400);
+        }
+
+        $lead = new Lead();
+        $lead->setName($data['name']);
+        $lead->setEmail($data['email']);
+        $lead->setPhone($data['phone']);
+        $lead->setMessage($data['message'] ?? null);
+        $lead->setCompany($data['company'] ?? null);
+        $lead->setStatus($data['status'] ?? null);
+        $lead->setTurnover($data['turnover'] ?? null);
+        $lead->setCreatedAt(new \DateTimeImmutable());
+
+        $entityManager->persist($lead);
+        $entityManager->flush();
+
+        return new JsonResponse(['message' => 'Lead created successfully'], 201);
+    }
+}
+>>>>>>> d94e20d84ccf633d4a2b62929d4bbdb750bfd1e8
