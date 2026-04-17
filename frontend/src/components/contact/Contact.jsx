@@ -1,112 +1,68 @@
-import React, { useState } from 'react';
-import { submitQuote } from '../../services/api';
+import React from 'react';
 
-function Contact({ content }) {
-  const {
-    title = 'Contactez-nous',
-    subtitle = 'Une question? N\'hésitez pas à nous contacter.',
-    buttonText = 'Envoyer'
-  } = content || {};
-
-  const [formData, setFormData] = useState({
-    nom: '',
-    email: '',
-    tele: '',
-    message: ''
-  });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await submitQuote(formData);
-      setSuccess(true);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+function Contact({ content = {} }) {
+  const { title = 'Contactez-nous', subtitle = '', email = '', phone = '', address = '', showMap = true } = content;
 
   return (
-    <section id="contact" className="py-20 bg-surface">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gradient mb-4">{title}</h2>
-            <p className="text-gray-600">{subtitle}</p>
-          </div>
-
-          {success ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-success rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-check text-white text-2xl"></i>
-              </div>
-              <h2 className="text-2xl font-bold text-dark mb-2">Merci !</h2>
-              <p className="text-gray-600">Votre message a été envoyé.</p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <input
-                  type="text"
-                  name="nom"
-                  value={formData.nom}
-                  onChange={handleChange}
-                  placeholder="Votre nom *"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-light focus:bg-surface"
-                  required
-                />
-              </div>
-              <div>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Votre email *"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-light focus:bg-surface"
-                  required
-                />
-              </div>
-              <div>
-                <input
-                  type="tel"
-                  name="tele"
-                  value={formData.tele}
-                  onChange={handleChange}
-                  placeholder="Téléphone *"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-light focus:bg-surface"
-                  required
-                />
-              </div>
-              <div>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Votre message"
-                  rows="4"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-light focus:bg-surface"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-yellow-400 text-dark font-bold py-4 px-8 rounded-xl hover:bg-yellow-500"
-              >
-                {loading ? 'Envoi...' : buttonText}
-              </button>
-            </form>
+        <div className="text-center mb-12">
+          {title && (
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">{title}</h2>
+          )}
+          {subtitle && (
+            <p className="text-gray-600 max-w-2xl mx-auto">{subtitle}</p>
           )}
         </div>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          {email && (
+            <div className="text-center">
+              <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-envelope text-dark text-xl"></i>
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-2">Email</h3>
+              <a href={`mailto:${email}`} className="text-gray-600 hover:text-yellow-600">
+                {email}
+              </a>
+            </div>
+          )}
+
+          {phone && (
+            <div className="text-center">
+              <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-phone text-dark text-xl"></i>
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-2">Téléphone</h3>
+              <a href={`tel:${phone}`} className="text-gray-600 hover:text-yellow-600">
+                {phone}
+              </a>
+            </div>
+          )}
+
+          {address && (
+            <div className="text-center">
+              <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-map-marker-alt text-dark text-xl"></i>
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-2">Adresse</h3>
+              <p className="text-gray-600">{address}</p>
+            </div>
+          )}
+        </div>
+
+        {showMap && (
+          <div className="mt-12 rounded-lg overflow-hidden h-64 bg-gray-100">
+            <iframe
+              title="Contact Map"
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.9916256937595!2d2.292292615674389!3d48.85837007928746!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e2964e34e2d%3A0x8ddca9ee60ef7d3b!2sParis%2C%20France!5e0!3m2!1sfr!2sfr!4v1234567890`}
+              allowFullScreen
+            ></iframe>
+          </div>
+        )}
       </div>
     </section>
   );

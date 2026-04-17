@@ -1,23 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import {
-  fetchAllPages, createPage, updatePage, deletePage, togglePagePublish,
+import { fetchAllPages, createPage, updatePage, deletePage, togglePagePublish,
   fetchMedia, uploadMedia, deleteMedia,
   fetchSettings, updateSettings,
   logout as apiLogout
 } from '../api/cms';
-
-const SECTION_TYPES = [
-  { value: 'hero', label: 'Hero' },
-  { value: 'features', label: 'Features' },
-  { value: 'content', label: 'Content' },
-  { value: 'faq', label: 'FAQ' },
-  { value: 'pricing', label: 'Pricing' },
-  { value: 'cta', label: 'CTA' },
-  { value: 'testimonials', label: 'Testimonials' },
-  { value: 'contact', label: 'Contact' },
-  { value: 'gallery', label: 'Gallery' }
-];
+import SectionRenderer from '../components/admin/SectionRenderer';
+import SectionPreview from '../components/admin/SectionPreview';
+import { SECTION_TYPES, getSectionLabel } from '../components/admin/sections/sectionTypes';
+import { getDefaultContent } from '../components/admin/sections/sectionDefaults';
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -27,13 +18,34 @@ function AdminPage() {
   const [error, setError] = useState(null);
   const [showNewPageModal, setShowNewPageModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [newPage, setNewPage] = useState({ title: '', slug: '' });
+  const [newPage, setNewPage] = useState({ 
+    title: '', 
+    slug: '',
+    preset: '' 
+  });
+
+  const pagePresets = [
+    { title: 'Accueil', slug: 'home', preset: 'home' },
+    { title: 'Mentions légales', slug: 'mentions-legales', preset: 'mentions-legales' },
+    { title: 'Politique de confidentialité', slug: 'politique-confidentialite', preset: 'politique-confidentialite' }
+  ];
+
+  const handlePresetSelect = (preset) => {
+    const pagePreset = pagePresets.find(p => p.preset === preset);
+    if (pagePreset) {
+      setNewPage({
+        title: pagePreset.title,
+        slug: pagePreset.slug,
+        preset: pagePreset.preset
+      });
+    }
+  };
   const [settings, setSettings] = useState({});
   const [media, setMedia] = useState([]);
   const [selectedPage, setSelectedPage] = useState(null);
   const [sections, setSections] = useState([]);
   const [showSectionModal, setShowSectionModal] = useState(false);
-  const [newSection, setNewSection] = useState({ type: 'hero', content: {} });
+  const [newSection, setNewSection] = useState({ type: 'hero', content: getDefaultContent('hero') });
   const [editingSection, setEditingSection] = useState(null);
 
   useEffect(() => {
@@ -76,7 +88,7 @@ function AdminPage() {
     try {
       await createPage(newPage);
       setShowNewPageModal(false);
-      setNewPage({ title: '', slug: '' });
+      setNewPage({ title: '', slug: '', preset: '' });
       loadPages();
     } catch (err) {
       setError(err.message);
@@ -425,12 +437,10 @@ function AdminPage() {
                        >
                          Supprimer
                        </button>
-                     </div>
-                  </div>
-                  <pre className="mt-2 text-xs text-gray-500 bg-gray-50 p-2 rounded overflow-x-auto">
-                    {JSON.stringify(section.content, null, 2)}
-                  </pre>
-                </div>
+</div>
+                   </div>
+                   <SectionPreview section={section} />
+                 </div>
               ))}
               {sections.length === 0 && (
                 <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
@@ -547,11 +557,26 @@ function AdminPage() {
             <h3 className="text-xl font-bold text-gray-800 mb-4">Nouvelle Page</h3>
             <form onSubmit={handleCreatePage}>
               <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Pages rapides</label>
+                <div className="flex flex-wrap gap-2">
+                  {pagePresets.map(preset => (
+                    <button
+                      key={preset.preset}
+                      type="button"
+                      onClick={() => handlePresetSelect(preset.preset)}
+                      className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-yellow-100 hover:text-yellow-800"
+                    >
+                      {preset.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Titre</label>
                 <input
                   type="text"
                   value={newPage.title}
-                  onChange={(e) => setNewPage({ ...newPage, title: e.target.value })}
+                  onChange={(e) => setNewPage({ ...newPage, title: e.target.value, preset: '' })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   required
                 />
@@ -561,7 +586,7 @@ function AdminPage() {
                 <input
                   type="text"
                   value={newPage.slug}
-                  onChange={(e) => setNewPage({ ...newPage, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') })}
+                  onChange={(e) => setNewPage({ ...newPage, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'), preset: '' })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   required
                 />
@@ -570,7 +595,7 @@ function AdminPage() {
               <div className="flex space-x-2">
                 <button
                   type="button"
-                  onClick={() => setShowNewPageModal(false)}
+                  onClick={() => { setShowNewPageModal(false); setNewPage({ title: '', slug: '', preset: '' }); }}
                   className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
                 >
                   Annuler
@@ -596,25 +621,13 @@ function AdminPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Type de Section</label>
                 <select
                   value={newSection.type}
-                  onChange={(e) => setNewSection({ ...newSection, type: e.target.value })}
+                  onChange={(e) => setNewSection({ ...newSection, type: e.target.value, content: getDefaultContent(e.target.value) })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
                   {SECTION_TYPES.map(type => (
                     <option key={type.value} value={type.value}>{type.label}</option>
                   ))}
                 </select>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Contenu (JSON)</label>
-                <textarea
-                  value={JSON.stringify(newSection.content, null, 2)}
-                  onChange={(e) => {
-                    try {
-                      setNewSection({ ...newSection, content: JSON.parse(e.target.value) });
-                    } catch (err) {}
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg h-48 font-mono text-xs"
-                />
               </div>
               <div className="flex space-x-2">
                 <button
@@ -637,30 +650,13 @@ function AdminPage() {
       )}
 
       {editingSection && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Modifier Section: {editingSection.type}</h3>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contenu (JSON)</label>
-              <textarea
-                defaultValue={JSON.stringify(editingSection.content, null, 2)}
-                onBlur={(e) => {
-                  try {
-                    const content = JSON.parse(e.target.value);
-                    handleUpdateSection(editingSection, content);
-                  } catch (err) {
-                    alert('JSON invalide');
-                  }
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg h-96 font-mono text-xs"
-              />
-            </div>
-            <button
-              onClick={() => setEditingSection(null)}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-            >
-              Fermer
-            </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-auto">
+            <SectionRenderer
+              section={editingSection}
+              onSave={(content) => handleUpdateSection(editingSection, content)}
+              onCancel={() => setEditingSection(null)}
+            />
           </div>
         </div>
       )}

@@ -53,8 +53,8 @@ function App() {
                 <AdminPage />
               </ProtectedAdminRoute>
             } />
-            <Route path="/mentions-legales" element={<MentionsLegales />} />
-            <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+            <Route path="/mentions-legales" element={<DynamicPage slug="mentions-legales" />} />
+            <Route path="/politique-confidentialite" element={<DynamicPage slug="politique-confidentialite" />} />
           </Routes>
         </main>
         <Footer />

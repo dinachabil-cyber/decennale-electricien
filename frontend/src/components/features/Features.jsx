@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 
-function FeaturesSection() {
+function FeaturesSection({ content = {} }) {
   const [openFaq, setOpenFaq] = useState(null);
+
+  // Use content from CMS or fallback to default data
+  const { faqs: contentFaqs = [] } = content;
 
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
   };
 
-  const faqs = [
+  // Use FAQs from CMS if available, otherwise use defaults
+  const faqs = contentFaqs.length > 0 ? contentFaqs : [
     {
       question: "L'assurance décennale est-elle obligatoire pour un électricien ?",
       answer: "Oui. Tout constructeur au sens de l'article 1792-1 du Code civil, y compris un électricien intervenant sur un ouvrage de construction, est tenu de souscription une assurance décennale avant l'ouverture du chantier. Cette obligation s'applique quelle que soit la forme juridique de l'entreprise : auto-entrepreneur, artisan, EURL ou SARL. Le défaut d'assurance constitue un délit pénal."
