@@ -25,6 +25,9 @@ class Section
     #[ORM\Column(type: 'integer')]
     private int $position = 0;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isEnabled = true;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -71,6 +74,17 @@ class Section
     public function setPosition(int $position): static
     {
         $this->position = $position;
+        return $this;
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->isEnabled;
+    }
+
+    public function setIsEnabled(bool $isEnabled): static
+    {
+        $this->isEnabled = $isEnabled;
         return $this;
     }
 }

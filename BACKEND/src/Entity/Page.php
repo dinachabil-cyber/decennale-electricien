@@ -25,6 +25,9 @@ class Page
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $sections;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isPublished = false;
+
     public function __construct()
     {
         $this->sections = new ArrayCollection();
@@ -78,6 +81,17 @@ class Page
                 $section->setPage(null);
             }
         }
+        return $this;
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->isPublished;
+    }
+
+    public function setIsPublished(bool $isPublished): static
+    {
+        $this->isPublished = $isPublished;
         return $this;
     }
 }

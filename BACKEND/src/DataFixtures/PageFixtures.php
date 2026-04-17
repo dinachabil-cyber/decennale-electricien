@@ -12,111 +12,117 @@ class PageFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $page = new Page();
-        $page->setTitle('Assurance Décennale Électricien');
-        $page->setSlug('accueil');
+        $page->setTitle('Accueil');
+        $page->setSlug('home');
+        $page->setIsPublished(true);
 
         $heroSection = new Section();
         $heroSection->setPage($page);
         $heroSection->setType('hero');
         $heroSection->setContent([
             'title' => 'Assurance Décennale Électricien',
-            'subtitle' => 'Comparez et Souscrivez',
-            'ctaText' => 'Devis Gratuit'
+            'subtitle' => 'Devis en quelques clics',
+            'image' => '/images/img.png',
+            'buttonText' => 'Obtenir mon devis',
+            'formTitle' => 'Complétez ce formulaire pour obtenir un tarif',
+            'successTitle' => 'Merci !',
+            'successMessage' => 'Votre demande a été envoyée. Un expert vous contactera rapidement.'
         ]);
         $heroSection->setPosition(0);
+        $heroSection->setIsEnabled(true);
         $manager->persist($heroSection);
-
-        $content1 = new Section();
-        $content1->setPage($page);
-        $content1->setType('content');
-        $content1->setContent([
-            'title' => 'Prix assurance décennale électricien en ligne',
-            'sections' => [
-                [
-                    'title' => 'I. Prix assurance décennale électricien',
-                    'content' => "Le tarif d'une assurance décennale électricien dépend de plusieurs variables concrètes que les assureurs examinent systématiquement avant d'établir une proposition.\n\nLe chiffre d'affaires annuel est le premier critère de pondération. Un électricien réalisant 40 000 euros de CA sur des chantiers résidentiels ne paiera pas la même prime qu'un artisan à 200 000 euros intervenant sur des bâtiments tertiaires. En pratique, les cotisations annuelles se situent entre 600 et 1 200 euros pour les profils à faible activité, et peuvent dépasser 2 500 euros pour les entreprises plus importantes."
-                ]
-            ]
-        ]);
-        $content1->setPosition(1);
-        $manager->persist($content1);
 
         $features = new Section();
         $features->setPage($page);
         $features->setType('features');
         $features->setContent([
-            'title' => 'Pourquoi Nous Choisir',
+            'title' => 'Assurance Décennale Électricien',
+            'introText' => 'Tout électricien qui intervient sur des travaux de construction ou de rénovation est soumis à une obligation légale claire : souscription une assurance décennale avant l\'ouverture du premier chantier.',
             'features' => [
-                ['icon' => '✓', 'title' => 'Comparateur Indépendant', 'description' => 'Nous comparons les offres de plusieurs assureurs pour trouver la meilleure couverture au meilleur prix.'],
-                ['icon' => '✓', 'title' => 'Experts Certifiés', 'description' => 'Nos experts connaissent les spécificités du métier d\'électricien et vous orientent vers les contrats adaptés.'],
-                ['icon' => '✓', 'title' => 'Souscription Rapide', 'description' => 'Obtenez votre devis en quelques minutes et souscrivez directement en ligne.']
-            ]
-        ]);
-        $features->setPosition(2);
-        $manager->persist($features);
-
-        $pricing = new Section();
-        $pricing->setPage($page);
-        $pricing->setType('pricing');
-        $pricing->setContent([
-            'title' => 'Nos Tarifs',
-            'plans' => [
                 [
-                    'name' => 'Débutant',
-                    'price' => '600€',
-                    'features' => ['Garantie décennale', 'RCP Pro', 'Support dédié'],
-                    'featured' => false
+                    'icon' => 'euro-sign',
+                    'title' => 'Prix Assurance Décennale',
+                    'description' => 'Le tarif dépend de plusieurs facteurs : chiffre d\'affaires, nature des chantiers, statut juridique.',
+                    'items' => [
+                        'Auto-entrepreneur : 600-900€/an',
+                        'Artisan : 1000-2000€/an',
+                        'Société : Sur devis'
+                    ]
                 ],
                 [
-                    'name' => 'Artisan',
-                    'price' => '900€',
-                    'features' => ['Garantie décennale', 'RCP Pro', 'Garantie parfait achèvement', 'Support prioritaire'],
-                    'featured' => true
+                    'icon' => 'shield-alt',
+                    'title' => 'Garanties Incluses',
+                    'items' => [
+                        'Responsabilité Civile Décennale',
+                        'Dommages aux existants',
+                        'RC Professionnelle',
+                        'Protection 10 ans'
+                    ]
                 ],
                 [
-                    'name' => 'Entreprise',
-                    'price' => '1500€',
-                    'features' => ['Garantie décennale', 'RCP Pro', 'Toutes garanties', 'Conseil illimité', 'Gestion sinistres'],
-                    'featured' => false
+                    'icon' => 'user-clock',
+                    'title' => 'Auto-Entrepreneur',
+                    'items' => [
+                        'Obligation légale (loi Spinetta)',
+                        'Mentions obligatoires sur devis'
+                    ]
+                ],
+                [
+                    'icon' => 'question-circle',
+                    'title' => 'Que Couvre la Décennale ?',
+                    'items' => [
+                        'Défauts d\'installation électrique',
+                        'Incendies d\'origine électrique',
+                        'Non-conformité normes NFC 15-100',
+                        'Installations photovoltaïques'
+                    ]
                 ]
-            ]
+            ],
+            'steps' => [
+                ['number' => '01', 'title' => 'Remplissez le formulaire', 'description' => 'En 2 minutes, donnez vos informations.'],
+                ['number' => '02', 'title' => 'Analyse de votre profil', 'description' => 'Nos experts analysent votre situation.'],
+                ['number' => '03', 'title' => 'Comparez les offre', 'description' => 'Recevez plusieurs devis personnalisés.'],
+                ['number' => '04', 'title' => 'Souscrivez', 'description' => 'Choisissez et recevez votre attestation.']
+            ],
+            'ctaTitle' => 'Devis assurance décennale électricien',
+            'ctaDescription' => 'Pour obtenir un devis d\'assurance décennale électricien, complétez le formulaire en haut de page. Nos experts vous orientent vers les meilleures garanties adaptées à votre activité.',
+            'ctaButton' => 'Obtenir mon devis maintenant'
         ]);
-        $pricing->setPosition(3);
-        $manager->persist($pricing);
+        $features->setPosition(1);
+        $features->setIsEnabled(true);
+        $manager->persist($features);
 
         $faq = new Section();
         $faq->setPage($page);
         $faq->setType('faq');
         $faq->setContent([
-            'title' => 'FAQ - Assurance Décennale Électricien',
+            'title' => 'Questions fréquentes',
             'items' => [
                 [
                     'question' => 'L\'assurance décennale est-elle obligatoire pour un électricien ?',
-                    'answer' => 'Oui. Tout constructeur au sens de l\'article 1792-1 du Code civil, y compris un électricien intervenant sur un ouvrage de construction, est tenu de souscription une assurance décennale avant l\'ouverture du chantier.'
+                    'answer' => 'Oui. Tout constructeur au sens de l\'article 1792-1 du Code civil, y compris un électricien intervenant sur un ouvrage de construction, est tenu de souscription une assurance décennale avant l\'ouverture du chantier. Cette obligation s\'applique quelle que soit la forme juridique de l\'entreprise : auto-entrepreneur, artisan, EURL ou SARL. Le défaut d\'assurance constitue un délit pénal.'
                 ],
                 [
                     'question' => 'Quel est le prix moyen d\'une assurance décennale pour un électricien ?',
-                    'answer' => 'Le tarif annuel varie entre 600 et 2 500 euros selon le chiffre d\'affaires, la nature des chantiers et l\'historique de sinistres.'
+                    'answer' => 'Le tarif annuel varie entre 600 et 2 500 euros selon le chiffre d\'affaires, la nature des chantiers et l\'historique de sinistres. Un électricien auto-entrepreneur avec un CA inférieur à 50 000 euros paiera généralement entre 600 et 900 euros par an. Une entreprise réalisant 150 000 euros de CA sur des chantiers mixtes se situera davantage autour de 1 500 à 2 000 euros.'
                 ],
                 [
                     'question' => 'Un électricien auto-entrepreneur doit-il souscription une décennale ?',
-                    'answer' => 'Oui, sans exception. Le statut auto-entrepreneur ne dispense pas de l\'obligation légale de garantie décennale.'
+                    'answer' => 'Oui, sans exception. Le statut auto-entrepreneur ne dispense pas de l\'obligation légale de garantie décennale. Les mentions de l\'assureur, du numéro de contrat et de la couverture géographique doivent figurer sur chaque devis et chaque facture émis.'
+                ],
+                [
+                    'question' => 'Que se passe-t-il si un sinistre survient 8 ans après les travaux ?',
+                    'answer' => 'La garantie décennale couvre les dommages survenus dans les dix ans suivant la réception des travaux. Un sinistre constaté 8 ans après la réception est donc pris en charge, à condition que l\'assureur ait été déclaré sur le contrat en vigueur au moment de la réception.'
+                ],
+                [
+                    'question' => 'Quelle différence entre décennale et responsabilité civile professionnelle ?',
+                    'answer' => 'La décennale couvre les dommages survenant après la réception des travaux, pendant dix ans, lorsqu\'ils compromettent la solidité ou la destination de l\'ouvrage. La RCP couvre les dommages causés pendant l\'exécution des travaux (avant réception).'
                 ]
             ]
         ]);
-        $faq->setPosition(4);
+        $faq->setPosition(2);
+        $faq->setIsEnabled(true);
         $manager->persist($faq);
-
-        $contact = new Section();
-        $contact->setPage($page);
-        $contact->setType('contact');
-        $contact->setContent([
-            'title' => 'Demandez votre devis',
-            'subtitle' => 'Nos experts sont disponibles pour vous répondre',
-            'buttonText' => 'Envoyer ma demande'
-        ]);
-        $contact->setPosition(5);
-        $manager->persist($contact);
 
         $manager->persist($page);
         $manager->flush();

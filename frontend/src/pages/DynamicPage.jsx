@@ -3,14 +3,29 @@ import { useParams } from 'react-router-dom';
 import { fetchPageBySlug } from '../api/cms';
 import Hero from '../components/hero/Hero';
 import Features from '../components/features/Features';
+import FAQ from '../components/faq/FAQ';
+import Content from '../components/content/Content';
+import Pricing from '../components/pricing/Pricing';
+import CTA from '../components/cta/CTA';
+import Testimonials from '../components/testimonials/Testimonials';
+import Contact from '../components/contact/Contact';
+import Gallery from '../components/gallery/Gallery';
 
 const SECTION_COMPONENTS = {
   hero: Hero,
-  features: Features
+  features: Features,
+  faq: FAQ,
+  content: Content,
+  pricing: Pricing,
+  cta: CTA,
+  testimonials: Testimonials,
+  contact: Contact,
+  gallery: Gallery
 };
 
-function DynamicPage() {
-  const { slug } = useParams();
+function DynamicPage({ slug: propSlug }) {
+  const urlSlug = useParams().slug;
+  const slug = propSlug || urlSlug;
   const [page, setPage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,6 +80,7 @@ function DynamicPage() {
 
     return page.sections
       .sort((a, b) => a.position - b.position)
+      .filter(section => section.isEnabled !== false)
       .map((section) => {
         const Component = SECTION_COMPONENTS[section.type];
         if (!Component) {

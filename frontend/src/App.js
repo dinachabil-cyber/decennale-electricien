@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Header from './components/layout/Header';
-import Hero from './components/hero/Hero';
-import Features from './components/features/Features';
 import CookieBanner from './components/CookieBanner';
 import DynamicPage from './pages/DynamicPage';
 import AdminPage from './pages/AdminPage';
@@ -47,12 +45,7 @@ function App() {
         <Header />
         <main>
           <Routes>
-            <Route path="/" element={
-              <>
-                <Hero />
-                <Features />
-              </>
-            } />
+            <Route path="/" element={<DynamicPage slug="home" />} />
             <Route path="/page/:slug" element={<DynamicPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin" element={

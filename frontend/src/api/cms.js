@@ -166,3 +166,95 @@ export function getAuthHeader() {
   const token = localStorage.getItem('admin_token');
   return token ? { 'Authorization': `Bearer ${token}` } : {};
 }
+
+export async function fetchSettings() {
+  const response = await fetch(`${API_URL}/settings`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch settings');
+  }
+  return response.json();
+}
+
+export async function updateSettings(data) {
+  const response = await fetch(`${API_URL}/settings`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update settings');
+  }
+  return response.json();
+}
+
+export async function fetchHeaderSettings() {
+  const response = await fetch(`${API_URL}/settings/header`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch header settings');
+  }
+  return response.json();
+}
+
+export async function fetchFooterSettings() {
+  const response = await fetch(`${API_URL}/settings/footer`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch footer settings');
+  }
+  return response.json();
+}
+
+export async function togglePagePublish(id) {
+  const response = await fetch(`${API_URL}/pages/${id}/publish`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() }
+  });
+  if (!response.ok) {
+    throw new Error('Failed to toggle page publish');
+  }
+  return response.json();
+}
+
+export async function toggleSection(id) {
+  const response = await fetch(`${API_URL}/sections/${id}/toggle`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() }
+  });
+  if (!response.ok) {
+    throw new Error('Failed to toggle section');
+  }
+  return response.json();
+}
+
+export async function fetchMedia() {
+  const response = await fetch(`${API_URL}/media`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch media');
+  }
+  return response.json();
+}
+
+export async function uploadMedia(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  const response = await fetch(`${API_URL}/media`, {
+    method: 'POST',
+    body: formData,
+    headers: getAuthHeader()
+  });
+  if (!response.ok) {
+    throw new Error('Failed to upload media');
+  }
+  return response.json();
+}
+
+export async function deleteMedia(filename) {
+  const response = await fetch(`${API_URL}/media/${filename}`, {
+    method: 'DELETE',
+    headers: getAuthHeader()
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete media');
+  }
+  return response.json();
+}
