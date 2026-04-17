@@ -1,0 +1,102 @@
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Qu'est-ce que l'assurance décennale pour électricien ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "L'assurance décennale est une garantie obligatoire qui couvre les dommages pouvant affecter la solidité d'un ouvrage ou le rendre impropre à sa destination pendant 10 ans après la fin des travaux. Pour un électricien, cela inclut les problèmes de conformité électrique, les dommages sur l'installation et les équipements électriques."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "L'assurance décennale est-elle obligatoire pour les électriciens ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui, la loi Spinetta de 1978 rend l'assurance décennale obligatoire pour tout professionnel du bâtiment, y compris les électriciens. Sans cette assurance, vous ne pouvez pas exercer légalement et risquez des sanctions pénales."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Combien coûte une assurance décennale pour électricien ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Le coût varie selon plusieurs critères : votre chiffre d'affaires, votre expérience, la taille de votre entreprise et les garanties choisies. En moyenne, comptez entre 1 500€ et 3 500€ par an pour une activité d'électricien. Demandez un devis gratuit pour obtenir une offre personnalisée."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Que couvre l'assurance décennale pour électricien ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "La garantie décennale couvre les dommages graves affectant : la solidité de l'ouvrage (fondations, ossature, murs porteurs), l'étanchéité (toiture, façade), les équipements fixes (tableau électrique, câblage), et les dommages rendant le bâtiment impropre à son usage (problèmes électriques rendant l'habitation dangereuse)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quand doit-on déclarer un sinistre décennal ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Vous devez déclarer tout sinistre dès sa connaissance et dans un délai maximum de 5 jours ouvrés. La déclaration doit être faite par écrit à votre assureur avec tous les élémentsprouvants : photos, devis de réparation, témoignages, etc."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quelle est la différence entre garantie biennale et décennale ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "La garantie biennale (ou garantie de parfait achèvement) couvre les dommages légers et les équipements pendant 2 ans après la réception des travaux. La garantie décennale couvre les dommages graves affectant la structure du bâtiment pendant 10 ans. Les deux sont complémentaires et souvent incluses dans le même contrat."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Puis-je exercer sans assurance décennale ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Non, exercer sans assurance décennale est illégal et expose à de lourdes sanctions : amende pouvant aller jusqu'à 75 000€, interdiction d'exercer, et responsabilité civile en cas de sinistre. De plus, le client peut refuser de payer si vous n'avez pas de garantie décennale."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment trouver la meilleure assurance décennale ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pour trouver la meilleure offre, comparez les garanties proposées, les exclusions, les plafonds de couverture et les franchises. Utilisez notre service de comparaison gratuit pour obtenir plusieurs devis et choisir l'offre la plus adaptée à votre activité."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quelle est la franchise d'une assurance décennale ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "La franchise est le montant qui reste à votre charge en cas de sinistre. Elle varie généralement entre 500€ et 2 000€ selon les contrats. Une franchise plus basse signifie généralement une prime plus élevée. Choisissez en fonction de votre tolérance au risque."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "L'assurance décennale couvre-t-elle les erreurs de manipulation ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "La garantie décennale couvre les dommages résultant d'un défaut de conformité ou d'une malfaçon, mais pas les erreurs de manipulation simples. En revanche, si une erreur de manipulation cause un dommage grave affectant la sécurité électrique du bâtiment, elle peut être couverte. La RC Pro couvre généralement les erreurs de manipulation simples."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment fonctionne le coefficient de bonus/malus ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Comme pour l'assurance auto, le coefficient de bonus/malus applique une majoration en cas de sinistre responsable et une réduction pour les années sans sinistre. Un bonus de 0,80 peut réduire votre prime de 20%. À l'inverse, un malus peut majorer la prime jusqu'à 50%."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Puis-je assurer plusieurs activités sous le même contrat ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui, vous pouvez combiner plusieurs activités du bâtiment (électricien, plombier, peintre...) sous un même contrat décennal. Cela permet souvent de bénéficier d'un tarif de groupe. Cependant, chaque activité doit être déclarée et może avoir des garanties spécifiques."
+      }
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "pages": [
+    {
+      "title": "Accueil",
+      "slug": "home",
+      "isPublished": true,
+      "sections": [
+        {
+          "type": "hero",
+          "content": {
+            "title": "Assurance Décennale Électricien",
+            "subtitle": "Devis en quelques clics",
+            "backgroundImage": "/images/img.png",
+            "ctaText": "Obtenir mon devis"
+          }
+        },
+        {
+          "type": "faq",
+          "content": {
+            "title": "Questions fréquentes",
+            "items": [
+              { "question": "L'assurance décennale est-elle obligatoire ?", "answer": "Oui, pour tout électricien intervenant sur des travaux de construction." },
+              { "question": "Quel est le prix moyen ?", "answer": "Entre 600€ et 2500€ par an selon le chiffre d'affaires." },
+              { "question": "Auto-entrepreneur : obligation ?", "answer": "Oui, le statut n'exonère pas de l'obligation." },
+              { "question": "Couverture après 8 ans ?", "answer": "Oui, la garantie couvre les 10 ans suivant la réception." },
+              { "question": "Différence décennale/RC pro ?", "answer": "La décennale couvre 10 ans après réception, la RC pro couvre les dommages pendant les travaux." }
+            ]
+          }
+        },
+        {
+          "type": "steps",
+          "content": {
+            "title": "Comment ça marche ?",
+            "steps": [
+              { "number": "01", "title": "Remplissez le formulaire", "description": "En 2 minutes, donnez vos informations." },
+              { "number": "02", "title": "Analyse de votre profil", "description": "Nos experts analysent votre situation." },
+              { "number": "03", "title": "Comparez les offres", "description": "Recevez plusieurs devis personnalisés." },
+              { "number": "04", "title": "Souscrivez", "description": "Choisissez et recevez votre attestation." }
+            ]
+          }
+        },
+        {
+          "type": "content",
+          "content": {
+            "title": "Pourquoi choisir notre comparateur ?",
+            "introduction": "Nous analysons votre situation et comparons les meilleurs contrats du marché.",
+            "sections": [
+              { "title": "Expertise construction", "content": "Nos experts connaissent les spécificités du métier d'électricien." },
+              { "title": "Accès aux meilleurs tarifs", "content": "Nous négocions pour vous les garanties les plus complètes au meilleur prix." }
+            ]
+          }
+        },
+        {
+          "type": "form",
+          "content": {
+            "title": "Demande de devis",
+            "description": "Remplissez le formulaire pour obtenir votre tarif personnalisé.",
+            "submitText": "Obtenir mon devis",
+            "email": "contact@exemple.fr",
+            "fields": [
+              { "name": "name", "label": "Nom", "type": "text", "required": true },
+              { "name": "email", "label": "Email", "type": "email", "required": true },
+              { "name": "phone", "label": "Téléphone", "type": "tel", "required": false },
+              { "name": "message", "label": "Votre message", "type": "textarea", "required": true }
+            ]
+          }
+        },
+        {
+          "type": "footer",
+          "content": {
+            "text": "© 2024 AKSAM ASSURANCES. Tous droits réservés.",
+            "links": [
+              { "label": "Mentions légales", "url": "/mentions-legales" },
+              { "label": "Politique de confidentialité", "url": "/privacy" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "À propos",
+      "slug": "about",
+      "isPublished": true,
+      "sections": [
+        {
+          "type": "hero",
+          "content": {
+            "title": "À propos de nous",
+            "subtitle": "Experts en assurance construction depuis 2010",
+            "ctaText": "Nous contacter",
+            "ctaLink": "/contact"
+          }
+        },
+        {
+          "type": "content",
+          "content": {
+            "title": "Notre expertise",
+            "introduction": "AKSAM ASSURANCES est un courtier spécialisé dans l'assurance construction.",
+            "sections": [
+              { "title": "Mission", "content": "Accompagner les professionnels du bâtiment dans la protection de leur activité." },
+              { "title": "Valeurs", "content": "Expertise, indépendance, et service personnalisé." }
+            ]
+          }
+        },
+        {
+          "type": "contact",
+          "content": {
+            "title": "Contactez-nous",
+            "subtitle": "Notre équipe est à votre disposition",
+            "email": "contact@aksam-assurances.fr",
+            "phone": "01 23 45 67 89",
+            "address": "10 Rue de Penthièvre, 75008 Paris",
+            "showMap": true
+          }
+        }
+      ]
+    },
+    {
+      "title": "Contact",
+      "slug": "contact",
+      "isPublished": true,
+      "sections": [
+        {
+          "type": "hero",
+          "content": {
+            "title": "Contact",
+            "subtitle": "Une question ? Notre équipe vous répond.",
+            "ctaText": "Envoyer un message",
+            "ctaLink": "#contact-form"
+          }
+        },
+        {
+          "type": "contact",
+          "content": {
+            "title": "Nos coordonnées",
+            "subtitle": "Retrouvez-nous à Paris",
+            "email": "contact@aksam-assurances.fr",
+            "phone": "01 23 45 67 89",
+            "address": "10 Rue de Penthièvre, 75008 Paris",
+            "showMap": true
+          }
+        },
+        {
+          "type": "form",
+          "content": {
+            "title": "Formulaire de contact",
+            "description": "Remplissez ce formulaire et nous vous répondrons dans les 24h.",
+            "submitText": "Envoyer le message",
+            "email": "contact@exemple.fr",
+            "fields": [
+              { "name": "name", "label": "Votre nom", "type": "text", "required": true },
+              { "name": "email", "label": "Votre email", "type": "email", "required": true },
+              { "name": "subject", "label": "Sujet", "type": "text", "required": true },
+              { "name": "message", "label": "Message", "type": "textarea", "required": true }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

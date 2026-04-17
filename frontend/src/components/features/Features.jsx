@@ -1,39 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 function FeaturesSection({ content = {} }) {
-  const [openFaq, setOpenFaq] = useState(null);
-
-  // Use content from CMS or fallback to default data
-  const { faqs: contentFaqs = [] } = content;
-
-  const toggleFaq = (index) => {
-    setOpenFaq(openFaq === index ? null : index);
-  };
-
-  // Use FAQs from CMS if available, otherwise use defaults
-  const faqs = contentFaqs.length > 0 ? contentFaqs : [
-    {
-      question: "L'assurance décennale est-elle obligatoire pour un électricien ?",
-      answer: "Oui. Tout constructeur au sens de l'article 1792-1 du Code civil, y compris un électricien intervenant sur un ouvrage de construction, est tenu de souscription une assurance décennale avant l'ouverture du chantier. Cette obligation s'applique quelle que soit la forme juridique de l'entreprise : auto-entrepreneur, artisan, EURL ou SARL. Le défaut d'assurance constitue un délit pénal."
-    },
-    {
-      question: "Quel est le prix moyen d'une assurance décennale pour un électricien ?",
-      answer: "Le tarif annuel varie entre 600 et 2 500 euros selon le chiffre d'affaires, la nature des chantiers et l'historique de sinistres. Un électricien auto-entrepreneur avec un CA inférieur à 50 000 euros paiera généralement entre 600 et 900 euros par an. Une entreprise réalisant 150 000 euros de CA sur des chantiers mixtes se situera davantage autour de 1 500 à 2 000 euros."
-    },
-    {
-      question: "Un électricien auto-entrepreneur doit-il souscription une décennale ?",
-      answer: "Oui, sans exception. Le statut auto-entrepreneur ne dispense pas de l'obligation légale de garantie décennale. Les mentions de l'assureur, du numéro de contrat et de la couverture géographique doivent figurer sur chaque devis et chaque facture émis."
-    },
-    {
-      question: "Que se passe-t-il si un sinistre survient 8 ans après les travaux ?",
-      answer: "La garantie décennale couvre les dommages survenus dans les dix ans suivant la réception des travaux. Un sinistre constaté 8 ans après la réception est donc pris en charge, à condition que l'assureur ait été déclaré sur le contrat en vigueur au moment de la réception."
-    },
-    {
-      question: "Quelle différence entre décennale et responsabilité civile professionnelle ?",
-      answer: "La décennale couvre les dommages survenant après la réception des travaux, pendant dix ans, lorsqu'ils compromettent la solidité ou la destination de l'ouvrage. La RCP couvre les dommages causés pendant l'exécution des travaux (avant réception)."
-    }
-  ];
-
   return (
     <section className="py-20 bg-surface">
       <div className="container mx-auto px-4">
@@ -236,28 +203,6 @@ function FeaturesSection({ content = {} }) {
                   <i className="fas fa-arrow-up mr-2"></i>
                   Obtenir mon devis maintenant
                 </a>
-              </div>
-            </div>
-
-            <div className="mt-16">
-              <h2 className="text-3xl font-bold text-dark mb-8 text-center">Questions fréquentes</h2>
-              <div className="space-y-4 max-w-3xl mx-auto">
-                {faqs.map((faq, index) => (
-                  <div key={index} className="bg-gray-50 rounded-xl overflow-hidden">
-                    <button
-                      className="w-full px-6 py-4 text-left flex justify-between items-center"
-                      onClick={() => toggleFaq(index)}
-                    >
-                      <span className="font-semibold text-dark">{faq.question}</span>
-                      <i className={`fas fa-chevron-down text-yellow-500 transition-transform ${openFaq === index ? 'rotate-180' : ''}`}></i>
-                    </button>
-                    {openFaq === index && (
-                      <div className="px-6 pb-4">
-                        <p className="text-gray-600">{faq.answer}</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
               </div>
             </div>
           </div>

@@ -1,260 +1,77 @@
 const API_URL = process.env.REACT_APP_API_URL || 'http://ecennale-electricien-backend.ddev.site/api';
 
-export async function fetchPageBySlug(slug) {
-  const response = await fetch(`${API_URL}/pages/slug/${slug}`);
-  if (!response.ok) {
-    throw new Error('Page not found');
-  }
-  return response.json();
-}
+const getToken = () => localStorage.getItem('admin_token');
+const authHeader = () => {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
-export async function fetchAllPages() {
-  const response = await fetch(`${API_URL}/pages`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch pages');
-  }
-  return response.json();
-}
-
-export async function createPage(data) {
-  const response = await fetch(`${API_URL}/pages`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+async function request(endpoint, options = {}) {
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...authHeader(), ...options.headers }
   });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to create page');
-  }
-  return response.json();
-}
-
-export async function updatePage(id, data) {
-  const response = await fetch(`${API_URL}/pages/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to update page');
-  }
-  return response.json();
-}
-
-export async function deletePage(id) {
-  const response = await fetch(`${API_URL}/pages/${id}`, {
-    method: 'DELETE'
-  });
-  if (!response.ok) {
-    throw new Error('Failed to delete page');
-  }
-  return response.json();
-}
-
-export async function addSection(pageId, data) {
-  const response = await fetch(`${API_URL}/pages/${pageId}/sections`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to add section');
-  }
-  return response.json();
-}
-
-export async function updateSection(id, data) {
-  const response = await fetch(`${API_URL}/sections/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to update section');
-  }
-  return response.json();
-}
-
-export async function deleteSection(id) {
-  const response = await fetch(`${API_URL}/sections/${id}`, {
-    method: 'DELETE'
-  });
-  if (!response.ok) {
-    throw new Error('Failed to delete section');
-  }
-  return response.json();
-}
-
-export async function reorderSections(pageId, sectionIds) {
-  const response = await fetch(`${API_URL}/pages/${pageId}/reorder`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sections: sectionIds })
-  });
-  if (!response.ok) {
-    throw new Error('Failed to reorder sections');
-  }
-  return response.json();
-}
-
-export async function fetchLeads() {
-  const token = localStorage.getItem('admin_token');
-  const response = await fetch(`${API_URL}/leads`, {
-    headers: {
-      'Authorization': token ? `Bearer ${token}` : ''
-    }
-  });
-  if (!response.ok) {
-    throw new Error('Failed to fetch leads');
-  }
-  return response.json();
-}
-
-const AUTH_API_URL = `${API_URL}/auth`;
-
-export async function login(email, password) {
-  console.log('Logging in to:', `${AUTH_API_URL}/login`);
-  const response = await fetch(`${AUTH_API_URL}/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  });
-  console.log('Login response status:', response.status);
   
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Login error response:', errorText);
-    let error;
+    const error = await response.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(error.error || 'Request failed');
+  }
+  return response.json();
+}
+
+export const pagesApi = {
+  getAll: () => request('/pages'),
+  getBySlug: (slug) => request(`/pages/slug/${slug}`),
+  getBySlugWithDraft: (slug) => request(`/pages/slug/${slug}?preview=true`),
+  getById: (id) => request(`/pages/${id}`),
+  create: (data) => request('/pages', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id, data) => request('/pages/${id}', { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id) => request('/pages/${id}', { method: 'DELETE' }),
+  togglePublish: (id) => request('/pages/${id}/publish', { method: 'PATCH' }),
+};
+
+export const sectionsApi = {
+  create: (pageId, data) => request(`/pages/${pageId}/sections`, { method: 'POST', body: JSON.stringify(data) }),
+  update: (id, data) => request(`/sections/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id) => request(`/sections/${id}`, { method: 'DELETE' }),
+  toggle: (id) => request(`/sections/${id}/toggle`, { method: 'PATCH' }),
+  reorder: (pageId, sectionIds) => request(`/pages/${pageId}/reorder`, { method: 'PATCH', body: JSON.stringify({ sections: sectionIds }) }),
+};
+
+export const settingsApi = {
+  get: () => request('/settings'),
+  update: (data) => request('/settings', { method: 'PUT', body: JSON.stringify(data) }),
+};
+
+export const mediaApi = {
+  getAll: () => request('/media'),
+  upload: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetch(`${API_URL}/media`, { method: 'POST', body: formData, headers: authHeader() });
+    if (!response.ok) throw new Error('Upload failed');
+    return response.json();
+  },
+  delete: (filename) => request(`/media/${filename}`, { method: 'DELETE' }),
+};
+
+export const authApi = {
+  login: async (email, password) => {
+    const data = await request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+    localStorage.setItem('admin_token', data.token);
+    return data;
+  },
+  logout: () => localStorage.removeItem('admin_token'),
+  verify: async () => {
+    const token = getToken();
+    if (!token) return null;
     try {
-      error = JSON.parse(errorText);
+      return await request('/auth/verify');
     } catch {
-      error = { error: 'Login failed' };
+      authApi.logout();
+      return null;
     }
-    throw new Error(error.error || 'Login failed');
-  }
-  const data = await response.json();
-  localStorage.setItem('admin_token', data.token);
-  localStorage.setItem('admin_email', data.admin.email);
-  localStorage.setItem('admin_role', data.admin.role);
-  return data;
-}
+  },
+};
 
-export function logout() {
-  localStorage.removeItem('admin_token');
-  localStorage.removeItem('admin_email');
-  localStorage.removeItem('admin_role');
-}
-
-export async function verifyToken() {
-  const token = localStorage.getItem('admin_token');
-  if (!token) return null;
-  
-  const response = await fetch(`${AUTH_API_URL}/verify`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  if (!response.ok) {
-    logout();
-    return null;
-  }
-  return response.json();
-}
-
-export function getAuthHeader() {
-  const token = localStorage.getItem('admin_token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-}
-
-export async function fetchSettings() {
-  const response = await fetch(`${API_URL}/settings`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch settings');
-  }
-  return response.json();
-}
-
-export async function updateSettings(data) {
-  const response = await fetch(`${API_URL}/settings`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  if (!response.ok) {
-    throw new Error('Failed to update settings');
-  }
-  return response.json();
-}
-
-export async function fetchHeaderSettings() {
-  const response = await fetch(`${API_URL}/settings/header`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch header settings');
-  }
-  return response.json();
-}
-
-export async function fetchFooterSettings() {
-  const response = await fetch(`${API_URL}/settings/footer`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch footer settings');
-  }
-  return response.json();
-}
-
-export async function togglePagePublish(id) {
-  const response = await fetch(`${API_URL}/pages/${id}/publish`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeader() }
-  });
-  if (!response.ok) {
-    throw new Error('Failed to toggle page publish');
-  }
-  return response.json();
-}
-
-export async function toggleSection(id) {
-  const response = await fetch(`${API_URL}/sections/${id}/toggle`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeader() }
-  });
-  if (!response.ok) {
-    throw new Error('Failed to toggle section');
-  }
-  return response.json();
-}
-
-export async function fetchMedia() {
-  const response = await fetch(`${API_URL}/media`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch media');
-  }
-  return response.json();
-}
-
-export async function uploadMedia(file) {
-  const formData = new FormData();
-  formData.append('file', file);
-  
-  const response = await fetch(`${API_URL}/media`, {
-    method: 'POST',
-    body: formData,
-    headers: getAuthHeader()
-  });
-  if (!response.ok) {
-    throw new Error('Failed to upload media');
-  }
-  return response.json();
-}
-
-export async function deleteMedia(filename) {
-  const response = await fetch(`${API_URL}/media/${filename}`, {
-    method: 'DELETE',
-    headers: getAuthHeader()
-  });
-  if (!response.ok) {
-    throw new Error('Failed to delete media');
-  }
-  return response.json();
-}
+export const login = authApi.login;

@@ -104,6 +104,45 @@ const SECTION_REGISTRY = {
     defaultContent: {
       images: [{ url: '', alt: '', caption: '' }]
     }
+  },
+  form: {
+    label: 'Formulaire',
+    labelFr: 'Formulaire',
+    description: 'Formulaire de contact ou de demande de devis',
+    icon: '📋',
+    defaultContent: {
+      title: 'Contactez-nous',
+      description: 'Remplissez ce formulaire',
+      submitText: 'Envoyer',
+      email: '',
+      fields: [
+        { name: 'name', label: 'Nom', type: 'text', required: true },
+        { name: 'email', label: 'Email', type: 'email', required: true }
+      ]
+    }
+  },
+  steps: {
+    label: 'Steps',
+    labelFr: 'Étapes',
+    description: 'Section d\'étapes',
+    icon: '🔢',
+    defaultContent: {
+      steps: [
+        { number: '01', title: 'Étape 1', description: 'Description de l\'étape' }
+      ]
+    }
+  },
+  footer: {
+    label: 'Footer',
+    labelFr: 'Footer',
+    description: 'Pied de page',
+    icon: '🦶',
+    defaultContent: {
+      text: 'Texte du footer',
+      links: [
+        { label: 'Mentions légales', url: '/mentions-legales' }
+      ]
+    }
   }
 };
 

@@ -1,0 +1,103 @@
+{
+  "title": "Assurance Décennale Électricien",
+  "slug": "home",
+  "isPublished": true,
+  "sections": [
+    {
+      "type": "hero",
+      "position": 0,
+      "isEnabled": true,
+      "content": {
+        "title": "Assurance Décennale Électricien",
+        "subtitle": "Devis personnalisé en quelques clics. Comparez les meilleures garanties pour protéger votre activité.",
+        "ctaText": "Obtenir mon devis gratuit",
+        "ctaLink": "#devis",
+        "backgroundImage": ""
+      }
+    },
+    {
+      "type": "form",
+      "position": 1,
+      "isEnabled": true,
+      "content": {
+        "title": "Demande de devis gratuit",
+        "subtitle": "Remplissez le formulaire pour recevoir votre devis personnalisé",
+        "fields": {
+          "name": { "label": "Nom complet", "required": true },
+          "email": { "label": "Email", "required": true },
+          "phone": { "label": "Téléphone", "required": true },
+          "company": { "label": "Nom de l'entreprise", "required": false },
+          "activity": { "label": "Activité", "required": true }
+        },
+        "submitText": "Envoyer ma demande",
+        "successMessage": "Merci ! Votre demande a été envoyée. Nous vous contacterons sous 24h."
+      }
+    },
+    {
+      "type": "content",
+      "position": 2,
+      "isEnabled": true,
+      "content": {
+        "title": "Pourquoi choisir une assurance décennale électricien ?",
+        "introduction": "L'assurance décennale est obligatoire pour tout professionnel du bâtiment, y compris les électriciens. Elle couvre les dommages qui affectent la solidité de l'ouvrage ou le rendent impropre à sa destination pendant 10 ans après la fin des travaux.",
+        "sections": [
+          {
+            "title": "Obligation légale",
+            "content": "La loi Spinetta de 1978 rend l'assurance décennale obligatoire pour les professionnels du bâtiment. Sans cette assurance, vous ne pouvez pas exercer légalement en tant qu'électricien."
+          },
+          {
+            "title": "Protection contre les litiges",
+            "content": "En cas de malfaçon ou de dommages détectés après la réception des travaux, l'assurance prend en charge les coûts de réparation. Cela vous protège financièrement et juridiquement."
+          },
+          {
+            "title": "Confiance client",
+            "content": "Posséder une assurance décennale rassure vos clients et peut être un argument commercial decisive dans la sélection de vos devis."
+          }
+        ],
+        "ctaText": "Comparer les devis",
+        "ctaLink": "#devis"
+      }
+    },
+    {
+      "type": "steps",
+      "position": 3,
+      "isEnabled": true,
+      "content": {
+        "title": "Comment obtenir votre devis ?",
+        "steps": [
+          {
+            "number": 1,
+            "title": "Remplissez le formulaire",
+            "description": "Indiquez vos informations professionnelles et votre activité"
+          },
+          {
+            "number": 2,
+            "title": "Comparaison des offres",
+            "description": "Nous comparons les assureurs pour trouver les meilleures garanties au meilleur prix"
+          },
+          {
+            "number": 3,
+            "title": "Recevez votre devis",
+            "description": "Recevez votre devis personnalisé sous 24h par email"
+          },
+          {
+            "number": 4,
+            "title": "Souscription en ligne",
+            "description": "Signez votre contrat et obtenir votre attestation immédiatement"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cta",
+      "position": 4,
+      "isEnabled": true,
+      "content": {
+        "title": "Prêt à protéger votre activité ?",
+        "subtitle": "Obtenez votre devis gratuit et sans engagement",
+        "buttonText": "Faire une demande de devis",
+        "buttonLink": "#devis"
+      }
+    }
+  ]
+}

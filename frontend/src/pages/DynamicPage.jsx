@@ -1,101 +1,97 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { cmsApi } from '../services/cmsApi';
-import { SectionRenderer } from '../sections/SectionRenderer';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
+import { pagesApi } from '../api/cms';
+import SectionRenderer from '../components/sections/SectionRenderer';
 
-const PageLoadingFallback = () => (
-  <div className="py-20 text-center">
-    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
-  </div>
-);
-
-const PageErrorFallback = ({ error, onRetry }) => (
-  <div className="py-20 text-center">
-    <h2 className="text-2xl font-bold text-gray-800 mb-2">Erreur de chargement</h2>
-    <p className="text-gray-600 mb-4">{error}</p>
-    {onRetry && (
-      <button 
-        onClick={onRetry}
-        className="px-4 py-2 bg-yellow-400 text-dark rounded-lg hover:bg-yellow-500"
-      >
-        Réessayer
-      </button>
-    )}
-  </div>
-);
-
-const EmptyPageFallback = () => (
-  <div className="py-20 text-center">
-    <p className="text-gray-600">Aucun contenu pour cette page.</p>
-  </div>
-);
-
-function DynamicPage({ slug: propSlug }) {
-  const navigate = useNavigate();
-  const urlSlug = useParams().slug;
-  const slug = propSlug || urlSlug;
-  
-  const [page, setPage] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const loadPage = useCallback(async () => {
-    if (!slug) return;
-    
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await cmsApi.fetchPageBySlug(slug);
-      setPage(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [slug]);
-
-  useEffect(() => {
-    loadPage();
-  }, [loadPage]);
-
-  const sections = useMemo(() => {
-    if (!page?.sections) return [];
-    return page.sections
-      .filter(section => section.isEnabled !== false)
-      .sort((a, b) => a.position - b.position);
-  }, [page?.sections]);
-
-  if (loading) return <PageLoadingFallback />;
-  
-  if (error) {
-    if (error.includes('not found') || error.includes('Page not found')) {
-      return (
-        <div className="py-20 text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Page non trouvée</h2>
-          <p className="text-gray-500 text-sm">Cette page n'existe pas.</p>
-        </div>
-      );
-    }
-    return <PageErrorFallback error={error} onRetry={loadPage} />;
-  }
-
-  if (!page) return null;
-
+function Loading() {
   return (
-    <div className="dynamic-page" data-page-id={page.id} data-page-slug={page.slug}>
-      {sections.length === 0 ? (
-        <EmptyPageFallback />
-      ) : (
-        sections.map((section, index) => (
-          <SectionRenderer
-            key={`${section.type}-${section.id}-${index}`}
-            section={section}
-            mode="frontend"
-          />
-        ))
-      )}
+    <div className="py-20 text-center">
+      <div className="inline-block w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
     </div>
   );
 }
 
-export default DynamicPage;
+function NotFound() {
+  return (
+    <div className="py-20 text-center">
+      <h2 className="text-2xl font-bold text-gray-800">Page non trouvée</h2>
+      <p className="text-gray-500">Cette page n'existe pas.</p>
+    </div>
+  );
+}
+
+function Error({ message }) {
+  return (
+    <div className="py-20 text-center">
+      <h2 className="text-2xl font-bold text-gray-800 mb-2">Erreur</h2>
+      <p className="text-gray-600">{message}</p>
+    </div>
+  );
+}
+
+function Empty() {
+  return (
+    <div className="py-20 text-center text-gray-500">
+      Aucun contenu pour cette page.
+    </div>
+  );
+}
+
+export default function DynamicPage() {
+  const { slug } = useParams();
+  const [searchParams] = useSearchParams();
+  const [page, setPage] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const pageSlug = slug || 'home';
+  const isPreview = searchParams.get('preview') === 'true';
+
+  useEffect(() => {
+    async function fetchPage() {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        let data;
+        if (isPreview) {
+          data = await pagesApi.getBySlug(pageSlug);
+        } else {
+          data = await pagesApi.getBySlug(pageSlug);
+        }
+        setPage(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPage();
+  }, [pageSlug, isPreview]);
+
+  const sections = useMemo(() => {
+    if (!page?.sections) return [];
+    return page.sections
+      .filter(s => s.isEnabled !== false)
+      .sort((a, b) => a.position - b.position);
+  }, [page?.sections]);
+
+  if (loading) return <Loading />;
+  if (error) {
+    if (error.includes('not found')) return <NotFound />;
+    return <Error message={error} />;
+  }
+  if (!page) return <NotFound />;
+
+  return (
+    <main data-page-id={page.id} data-page-slug={page.slug}>
+      {sections.length === 0 ? (
+        <Empty />
+      ) : (
+        sections.map(section => (
+          <SectionRenderer key={section.id} section={section} mode="frontend" />
+        ))
+      )}
+    </main>
+  );
+}

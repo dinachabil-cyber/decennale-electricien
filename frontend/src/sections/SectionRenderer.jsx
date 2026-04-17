@@ -7,6 +7,7 @@ const COMPONENTS = {
   features: React.lazy(() => import('../components/features/Features')),
   pricing: React.lazy(() => import('../components/pricing/Pricing')),
   faq: React.lazy(() => import('../components/faq/FAQ')),
+  howitworks: React.lazy(() => import('../components/howitworks/HowItWorks')),
   contact: React.lazy(() => import('../components/contact/Contact')),
   cta: React.lazy(() => import('../components/cta/CTA')),
   testimonials: React.lazy(() => import('../components/testimonials/Testimonials')),
@@ -31,12 +32,9 @@ export const SectionRenderer = React.memo(function SectionRenderer({ section, mo
 
   const Component = COMPONENTS[type];
 
+  // Skip unknown section types silently
   if (!Component) {
-    return (
-      <div className="py-8 px-4">
-        <p className="text-gray-500">Composant non trouvé: {type}</p>
-      </div>
-    );
+    return null;
   }
 
   const renderProps = {

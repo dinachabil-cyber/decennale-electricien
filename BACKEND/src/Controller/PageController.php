@@ -127,7 +127,7 @@ $sections = [];
         $data = json_decode($request->getContent(), true);
 
         if (isset($data['type'])) {
-$validTypes = ['hero', 'faq', 'pricing', 'features', 'contact', 'content', 'cta', 'testimonials', 'gallery'];
+            $validTypes = ['hero', 'faq', 'pricing', 'features', 'contact', 'content', 'cta', 'testimonials', 'gallery', 'form', 'steps', 'footer'];
             if (!in_array($data['type'], $validTypes)) {
                 return new JsonResponse(['error' => 'Invalid section type'], 400);
             }
@@ -193,6 +193,37 @@ $validTypes = ['hero', 'faq', 'pricing', 'features', 'contact', 'content', 'cta'
         return new JsonResponse(['message' => 'Sections reordered successfully']);
     }
 
+    #[Route('/api/pages/{id}', name: 'update_page', methods: ['PUT'])]
+    public function updatePage(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $page = $em->find(Page::class, $id);
+        if (!$page) {
+            return new JsonResponse(['error' => 'Page not found'], 404);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (isset($data['title'])) {
+            $page->setTitle($data['title']);
+        }
+        if (isset($data['slug'])) {
+            $existing = $em->getRepository(Page::class)->findOneBySlug($data['slug']);
+            if ($existing && $existing->getId() !== $id) {
+                return new JsonResponse(['error' => 'Page with this slug already exists'], 400);
+            }
+            $page->setSlug($data['slug']);
+        }
+
+        $em->flush();
+
+        return new JsonResponse([
+            'id' => $page->getId(),
+            'title' => $page->getTitle(),
+            'slug' => $page->getSlug(),
+            'isPublished' => $page->isPublished()
+        ]);
+    }
+
     #[Route('/api/pages/{id}/publish', name: 'toggle_page_publish', methods: ['PATCH'])]
     public function togglePagePublish(int $id, EntityManagerInterface $em): JsonResponse
     {
@@ -225,9 +256,16 @@ $validTypes = ['hero', 'faq', 'pricing', 'features', 'contact', 'content', 'cta'
     }
 
     #[Route('/api/pages/slug/{slug}', name: 'get_page_by_slug', methods: ['GET'])]
-    public function getPageBySlug(string $slug, EntityManagerInterface $em): JsonResponse
+    public function getPageBySlug(string $slug, Request $request, EntityManagerInterface $em): JsonResponse
     {
-        $page = $em->getRepository(Page::class)->findOneBySlug($slug);
+        $preview = $request->query->get('preview') === 'true';
+        
+        if ($preview) {
+            $page = $em->getRepository(Page::class)->findOneBy(['slug' => $slug]);
+        } else {
+            $page = $em->getRepository(Page::class)->findOneBy(['slug' => $slug, 'isPublished' => true]);
+        }
+        
         if (!$page) {
             return new JsonResponse(['error' => 'Page not found'], 404);
         }
@@ -265,7 +303,7 @@ $validTypes = ['hero', 'faq', 'pricing', 'features', 'contact', 'content', 'cta'
             return new JsonResponse(['error' => 'Section type is required'], 400);
         }
 
-        $validTypes = ['hero', 'faq', 'pricing', 'features', 'contact', 'content', 'cta', 'testimonials', 'gallery'];
+        $validTypes = ['hero', 'faq', 'pricing', 'features', 'contact', 'content', 'cta', 'testimonials', 'gallery', 'form', 'steps', 'footer'];
         if (!in_array($data['type'], $validTypes)) {
             return new JsonResponse(['error' => 'Invalid section type'], 400);
         }
