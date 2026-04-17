@@ -17,6 +17,20 @@ class LeadController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
+        $errors = [];
+        if (!empty($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'Email invalide';
+        }
+        if (!empty($data['tele']) && !preg_match('/^[\d\s\+\-\(\)]{8,20}$/', $data['tele'])) {
+            $errors[] = 'Téléphone invalide';
+        }
+        if (empty($data['nom']) && empty($data['email']) && empty($data['tele'])) {
+            $errors[] = 'Veuillez fournir au moins un champ';
+        }
+        if (!empty($errors)) {
+            return new JsonResponse(['success' => false, 'errors' => $errors], 400);
+        }
+
         $lead = new Lead();
         $lead->setNom($data['nom'] ?? null);
         $lead->setEmail($data['email'] ?? null);
@@ -26,7 +40,15 @@ class LeadController extends AbstractController
         $lead->setChiffreAffaires($data['chiffreAffaires'] ?? null);
 
         $em->persist($lead);
-        $em->flush();
+
+        try {
+            $em->flush();
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ], 500);
+        }
 
         return new JsonResponse([
             'success' => true,

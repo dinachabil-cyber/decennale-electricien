@@ -27,7 +27,7 @@ export const pagesApi = {
   create: (data) => request('/pages', { method: 'POST', body: JSON.stringify(data) }),
   update: (id, data) => request('/pages/${id}', { method: 'PUT', body: JSON.stringify(data) }),
   delete: (id) => request('/pages/${id}', { method: 'DELETE' }),
-  togglePublish: (id) => request('/pages/${id}/publish', { method: 'PATCH' }),
+  togglePublish: (id) => request(`/pages/${id}/publish`, { method: 'PATCH' }),
 };
 
 export const sectionsApi = {
