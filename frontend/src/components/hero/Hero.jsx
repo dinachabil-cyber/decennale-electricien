@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { submitQuote } from '../../services/api';
 
 const LEGAL_STATUSES = [
@@ -17,13 +17,15 @@ const REVENUE_OPTIONS = [
 ];
 
 const STEPS = [
-  { key: 'identity', title: 'Identité' },
-  { key: 'legal', title: 'Statut' },
-  { key: 'revenue', title: 'Chiffre d\'affaires' },
-  { key: 'contact', title: 'Contact' },
+  { key: 'nom', title: 'Nom' },
+  { key: 'entreprise', title: 'Entreprise' },
+  { key: 'statut', title: 'Statut' },
+  { key: 'revenue', title: 'Revenu' },
+  { key: 'telephone', title: 'Téléphone' },
+  { key: 'email', title: 'Email' },
 ];
 
-function MultiStepInput({ value, onChange, placeholder, icon, required, type = 'text', autoFocus }) {
+function FormInput({ value, onChange, placeholder, icon, required, type = 'text', autoFocus }) {
   return (
     <div className="flex w-full min-w-0">
       <span className="flex items-center px-4 py-4 bg-gray-50 border border-r-0 border-gray-200 rounded-l-xl shrink-0">
@@ -42,44 +44,25 @@ function MultiStepInput({ value, onChange, placeholder, icon, required, type = '
   );
 }
 
-function SelectableCard({ options, value, onChange, autoAdvance }) {
-  const [timer, setTimer] = useState(null);
-
-  const handleSelect = (optionValue) => {
-    onChange(optionValue);
-    if (autoAdvance) {
-      setTimer(setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('multiStepNext'));
-      }, 400));
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [timer]);
-
+function SelectCard({ options, value, onChange }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {options.map((option) => (
         <button
           key={option.value}
           type="button"
-          onClick={() => handleSelect(option.value)}
+          onClick={() => onChange(option.value)}
           className={`p-4 rounded-xl border-2 transition-all duration-300 text-left flex items-center gap-3 ${
             value === option.value
               ? 'border-yellow-500 bg-yellow-50 shadow-md'
               : 'border-gray-200 bg-light hover:border-yellow-300 hover:shadow-sm'
           }`}
         >
-          {option.icon && (
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
-              value === option.value ? 'bg-yellow-500 text-dark' : 'bg-gray-100 text-gray-500'
-            }`}>
-              <i className={`fas ${option.icon}`}></i>
-            </div>
-          )}
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
+            value === option.value ? 'bg-yellow-500 text-dark' : 'bg-gray-100 text-gray-500'
+          }`}>
+            <i className={`fas ${option.icon}`}></i>
+          </div>
           <span className={`font-medium ${value === option.value ? 'text-dark' : 'text-gray-700'}`}>
             {option.label}
           </span>
@@ -114,7 +97,7 @@ function StepIndicator({ steps, currentStep }) {
   );
 }
 
-function StepContainer({ children, stepKey, isActive }) {
+function StepContainer({ children, isActive }) {
   return (
     <div
       className={`transition-all duration-300 ${
@@ -129,66 +112,21 @@ function StepContainer({ children, stepKey, isActive }) {
   );
 }
 
-function Summary({ data, onEdit }) {
-  const statusLabel = LEGAL_STATUSES.find(s => s.value === data.statut)?.label || data.statut;
-  const revenueLabel = REVENUE_OPTIONS.find(r => r.value === data.chiffreAffaires)?.label || data.chiffreAffaires;
-
-  return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-dark text-center mb-4">Récapitulatif</h3>
-      
-      <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-        <div className="flex justify-between items-center border-b border-gray-200 pb-2">
-          <span className="text-gray-500 text-sm">Nom</span>
-          <span className="font-medium text-dark">{data.nom}</span>
-        </div>
-        <div className="flex justify-between items-center border-b border-gray-200 pb-2">
-          <span className="text-gray-500 text-sm">Statut</span>
-          <span className="font-medium text-dark">{statusLabel}</span>
-        </div>
-        <div className="flex justify-between items-center border-b border-gray-200 pb-2">
-          <span className="text-gray-500 text-sm">Chiffre d'affaires</span>
-          <span className="font-medium text-dark">{revenueLabel}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-500 text-sm">Email</span>
-          <span className="font-medium text-dark">{data.email}</span>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        onClick={() => onEdit()}
-        className="w-full text-yellow-600 hover:text-yellow-700 text-sm font-medium underline"
-      >
-        Modifier
-      </button>
-    </div>
-  );
-}
-
 function Hero({ onSuccess }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     nom: '',
-    email: '',
+    entreprise: '',
     statut: '',
-    chiffreAffaires: ''
+    chiffreAffaires: '',
+    tele: '',
+    email: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [agreed, setAgreed] = useState(false);
-
-  useEffect(() => {
-    const handleNext = () => {
-      if (currentStep < STEPS.length - 1) {
-        setCurrentStep(prev => prev + 1);
-      }
-    };
-    window.addEventListener('multiStepNext', handleNext);
-    return () => window.removeEventListener('multiStepNext', handleNext);
-  }, [currentStep]);
+  const [agreedTele, setAgreedTele] = useState(false);
+  const [agreedEmail, setAgreedEmail] = useState(false);
 
   const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -206,20 +144,20 @@ function Hero({ onSuccess }) {
     }
   };
 
-  const goToStep = (step) => {
-    setCurrentStep(step);
-  };
-
   const canProceed = () => {
     switch (currentStep) {
       case 0:
         return formData.nom.trim().length > 0;
       case 1:
-        return formData.statut.length > 0;
+        return true;
       case 2:
-        return formData.chiffreAffaires.length > 0;
+        return formData.statut.length > 0;
       case 3:
-        return formData.email.length > 0 && agreed;
+        return formData.chiffreAffaires.length > 0;
+      case 4:
+        return formData.tele.trim().length > 0 && agreedTele;
+      case 5:
+        return formData.email.trim().length > 0 && agreedEmail;
       default:
         return false;
     }
@@ -235,12 +173,11 @@ function Hero({ onSuccess }) {
     try {
       await submitQuote({
         nom: formData.nom,
+        entreprise: formData.entreprise,
         email: formData.email,
+        tele: formData.tele,
         statut: formData.statut,
-        chiffreAffaires: formData.chiffreAffaires,
-        entreprise: formData.nom,
-        tele: '',
-        agreed: agreed
+        chiffreAffaires: formData.chiffreAffaires
       });
       setSuccess(true);
       onSuccess?.();
@@ -309,97 +246,122 @@ function Hero({ onSuccess }) {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="relative">
+              <form onSubmit={handleSubmit}>
                 <StepIndicator steps={STEPS} currentStep={currentStep} />
 
                 <div className="relative min-h-[200px]">
-                  <StepContainer stepKey="identity" isActive={currentStep === 0}>
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-dark mb-4">Quel est votre nom ?</h3>
-                      <MultiStepInput
-                        value={formData.nom}
-                        onChange={(val) => updateField('nom', val)}
-                        placeholder="Votre Nom complet *"
-                        icon="fa-user"
+                  <StepContainer isActive={currentStep === 0}>
+                    <h3 className="text-lg font-semibold text-dark mb-4">Quel est votre nom ?</h3>
+                    <FormInput
+                      value={formData.nom}
+                      onChange={(val) => updateField('nom', val)}
+                      placeholder="Votre Nom *"
+                      icon="fa-user"
+                      required
+                      autoFocus
+                    />
+                  </StepContainer>
+
+                  <StepContainer isActive={currentStep === 1}>
+                    <h3 className="text-lg font-semibold text-dark mb-4">Quel est le nom de votre entreprise ?</h3>
+                    <FormInput
+                      value={formData.entreprise}
+                      onChange={(val) => updateField('entreprise', val)}
+                      placeholder="Entreprise / Nom"
+                      icon="fa-building"
+                      autoFocus
+                    />
+                  </StepContainer>
+
+                  <StepContainer isActive={currentStep === 2}>
+                    <h3 className="text-lg font-semibold text-dark mb-4">Statut Juridique</h3>
+                    <SelectCard
+                      options={LEGAL_STATUSES}
+                      value={formData.statut}
+                      onChange={(val) => updateField('statut', val)}
+                    />
+                  </StepContainer>
+
+                  <StepContainer isActive={currentStep === 3}>
+                    <h3 className="text-lg font-semibold text-dark mb-4">Chiffre d'affaires</h3>
+                    <SelectCard
+                      options={REVENUE_OPTIONS}
+                      value={formData.chiffreAffaires}
+                      onChange={(val) => updateField('chiffreAffaires', val)}
+                    />
+                  </StepContainer>
+
+                  <StepContainer isActive={currentStep === 4}>
+                    <h3 className="text-lg font-semibold text-dark mb-4">Numéro</h3>
+                    <div>
+                      <FormInput
+                        value={formData.tele}
+                        onChange={(val) => updateField('tele', val)}
+                        placeholder="Téléphone *"
+                        icon="fa-phone"
                         required
+                        type="tel"
                         autoFocus
                       />
                     </div>
-                  </StepContainer>
-
-                  <StepContainer stepKey="legal" isActive={currentStep === 1}>
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-dark mb-4">Quel est votre statut juridique ?</h3>
-                      <SelectableCard
-                        options={LEGAL_STATUSES}
-                        value={formData.statut}
-                        onChange={(val) => updateField('statut', val)}
-                        autoAdvance
+                    <div className="mt-4 flex items-start gap-3 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                      <input 
+                        type="checkbox" 
+                        checked={agreedTele}
+                        onChange={(e) => setAgreedTele(e.target.checked)}
+                        className="mt-1 w-5 h-5 text-yellow-500 rounded focus:ring-yellow-400" 
                       />
+                      <span className="text-xs md:text-sm text-gray-600">
+                        En cliquant sur "Suivant", vous acceptez d'être contacté par téléphone.
+                      </span>
                     </div>
                   </StepContainer>
 
-                  <StepContainer stepKey="revenue" isActive={currentStep === 2}>
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-dark mb-4">Quel est votre chiffre d'affaires ?</h3>
-                      <SelectableCard
-                        options={REVENUE_OPTIONS}
-                        value={formData.chiffreAffaires}
-                        onChange={(val) => updateField('chiffreAffaires', val)}
-                        autoAdvance
+                  <StepContainer isActive={currentStep === 5}>
+                    <h3 className="text-lg font-semibold text-dark mb-4">Votre Email</h3>
+                    <div>
+                      <FormInput
+                        value={formData.email}
+                        onChange={(val) => updateField('email', val)}
+                        placeholder="Email *"
+                        icon="fa-envelope"
+                        required
+                        type="email"
+                        autoFocus
                       />
                     </div>
-                  </StepContainer>
-
-                  <StepContainer stepKey="contact" isActive={currentStep === 3}>
-                    <div className="space-y-4">
-                      <Summary data={formData} onEdit={() => goToStep(0)} />
-                      
-                      <div className="mt-6">
-                        <MultiStepInput
-                          value={formData.email}
-                          onChange={(val) => updateField('email', val)}
-                          placeholder="Votre Email *"
-                          icon="fa-envelope"
-                          required
-                          type="email"
-                          autoFocus
-                        />
-                      </div>
-
-                      <div className="flex items-start gap-3 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
-                        <input 
-                          type="checkbox" 
-                          checked={agreed}
-                          onChange={(e) => setAgreed(e.target.checked)}
-                          className="mt-1 w-5 h-5 text-yellow-500 rounded focus:ring-yellow-400" 
-                        />
-                        <span className="text-xs md:text-sm text-gray-600">
-                          En cliquant sur "Obtenir mon devis", vous acceptez d'être contacté.
-                        </span>
-                      </div>
+                    <div className="mt-4 flex items-start gap-3 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                      <input 
+                        type="checkbox" 
+                        checked={agreedEmail}
+                        onChange={(e) => setAgreedEmail(e.target.checked)}
+                        className="mt-1 w-5 h-5 text-yellow-500 rounded focus:ring-yellow-400" 
+                      />
+                      <span className="text-xs md:text-sm text-gray-600">
+                        En cliquant sur "Obtenir mon devis", vous acceptez d'être contacté par email.
+                      </span>
                     </div>
                   </StepContainer>
                 </div>
 
-                <div className="flex gap-3 mt-6">
-                  {currentStep > 0 && currentStep < 3 && (
+                <div className="mt-6">
+                  {currentStep > 0 && (
                     <button
                       type="button"
                       onClick={prevStep}
-                      className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors duration-200"
+                      className="w-full mb-3 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors duration-200"
                     >
                       <i className="fas fa-arrow-left mr-2"></i>
                       Retour
                     </button>
                   )}
                   
-                  {currentStep < 3 ? (
+                  {currentStep < 5 ? (
                     <button
                       type="button"
                       onClick={nextStep}
                       disabled={!canProceed()}
-                      className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-dark font-bold py-4 px-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                      className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-dark font-bold py-4 px-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                     >
                       Suivant
                       <i className="fas fa-arrow-right ml-2"></i>
@@ -408,7 +370,7 @@ function Hero({ onSuccess }) {
                     <button
                       type="submit"
                       disabled={loading || !canProceed()}
-                      className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-dark font-bold py-4 px-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                      className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-dark font-bold py-4 px-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                     >
                       {loading ? 'Traitement...' : 'Obtenir mon devis'}
                     </button>
