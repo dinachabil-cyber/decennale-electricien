@@ -2,26 +2,18 @@ import React from 'react';
 import {
   HeroSectionEditor,
   ContentSectionEditor,
-  FeaturesSectionEditor,
-  PricingSectionEditor,
   FAQSectionEditor,
-  ContactSectionEditor,
+  CarteSectionEditor,
   CTAEditor,
-  TestimonialsEditor,
-  GalleryEditor,
   getSectionLabel
 } from './sections';
 
 const EDITORS = {
   hero: HeroSectionEditor,
   content: ContentSectionEditor,
-  features: FeaturesSectionEditor,
-  pricing: PricingSectionEditor,
   faq: FAQSectionEditor,
-  contact: ContactSectionEditor,
+  carte: CarteSectionEditor,
   cta: CTAEditor,
-  testimonials: TestimonialsEditor,
-  gallery: GalleryEditor
 };
 
 export default function SectionRenderer({ section, onSave, onCancel }) {

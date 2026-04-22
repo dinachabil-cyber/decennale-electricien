@@ -4,13 +4,9 @@ import { getSectionConfig, getSectionLabel } from '../sections/registry';
 const EDITORS = {
   hero: React.lazy(() => import('../components/admin/sections/HeroSectionEditor')),
   content: React.lazy(() => import('../components/admin/sections/ContentSectionEditor')),
-  features: React.lazy(() => import('../components/admin/sections/FeaturesSectionEditor')),
-  pricing: React.lazy(() => import('../components/admin/sections/PricingSectionEditor')),
   faq: React.lazy(() => import('../components/admin/sections/FAQSectionEditor')),
-  contact: React.lazy(() => import('../components/admin/sections/ContactSectionEditor')),
+  carte: React.lazy(() => import('../components/admin/sections/CarteSectionEditor')),
   cta: React.lazy(() => import('../components/admin/sections/CTAEditor')),
-  testimonials: React.lazy(() => import('../components/admin/sections/TestimonialsEditor')),
-  gallery: React.lazy(() => import('../components/admin/sections/GalleryEditor')),
 };
 
 const EditorFallback = () => (

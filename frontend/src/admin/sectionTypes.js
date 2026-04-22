@@ -4,16 +4,12 @@
 export const SECTION_TYPES = [
   { value: 'hero', label: 'Hero', icon: '🟣' },
   { value: 'content', label: 'Contenu', icon: '📝' },
-  { value: 'features', label: 'Fonctionnalités', icon: '⚡' },
-  { value: 'pricing', label: 'Tarifs', icon: '💰' },
   { value: 'faq', label: 'FAQ', icon: '❓' },
   { value: 'form', label: 'Formulaire', icon: '📋' },
   { value: 'steps', label: 'Étapes', icon: '🔢' },
   { value: 'footer', label: 'Footer', icon: '🦶' },
-  { value: 'contact', label: 'Contact', icon: '📧' },
-  { value: 'cta', label: 'Appel à l\'action', icon: '🎯' },
-  { value: 'testimonials', label: 'Témoignages', icon: '💬' },
-  { value: 'gallery', label: 'Galerie', icon: '🖼️' },
+  { value: 'carte', label: 'Carte', icon: '📍' },
+  { value: 'cta', label: 'CTA', icon: '🎯' },
 ];
 
 // Default content for each section type
@@ -32,18 +28,12 @@ export const SECTION_DEFAULTS = {
     ctaText: '',
     ctaLink: '',
   },
-  features: {
-    features: [{ title: 'Feature', description: '', icon: 'star' }],
-  },
-  pricing: {
-    plans: [{ name: 'Basique', price: '99€', features: ['Feature 1'], featured: false, description: '' }],
-  },
   faq: {
     items: [{ question: 'Question?', answer: 'Réponse...' }],
   },
-  contact: {
-    title: 'Contactez-nous',
-    subtitle: 'Nous sommes à votre disposition',
+  carte: {
+    title: 'Nous contacter',
+    subtitle: 'Retrouvez-nous à notre agence',
     email: '',
     phone: '',
     address: '',
@@ -54,12 +44,6 @@ export const SECTION_DEFAULTS = {
     subtitle: 'Contactez-nous dès aujourd\'hui',
     buttonText: 'Contactez-nous',
     buttonLink: '/contact',
-  },
-  testimonials: {
-    testimonials: [{ name: 'Client', role: 'Client', quote: 'Excellent service!', avatar: '' }],
-  },
-  gallery: {
-    images: [{ url: '', alt: '', caption: '' }],
   },
   form: {
     title: 'Contactez-nous',

@@ -14,25 +14,14 @@ export const DEFAULT_CONTENT = {
     ctaText: 'Contactez-nous',
     ctaLink: '/contact'
   },
-  features: {
-    faqs: [
-      { question: "L'assurance décennale est-elle obligatoire pour un électricien ?", answer: "Oui. Tout constructeur doit être assurée..." },
-      { question: "Quel est le prix moyen ?", answer: "Le tarif varie entre 600 et 2500€..." }
-    ]
-  },
-  pricing: {
-    plans: [
-      { name: 'Basique', price: '29€', features: ['Feature 1'], featured: false }
-    ]
-  },
   faq: {
     items: [
       { question: 'Question?', answer: 'Réponse...' }
     ]
   },
-  contact: {
-    title: 'Contactez-nous',
-    subtitle: 'Nous sommes à votre disposition',
+  carte: {
+    title: 'Nous contacter',
+    subtitle: 'Retrouvez-nous à notre agence',
     email: '',
     phone: '',
     address: '',
@@ -43,16 +32,6 @@ export const DEFAULT_CONTENT = {
     subtitle: 'Contactez-nous dès aujourd\'hui',
     buttonText: 'Contactez-nous',
     buttonLink: '/contact'
-  },
-  testimonials: {
-    testimonials: [
-      { name: 'Nom', role: 'Client', quote: 'Excellent service!', avatar: '' }
-    ]
-  },
-  gallery: {
-    images: [
-      { url: '', alt: '', caption: '' }
-    ]
   }
 };
 

@@ -1,7 +1,14 @@
 import React from 'react';
 
-function Contact({ content = {} }) {
-  const { title = 'Contactez-nous', subtitle = '', email = '', phone = '', address = '', showMap = true } = content;
+function Carte({ content = {} }) {
+  const {
+    title = 'Nous contacter',
+    subtitle = 'Retrouvez-nous à notre agence',
+    email = '',
+    phone = '',
+    address = '',
+    showMap = true
+  } = content;
 
   return (
     <section className="py-16 bg-white">
@@ -15,7 +22,7 @@ function Contact({ content = {} }) {
           )}
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-12">
           {email && (
             <div className="text-center">
               <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -52,9 +59,9 @@ function Contact({ content = {} }) {
         </div>
 
         {showMap && (
-          <div className="mt-12 rounded-lg overflow-hidden h-64 bg-gray-100">
+          <div className="rounded-lg overflow-hidden h-64 md:h-80 bg-gray-100">
             <iframe
-              title="Contact Map"
+              title="Carte"
               width="100%"
               height="100%"
               frameBorder="0"
@@ -68,4 +75,4 @@ function Contact({ content = {} }) {
   );
 }
 
-export default Contact;
+export default Carte;

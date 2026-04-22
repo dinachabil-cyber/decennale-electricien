@@ -258,20 +258,7 @@ function ContentPreview({ section }) {
       </div>
     );
   }
-  if (type === 'features') {
-    return (
-      <div className="border-t pt-3 text-sm text-gray-600">
-        <p><strong>Features:</strong> {content.features?.length || 0} item(s)</p>
-      </div>
-    );
-  }
-  if (type === 'pricing') {
-    return (
-      <div className="border-t pt-3 text-sm text-gray-600">
-        <p><strong>Plans:</strong> {content.plans?.length || 0} item(s)</p>
-      </div>
-    );
-  }
+
   if (type === 'faq') {
     return (
       <div className="border-t pt-3 text-sm text-gray-600">
@@ -279,9 +266,10 @@ function ContentPreview({ section }) {
       </div>
     );
   }
-  if (type === 'contact') {
+  if (type === 'carte') {
     return (
       <div className="border-t pt-3 text-sm text-gray-600">
+        <p><strong>Titre:</strong> {content.title || '-'}</p>
         <p><strong>Email:</strong> {content.email || '-'}</p>
       </div>
     );
@@ -290,20 +278,6 @@ function ContentPreview({ section }) {
     return (
       <div className="border-t pt-3 text-sm text-gray-600">
         <p><strong>Titre:</strong> {content.title || '-'}</p>
-      </div>
-    );
-  }
-  if (type === 'testimonials') {
-    return (
-      <div className="border-t pt-3 text-sm text-gray-600">
-        <p><strong>Témoignages:</strong> {content.testimonials?.length || 0} item(s)</p>
-      </div>
-    );
-  }
-  if (type === 'gallery') {
-    return (
-      <div className="border-t pt-3 text-sm text-gray-600">
-        <p><strong>Images:</strong> {content.images?.length || 0} item(s)</p>
       </div>
     );
   }
@@ -389,40 +363,6 @@ function SectionEditor({ section, onSave, onCancel }) {
         </div>
       )}
 
-      {section.type === 'features' && (
-        <div>
-          <label className="block text-sm font-medium mb-2">Fonctionnalités</label>
-          {(content.features || []).map((f, i) => (
-            <div key={i} className="p-3 bg-gray-50 rounded mb-2">
-              <Input label="Titre" value={f.title || ''} onChange={(v) => handleNestedChange('features', i, 'title', v)} />
-              <Input label="Description" value={f.description || ''} onChange={(v) => handleNestedChange('features', i, 'description', v)} />
-              <Input label="Icône" value={f.icon || ''} onChange={(v) => handleNestedChange('features', i, 'icon', v)} />
-              <button onClick={() => removeItem('features', i)} className="text-red-500 text-sm mt-2">Supprimer</button>
-            </div>
-          ))}
-          <button onClick={() => addItem('features', { title: '', description: '', icon: 'star' })} className="text-blue-500 text-sm">+ Ajouter</button>
-        </div>
-      )}
-
-      {section.type === 'pricing' && (
-        <div>
-          <label className="block text-sm font-medium mb-2">Plans</label>
-          {(content.plans || []).map((p, i) => (
-            <div key={i} className="p-3 bg-gray-50 rounded mb-2">
-              <Input label="Nom" value={p.name || ''} onChange={(v) => handleNestedChange('plans', i, 'name', v)} />
-              <Input label="Prix" value={p.price || ''} onChange={(v) => handleNestedChange('plans', i, 'price', v)} />
-              <Input label="Description" value={p.description || ''} onChange={(v) => handleNestedChange('plans', i, 'description', v)} />
-              <label className="flex items-center gap-2 mt-2">
-                <input type="checkbox" checked={p.featured || false} onChange={(v) => handleNestedChange('plans', i, 'featured', v.target.checked)} />
-                Mis en avant
-              </label>
-              <button onClick={() => removeItem('plans', i)} className="text-red-500 text-sm mt-2">Supprimer</button>
-            </div>
-          ))}
-          <button onClick={() => addItem('plans', { name: '', price: '', features: [], featured: false })} className="text-blue-500 text-sm">+ Ajouter</button>
-        </div>
-      )}
-
       {section.type === 'faq' && (
         <div>
           <label className="block text-sm font-medium mb-2">Questions</label>
@@ -437,7 +377,7 @@ function SectionEditor({ section, onSave, onCancel }) {
         </div>
       )}
 
-      {section.type === 'contact' && (
+      {section.type === 'carte' && (
         <div className="space-y-4">
           <Input label="Titre" value={content.title || ''} onChange={(v) => handleChange('title', v)} />
           <Input label="Sous-titre" value={content.subtitle || ''} onChange={(v) => handleChange('subtitle', v)} />
@@ -445,7 +385,7 @@ function SectionEditor({ section, onSave, onCancel }) {
           <Input label="Téléphone" value={content.phone || ''} onChange={(v) => handleChange('phone', v)} />
           <Input label="Adresse" value={content.address || ''} onChange={(v) => handleChange('address', v)} />
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={content.showMap || false} onChange={(v) => handleChange('showMap', v.target.checked)} />
+            <input type="checkbox" checked={content.showMap || false} onChange={(e) => handleChange('showMap', e.target.checked)} />
             Afficher carte
           </label>
         </div>
@@ -457,36 +397,6 @@ function SectionEditor({ section, onSave, onCancel }) {
           <Input label="Sous-titre" value={content.subtitle || ''} onChange={(v) => handleChange('subtitle', v)} />
           <Input label="Texte bouton" value={content.buttonText || ''} onChange={(v) => handleChange('buttonText', v)} />
           <Input label="Lien bouton" value={content.buttonLink || ''} onChange={(v) => handleChange('buttonLink', v)} />
-        </div>
-      )}
-
-      {section.type === 'testimonials' && (
-        <div>
-          <label className="block text-sm font-medium mb-2">Témoignages</label>
-          {(content.testimonials || []).map((t, i) => (
-            <div key={i} className="p-3 bg-gray-50 rounded mb-2">
-              <Input label="Nom" value={t.name || ''} onChange={(v) => handleNestedChange('testimonials', i, 'name', v)} />
-              <Input label="Rôle" value={t.role || ''} onChange={(v) => handleNestedChange('testimonials', i, 'role', v)} />
-              <Textarea label="Citation" value={t.quote || ''} onChange={(v) => handleNestedChange('testimonials', i, 'quote', v)} />
-              <button onClick={() => removeItem('testimonials', i)} className="text-red-500 text-sm mt-2">Supprimer</button>
-            </div>
-          ))}
-          <button onClick={() => addItem('testimonials', { name: '', role: '', quote: '', avatar: '' })} className="text-blue-500 text-sm">+ Ajouter</button>
-        </div>
-      )}
-
-      {section.type === 'gallery' && (
-        <div>
-          <label className="block text-sm font-medium mb-2">Images</label>
-          {(content.images || []).map((img, i) => (
-            <div key={i} className="p-3 bg-gray-50 rounded mb-2">
-              <Input label="URL" value={img.url || ''} onChange={(v) => handleNestedChange('images', i, 'url', v)} />
-              <Input label="Alt" value={img.alt || ''} onChange={(v) => handleNestedChange('images', i, 'alt', v)} />
-              <Input label="Légende" value={img.caption || ''} onChange={(v) => handleNestedChange('images', i, 'caption', v)} />
-              <button onClick={() => removeItem('images', i)} className="text-red-500 text-sm mt-2">Supprimer</button>
-            </div>
-          ))}
-          <button onClick={() => addItem('images', { url: '', alt: '', caption: '' })} className="text-blue-500 text-sm">+ Ajouter</button>
         </div>
       )}
 

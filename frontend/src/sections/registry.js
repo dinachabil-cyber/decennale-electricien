@@ -28,28 +28,6 @@ const SECTION_REGISTRY = {
       ctaLink: '/contact'
     }
   },
-  features: {
-    label: 'Features',
-    labelFr: 'Fonctionnalités',
-    description: 'Grille de fonctionnalités',
-    icon: '⚡',
-    defaultContent: {
-      features: [
-        { title: 'Feature 1', description: '', icon: 'star' }
-      ]
-    }
-  },
-  pricing: {
-    label: 'Pricing',
-    labelFr: 'Tarifs',
-    description: 'Plans tarifaires',
-    icon: '💰',
-    defaultContent: {
-      plans: [
-        { name: 'Basique', price: '29€', features: ['Feature 1'], featured: false }
-      ]
-    }
-  },
   faq: {
     label: 'FAQ',
     labelFr: 'FAQ',
@@ -59,14 +37,14 @@ const SECTION_REGISTRY = {
       items: [{ question: 'Question?', answer: 'Réponse...' }]
     }
   },
-  contact: {
-    label: 'Contact',
-    labelFr: 'Contact',
-    description: 'Informations de contact',
-    icon: '📧',
+  carte: {
+    label: 'Carte',
+    labelFr: 'Carte',
+    description: 'Section avec carte et infos de contact',
+    icon: '📍',
     defaultContent: {
-      title: 'Contactez-nous',
-      subtitle: 'Nous sommes à votre disposition',
+      title: 'Nous contacter',
+      subtitle: 'Retrouvez-nous à notre agence',
       email: '',
       phone: '',
       address: '',
@@ -75,7 +53,7 @@ const SECTION_REGISTRY = {
   },
   cta: {
     label: 'CTA',
-    labelFr: 'Appel à l\'action',
+    labelFr: 'CTA',
     description: 'Bandeau d\'appel à l\'action',
     icon: '🎯',
     defaultContent: {
@@ -83,26 +61,6 @@ const SECTION_REGISTRY = {
       subtitle: 'Contactez-nous dès aujourd\'hui',
       buttonText: 'Contactez-nous',
       buttonLink: '/contact'
-    }
-  },
-  testimonials: {
-    label: 'Testimonials',
-    labelFr: 'Témoignages',
-    description: 'Témoignages clients',
-    icon: '💬',
-    defaultContent: {
-      testimonials: [
-        { name: 'Nom', role: 'Client', quote: 'Excellent service!', avatar: '' }
-      ]
-    }
-  },
-  gallery: {
-    label: 'Gallery',
-    labelFr: 'Galerie',
-    description: 'Galerie d\'images',
-    icon: '🖼️',
-    defaultContent: {
-      images: [{ url: '', alt: '', caption: '' }]
     }
   },
   form: {

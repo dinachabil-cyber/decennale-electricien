@@ -4,14 +4,11 @@ import { getSectionConfig } from './registry';
 const COMPONENTS = {
   hero: React.lazy(() => import('../components/hero/Hero')),
   content: React.lazy(() => import('../components/content/Content')),
-  features: React.lazy(() => import('../components/features/Features')),
-  pricing: React.lazy(() => import('../components/pricing/Pricing')),
   faq: React.lazy(() => import('../components/faq/FAQ')),
   howitworks: React.lazy(() => import('../components/howitworks/HowItWorks')),
-  contact: React.lazy(() => import('../components/contact/Contact')),
+  steps: React.lazy(() => import('../components/howitworks/HowItWorks')),
+  carte: React.lazy(() => import('../components/carte/Carte')),
   cta: React.lazy(() => import('../components/cta/CTA')),
-  testimonials: React.lazy(() => import('../components/testimonials/Testimonials')),
-  gallery: React.lazy(() => import('../components/gallery/Gallery')),
 };
 
 export const SectionRenderer = React.memo(function SectionRenderer({ section, mode = 'frontend', options = {} }) {

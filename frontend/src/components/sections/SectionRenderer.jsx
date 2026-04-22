@@ -3,15 +3,11 @@ import React from 'react';
 const COMPONENTS = {
   hero: React.lazy(() => import('../hero/Hero')),
   content: React.lazy(() => import('../content/Content')),
-  features: React.lazy(() => import('../features/Features')),
-  pricing: React.lazy(() => import('../pricing/Pricing')),
   faq: React.lazy(() => import('../faq/FAQ')),
   howitworks: React.lazy(() => import('../howitworks/HowItWorks')),
   steps: React.lazy(() => import('../howitworks/HowItWorks')),
-  contact: React.lazy(() => import('../contact/Contact')),
+  carte: React.lazy(() => import('../carte/Carte')),
   cta: React.lazy(() => import('../cta/CTA')),
-  testimonials: React.lazy(() => import('../testimonials/Testimonials')),
-  gallery: React.lazy(() => import('../gallery/Gallery')),
 };
 
 const Fallback = () => <div className="h-32 bg-gray-100 animate-pulse rounded" />;

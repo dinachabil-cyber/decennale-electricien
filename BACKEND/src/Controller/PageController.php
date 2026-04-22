@@ -127,7 +127,7 @@ $sections = [];
         $data = json_decode($request->getContent(), true);
 
         if (isset($data['type'])) {
-            $validTypes = ['hero', 'faq', 'pricing', 'features', 'contact', 'content', 'cta', 'testimonials', 'gallery', 'form', 'steps', 'footer'];
+            $validTypes = ['hero', 'faq', 'content', 'carte', 'cta', 'form', 'steps', 'footer'];
             if (!in_array($data['type'], $validTypes)) {
                 return new JsonResponse(['error' => 'Invalid section type'], 400);
             }
@@ -303,7 +303,7 @@ $sections = [];
             return new JsonResponse(['error' => 'Section type is required'], 400);
         }
 
-        $validTypes = ['hero', 'faq', 'pricing', 'features', 'contact', 'content', 'cta', 'testimonials', 'gallery', 'form', 'steps', 'footer'];
+        $validTypes = ['hero', 'faq', 'content', 'carte', 'cta', 'form', 'steps', 'footer'];
         if (!in_array($data['type'], $validTypes)) {
             return new JsonResponse(['error' => 'Invalid section type'], 400);
         }

@@ -87,29 +87,16 @@ function getPreviewFields(type, content) {
       { label: 'Titre', type: 'text', value: content?.title },
       { label: 'Sous-sections', type: 'array', value: content?.sections }
     ],
-    features: [
-      { label: 'Features', type: 'array', value: content?.features }
-    ],
-    pricing: [
-      { label: 'Plans', type: 'array', value: content?.plans }
-    ],
     faq: [
       { label: 'Questions', type: 'array', value: content?.items }
     ],
-    contact: [
-      { label: 'Email', type: 'text', value: content?.email },
-      { label: 'Téléphone', type: 'text', value: content?.phone },
-      { label: 'Adresse', type: 'text', value: content?.address }
+    carte: [
+      { label: 'Titre', type: 'text', value: content?.title },
+      { label: 'Email', type: 'text', value: content?.email }
     ],
     cta: [
       { label: 'Titre', type: 'text', value: content?.title },
       { label: 'Bouton', type: 'text', value: content?.buttonText }
-    ],
-    testimonials: [
-      { label: 'Témoignages', type: 'array', value: content?.testimonials }
-    ],
-    gallery: [
-      { label: 'Images', type: 'array', value: content?.images }
     ]
   };
   

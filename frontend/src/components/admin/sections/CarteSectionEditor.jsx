@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 
-export default function ContactSectionEditor({ content, onSave, onCancel }) {
+export default function CarteSectionEditor({ content, onSave, onCancel }) {
   const [formData, setFormData] = useState({
     title: content?.title || '',
     subtitle: content?.subtitle || '',
     email: content?.email || '',
     phone: content?.phone || '',
     address: content?.address || '',
-    showMap: content?.showMap ?? true
+    showMap: content?.showMap !== false
   });
 
   const handleSubmit = (e) => {
@@ -24,18 +24,18 @@ export default function ContactSectionEditor({ content, onSave, onCancel }) {
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-          placeholder="Contactez-nous"
+          placeholder="Nous contacter"
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Sous-titre</label>
-        <textarea
+        <input
+          type="text"
           value={formData.subtitle}
           onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-          rows={2}
-          placeholder="Nous sommes à votre disposition..."
+          placeholder="Retrouvez-nous à notre agence"
         />
       </div>
 
@@ -47,13 +47,13 @@ export default function ContactSectionEditor({ content, onSave, onCancel }) {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-            placeholder="contact@exemple.fr"
+            placeholder="contact@example.com"
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
           <input
-            type="text"
+            type="tel"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
@@ -69,17 +69,17 @@ export default function ContactSectionEditor({ content, onSave, onCancel }) {
           value={formData.address}
           onChange={(e) => setFormData({ ...formData, address: e.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-          placeholder="123 rue Example, 75000 Paris"
+          placeholder="10 Rue de Paris, 75001 Paris"
         />
       </div>
 
       <div>
-        <label className="flex items-center space-x-2 cursor-pointer">
+        <label className="flex items-center gap-2">
           <input
             type="checkbox"
             checked={formData.showMap}
             onChange={(e) => setFormData({ ...formData, showMap: e.target.checked })}
-            className="w-4 h-4 text-yellow-500 border-gray-300 rounded focus:ring-yellow-400"
+            className="w-4 h-4 text-yellow-500 rounded focus:ring-yellow-400"
           />
           <span className="text-sm text-gray-700">Afficher la carte</span>
         </label>

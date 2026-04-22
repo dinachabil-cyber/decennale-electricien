@@ -30,32 +30,6 @@ export default function SectionPreview({ section }) {
           </div>
         );
       
-      case 'features':
-        const features = content?.features || [];
-        return (
-          <div>
-            <p className="text-sm text-gray-600">{features.length} fonctionnalité(s)</p>
-            <div className="flex gap-2 mt-1 flex-wrap">
-              {features.slice(0, 3).map((f, i) => (
-                <span key={i} className="text-lg" title={f.title}>{f.icon}</span>
-              ))}
-            </div>
-          </div>
-        );
-      
-      case 'pricing':
-        const plans = content?.plans || [];
-        return (
-          <div>
-            <p className="text-sm text-gray-600">{plans.length} plan(s)</p>
-            {plans.map((plan, i) => (
-              <span key={i} className={`inline-block px-2 py-0.5 text-xs rounded mr-1 mb-1 ${plan.featured ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'}`}>
-                {plan.name} - {plan.price}
-              </span>
-            ))}
-          </div>
-        );
-      
       case 'faq':
         const items = content?.items || [];
         return (
@@ -66,16 +40,19 @@ export default function SectionPreview({ section }) {
             ))}
           </div>
         );
-      
-      case 'contact':
+
+      case 'carte':
         return (
           <div className="space-y-1">
-            {content?.email && <p className="text-xs text-gray-500">✉ {content.email}</p>}
-            {content?.phone && <p className="text-xs text-gray-500">📞 {content.phone}</p>}
-            {content?.address && <p className="text-xs text-gray-500">📍 {content.address}</p>}
+            <p className="font-medium text-gray-800">{content?.title || 'Sans titre'}</p>
+            {content?.email && (
+              <span className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                {content.email}
+              </span>
+            )}
           </div>
         );
-      
+
       case 'cta':
         return (
           <div className="space-y-1">
@@ -87,23 +64,7 @@ export default function SectionPreview({ section }) {
             )}
           </div>
         );
-      
-      case 'testimonials':
-        const testimonials = content?.testimonials || [];
-        return (
-          <div>
-            <p className="text-sm text-gray-600">{testimonials.length} témoignage(x)</p>
-          </div>
-        );
-      
-      case 'gallery':
-        const images = content?.images || [];
-        return (
-          <div>
-            <p className="text-sm text-gray-600">{images.length} image(s)</p>
-          </div>
-        );
-      
+
       default:
         return <p className="text-sm text-gray-500">Type: {type}</p>;
     }
