@@ -7,6 +7,7 @@ export default function PageList({ onSelectPage, onRefresh }) {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [newPage, setNewPage] = useState({ title: '', slug: '' });
+  const [editingPage, setEditingPage] = useState(null);
 
   const loadPages = async () => {
     try {
@@ -41,6 +42,17 @@ export default function PageList({ onSelectPage, onRefresh }) {
     if (!window.confirm('Supprimer cette page?')) return;
     try {
       await pagesApi.delete(id);
+      loadPages();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      await pagesApi.update(editingPage.id, { title: editingPage.title, slug: editingPage.slug });
+      setEditingPage(null);
       loadPages();
     } catch (err) {
       setError(err.message);
@@ -88,7 +100,7 @@ export default function PageList({ onSelectPage, onRefresh }) {
             {pages.map(page => (
               <tr key={page.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 font-medium">{page.title}</td>
-                <td className="px-6 py-4 text-gray-500">/{page.slug}</td>
+                <td className="px-6 py-4 text-gray-500">{page.slug === '/' ? '/' : `/${page.slug}`}</td>
                 <td className="px-6 py-4">
                   <span className={`px-2 py-1 text-xs rounded ${page.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                     {page.isPublished ? 'Publié' : 'Brouillon'}
@@ -101,6 +113,12 @@ export default function PageList({ onSelectPage, onRefresh }) {
                       className={`px-3 py-1 text-sm rounded ${page.isPublished ? 'bg-gray-200' : 'bg-green-500 text-white'}`}
                     >
                       {page.isPublished ? 'Dépublier' : 'Publier'}
+                    </button>
+                    <button
+                      onClick={() => setEditingPage({ id: page.id, title: page.title, slug: page.slug })}
+                      className="px-3 py-1 text-sm bg-yellow-500 text-white rounded"
+                    >
+                      Modifier
                     </button>
                     <button
                       onClick={() => onSelectPage(page)}
@@ -146,7 +164,7 @@ export default function PageList({ onSelectPage, onRefresh }) {
                   className="w-full px-3 py-2 border rounded"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">/page/{newPage.slug}</p>
+                <p className="text-xs text-gray-500 mt-1">/{newPage.slug === '/' ? '' : `page/${newPage.slug}`}</p>
               </div>
               <div className="flex space-x-2">
                 <button type="button" onClick={() => setShowModal(false)} className="flex-1 px-4 py-2 bg-gray-200 rounded">Annuler</button>
@@ -154,8 +172,43 @@ export default function PageList({ onSelectPage, onRefresh }) {
               </div>
             </form>
           </div>
-        </div>
-      )}
-    </div>
-  );
-}
+</div>
+        )}
+
+        {editingPage && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+              <h3 className="text-xl font-bold mb-4">Modifier la Page</h3>
+              <form onSubmit={handleUpdate}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Titre</label>
+                  <input
+                    type="text"
+                    value={editingPage.title}
+                    onChange={(e) => setEditingPage({ ...editingPage, title: e.target.value })}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Slug</label>
+                  <input
+                    type="text"
+                    value={editingPage.slug}
+                    onChange={(e) => setEditingPage({ ...editingPage, slug: e.target.value })}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">/{editingPage.slug === '/' ? '' : `page/${editingPage.slug}`}</p>
+                </div>
+                <div className="flex space-x-2">
+                  <button type="button" onClick={() => setEditingPage(null)} className="flex-1 px-4 py-2 bg-gray-200 rounded">Annuler</button>
+                  <button type="submit" className="flex-1 px-4 py-2 bg-yellow-400 rounded">Enregistrer</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }

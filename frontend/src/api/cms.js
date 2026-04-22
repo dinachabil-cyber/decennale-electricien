@@ -21,8 +21,18 @@ async function request(endpoint, options = {}) {
 
 export const pagesApi = {
   getAll: () => request('/pages'),
-  getBySlug: (slug) => request(`/pages/slug/${slug}`),
-  getBySlugWithDraft: (slug) => request(`/pages/slug/${slug}?preview=true`),
+  getBySlug: (slug) => {
+    if (!slug || slug === '/') {
+      return request('/pages/slug');
+    }
+    return request(`/pages/slug/${slug}`);
+  },
+  getBySlugWithDraft: (slug) => {
+    if (!slug || slug === '/') {
+      return request('/pages/slug?preview=true');
+    }
+    return request(`/pages/slug/${slug}?preview=true`);
+  },
   getById: (id) => request(`/pages/${id}`),
   create: (data) => request('/pages', { method: 'POST', body: JSON.stringify(data) }),
   update: (id, data) => request(`/pages/${id}`, { method: 'PUT', body: JSON.stringify(data) }),

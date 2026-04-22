@@ -71,7 +71,7 @@ class PageController extends AbstractController
         return new JsonResponse($result);
     }
 
-    #[Route('/api/pages/{id}', name: 'get_page', methods: ['GET'])]
+    #[Route('/api/pages/{id}', name: 'get_page', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function getPage(int $id, EntityManagerInterface $em): JsonResponse
     {
         $page = $em->find(Page::class, $id);
@@ -255,9 +255,45 @@ $sections = [];
         return new JsonResponse(['message' => 'Page deleted successfully']);
     }
 
+    #[Route('/api/pages/slug', name: 'get_page_root', methods: ['GET'])]
+    public function getPageRoot(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $preview = $request->query->get('preview') === 'true';
+        
+        if ($preview) {
+            $page = $em->getRepository(Page::class)->findOneBy(['slug' => '/']);
+        } else {
+            $page = $em->getRepository(Page::class)->findOneBy(['slug' => '/', 'isPublished' => true]);
+        }
+        
+        if (!$page) {
+            return new JsonResponse(['error' => 'Page not found'], 404);
+        }
+
+        $sections = [];
+        foreach ($page->getSections() as $section) {
+            $sections[] = [
+                'id' => $section->getId(),
+                'type' => $section->getType(),
+                'content' => $section->getContent(),
+                'position' => $section->getPosition(),
+                'isEnabled' => $section->isEnabled()
+            ];
+        }
+
+        return new JsonResponse([
+            'id' => $page->getId(),
+            'title' => $page->getTitle(),
+            'slug' => $page->getSlug(),
+            'isPublished' => $page->isPublished(),
+            'sections' => $sections
+        ]);
+    }
+
     #[Route('/api/pages/slug/{slug}', name: 'get_page_by_slug', methods: ['GET'])]
     public function getPageBySlug(string $slug, Request $request, EntityManagerInterface $em): JsonResponse
     {
+        $slug = $slug ?: '/';
         $preview = $request->query->get('preview') === 'true';
         
         if ($preview) {

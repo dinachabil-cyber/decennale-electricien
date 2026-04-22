@@ -34,8 +34,7 @@ class AuthController extends AbstractController
         }
 
         $token = $tokenService->generateToken($admin->getId(), $admin->getEmail());
-        $admin->setLastLoginAt(new \DateTime());
-        $em->flush();
+       
 
         return new JsonResponse([
             'token' => $token,

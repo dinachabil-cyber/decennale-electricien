@@ -25,8 +25,7 @@ class Admin
     #[ORM\Column(type: 'datetime')]
     private ?\DateTime $createdAt = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $lastLoginAt = null;
+  
 
     public function __construct()
     {
@@ -82,14 +81,5 @@ class Admin
         return $this;
     }
 
-    public function getLastLoginAt(): ?\DateTime
-    {
-        return $this->lastLoginAt;
-    }
-
-    public function setLastLoginAt(?\DateTime $lastLoginAt): static
-    {
-        $this->lastLoginAt = $lastLoginAt;
-        return $this;
-    }
+    
 }

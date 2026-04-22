@@ -44,7 +44,7 @@ export default function DynamicPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const pageSlug = slug || 'home';
+  const pageSlug = (slug && slug !== '/') ? slug : '/';
   const isPreview = searchParams.get('preview') === 'true';
 
   useEffect(() => {
