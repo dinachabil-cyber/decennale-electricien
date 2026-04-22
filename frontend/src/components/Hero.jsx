@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { submitQuote } from '../../services/api';
+import { submitQuote } from '../services/api';
 
 const LEGAL_STATUSES = [
   { value: 'auto-entrepreneur', label: 'Auto-entrepreneur', icon: 'fa-user' },

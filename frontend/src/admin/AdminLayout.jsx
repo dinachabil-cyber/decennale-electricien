@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authApi } from '../../api/cms';
+import { authApi } from '../api/cms';
 
 export default function AdminLayout({ children, activeTab, onTabChange, tabs }) {
   const navigate = useNavigate();

@@ -32,7 +32,7 @@
    - Proper schema.org/FAQPage format
    - Optimized for Rich Snippets
 
-2. **FAQJsonLd Component** (`components/seo/FAQJsonLd.jsx`)
+2. **FAQJsonLd Component** (`components/FAQJsonLd.jsx`)
    - Automatically injects JSON-LD into page head
    - No visible UI impact, only SEO benefit
 

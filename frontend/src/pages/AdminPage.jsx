@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AdminLayout from '../admin/layout/AdminLayout';
+import AdminLayout from '../admin/AdminLayout';
 import PageList from '../admin/pages/PageList';
 import SectionManager from '../admin/sections/SectionManager';
 

@@ -5,4 +5,3 @@ export { default as CardsSectionEditor } from './CardsSectionEditor';
 export { default as CTAEditor } from './CTAEditor';
 
 export * from './sectionTypes';
-export * from './sectionDefaults';

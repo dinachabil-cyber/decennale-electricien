@@ -1,24 +1,27 @@
 import React from 'react';
+import { getSectionConfig } from '../../sections/registry';
 
 const COMPONENTS = {
-  hero: React.lazy(() => import('../hero/Hero')),
-  content: React.lazy(() => import('../content/Content')),
-  faq: React.lazy(() => import('../faq/FAQ')),
-  howitworks: React.lazy(() => import('../howitworks/HowItWorks')),
-  steps: React.lazy(() => import('../howitworks/HowItWorks')),
-  cards: React.lazy(() => import('../cards/Cards')),
-  cta: React.lazy(() => import('../cta/CTA')),
+  hero: React.lazy(() => import('../Hero')),
+  content: React.lazy(() => import('../Content')),
+  faq: React.lazy(() => import('../FAQ')),
+  howitworks: React.lazy(() => import('../HowItWorks')),
+  steps: React.lazy(() => import('../HowItWorks')),
+  cards: React.lazy(() => import('../Cards')),
+  cta: React.lazy(() => import('../CTA')),
 };
 
-const Fallback = () => <div className="h-32 bg-gray-100 animate-pulse rounded" />;
-
-export default function SectionRenderer({ section, mode = 'frontend' }) {
-  // Guard against invalid section
-  if (!section || !section.type) {
-    return null;
-  }
-
+export const SectionRenderer = React.memo(function SectionRenderer({ section, mode = 'frontend', options = {} }) {
   const { type, content, id, isEnabled = true } = section;
+  const config = getSectionConfig(type);
+
+  if (!config) {
+    return (
+      <div className="py-8 px-4 bg-red-50 border border-red-200">
+        <p className="text-red-600">Type de section inconnu: {type}</p>
+      </div>
+    );
+  }
 
   if (mode === 'frontend' && isEnabled === false) {
     return null;
@@ -26,19 +29,29 @@ export default function SectionRenderer({ section, mode = 'frontend' }) {
 
   const Component = COMPONENTS[type];
 
-  // Skip unknown section types silently (no error shown)
   if (!Component) {
     return null;
   }
 
-  // Guard: prevent rendering if content is invalid/undefined
-  if (content === undefined || content === null) {
-    return null;
-  }
+  const renderProps = {
+    content,
+    sectionId: id,
+    ...options
+  };
 
   return (
-    <React.Suspense fallback={<Fallback />}>
-      <Component content={content} sectionId={id} />
+    <React.Suspense fallback={
+      mode === 'frontend' ? null : (
+        <div className="animate-pulse bg-gray-100 h-32 rounded-lg"></div>
+      )
+    }>
+      <Component {...renderProps} />
     </React.Suspense>
   );
+});
+
+export function getRendererComponent(type) {
+  return COMPONENTS[type] || null;
 }
+
+export default SectionRenderer;
