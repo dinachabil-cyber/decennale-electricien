@@ -5,7 +5,7 @@ const EDITORS = {
   hero: React.lazy(() => import('../components/admin/sections/HeroSectionEditor')),
   content: React.lazy(() => import('../components/admin/sections/ContentSectionEditor')),
   faq: React.lazy(() => import('../components/admin/sections/FAQSectionEditor')),
-  carte: React.lazy(() => import('../components/admin/sections/CarteSectionEditor')),
+  cards: React.lazy(() => import('../components/admin/sections/CardsSectionEditor')),
   cta: React.lazy(() => import('../components/admin/sections/CTAEditor')),
 };
 

@@ -37,18 +37,24 @@ const SECTION_REGISTRY = {
       items: [{ question: 'Question?', answer: 'Réponse...' }]
     }
   },
-  carte: {
-    label: 'Carte',
-    labelFr: 'Carte',
-    description: 'Section avec carte et infos de contact',
-    icon: '📍',
+  cards: {
+    label: 'Cards',
+    labelFr: 'Cartes',
+    description: 'Grille de cartes avec icône, titre, sous-titre, liste et bouton CTA',
+    icon: '🃏',
     defaultContent: {
-      title: 'Nous contacter',
-      subtitle: 'Retrouvez-nous à notre agence',
-      email: '',
-      phone: '',
-      address: '',
-      showMap: true
+      title: 'Cartes',
+      subtitle: '',
+      cards: [
+        { 
+          title: 'Titre carte 1', 
+          subtitle: '',
+          bulletPoints: ['Point 1', 'Point 2'],
+          buttonText: 'Obtenir mon devis',
+          buttonLink: '#contactForm',
+          icon: 'star' 
+        }
+      ]
     }
   },
   cta: {

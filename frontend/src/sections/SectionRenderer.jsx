@@ -7,7 +7,7 @@ const COMPONENTS = {
   faq: React.lazy(() => import('../components/faq/FAQ')),
   howitworks: React.lazy(() => import('../components/howitworks/HowItWorks')),
   steps: React.lazy(() => import('../components/howitworks/HowItWorks')),
-  carte: React.lazy(() => import('../components/carte/Carte')),
+  cards: React.lazy(() => import('../components/cards/Cards')),
   cta: React.lazy(() => import('../components/cta/CTA')),
 };
 

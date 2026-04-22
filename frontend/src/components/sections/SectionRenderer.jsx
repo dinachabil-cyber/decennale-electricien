@@ -6,7 +6,7 @@ const COMPONENTS = {
   faq: React.lazy(() => import('../faq/FAQ')),
   howitworks: React.lazy(() => import('../howitworks/HowItWorks')),
   steps: React.lazy(() => import('../howitworks/HowItWorks')),
-  carte: React.lazy(() => import('../carte/Carte')),
+  cards: React.lazy(() => import('../cards/Cards')),
   cta: React.lazy(() => import('../cta/CTA')),
 };
 

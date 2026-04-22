@@ -90,9 +90,8 @@ function getPreviewFields(type, content) {
     faq: [
       { label: 'Questions', type: 'array', value: content?.items }
     ],
-    carte: [
-      { label: 'Titre', type: 'text', value: content?.title },
-      { label: 'Email', type: 'text', value: content?.email }
+    cards: [
+      { label: 'Cartes', type: 'array', value: content?.cards }
     ],
     cta: [
       { label: 'Titre', type: 'text', value: content?.title },

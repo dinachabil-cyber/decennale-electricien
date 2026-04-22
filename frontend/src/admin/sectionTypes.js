@@ -8,7 +8,7 @@ export const SECTION_TYPES = [
   { value: 'form', label: 'Formulaire', icon: '📋' },
   { value: 'steps', label: 'Étapes', icon: '🔢' },
   { value: 'footer', label: 'Footer', icon: '🦶' },
-  { value: 'carte', label: 'Carte', icon: '📍' },
+  { value: 'cards', label: 'Cartes', icon: '🃏' },
   { value: 'cta', label: 'CTA', icon: '🎯' },
 ];
 
@@ -31,13 +31,19 @@ export const SECTION_DEFAULTS = {
   faq: {
     items: [{ question: 'Question?', answer: 'Réponse...' }],
   },
-  carte: {
-    title: 'Nous contacter',
-    subtitle: 'Retrouvez-nous à notre agence',
-    email: '',
-    phone: '',
-    address: '',
-    showMap: true,
+  cards: {
+    title: 'Cartes',
+    subtitle: '',
+    cards: [
+      { 
+        title: 'Titre carte 1', 
+        subtitle: 'Sous-titre',
+        bulletPoints: ['Point 1', 'Point 2'],
+        buttonText: 'Obtenir mon devis',
+        buttonLink: '#contactForm',
+        icon: 'star' 
+      }
+    ]
   },
   cta: {
     title: 'Prêt à commencer?',

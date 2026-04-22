@@ -3,7 +3,7 @@ import {
   HeroSectionEditor,
   ContentSectionEditor,
   FAQSectionEditor,
-  CarteSectionEditor,
+  CardsSectionEditor,
   CTAEditor,
   getSectionLabel
 } from './sections';
@@ -12,7 +12,7 @@ const EDITORS = {
   hero: HeroSectionEditor,
   content: ContentSectionEditor,
   faq: FAQSectionEditor,
-  carte: CarteSectionEditor,
+  cards: CardsSectionEditor,
   cta: CTAEditor,
 };
 

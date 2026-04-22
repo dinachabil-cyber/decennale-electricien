@@ -41,15 +41,14 @@ export default function SectionPreview({ section }) {
           </div>
         );
 
-      case 'carte':
+      case 'cards':
+        const cards = content?.cards || [];
         return (
-          <div className="space-y-1">
-            <p className="font-medium text-gray-800">{content?.title || 'Sans titre'}</p>
-            {content?.email && (
-              <span className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
-                {content.email}
-              </span>
-            )}
+          <div>
+            <p className="text-sm text-gray-600">{cards.length} carte(s)</p>
+            {cards.slice(0, 2).map((card, i) => (
+              <p key={i} className="text-xs text-gray-500 mt-1 truncate">• {card.title}</p>
+            ))}
           </div>
         );
 

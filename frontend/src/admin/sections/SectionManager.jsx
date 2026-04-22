@@ -266,11 +266,10 @@ function ContentPreview({ section }) {
       </div>
     );
   }
-  if (type === 'carte') {
+  if (type === 'cards') {
     return (
       <div className="border-t pt-3 text-sm text-gray-600">
-        <p><strong>Titre:</strong> {content.title || '-'}</p>
-        <p><strong>Email:</strong> {content.email || '-'}</p>
+        <p><strong>Cartes:</strong> {content.cards?.length || 0} carte(s)</p>
       </div>
     );
   }
@@ -377,17 +376,71 @@ function SectionEditor({ section, onSave, onCancel }) {
         </div>
       )}
 
-      {section.type === 'carte' && (
+      {section.type === 'cards' && (
         <div className="space-y-4">
           <Input label="Titre" value={content.title || ''} onChange={(v) => handleChange('title', v)} />
           <Input label="Sous-titre" value={content.subtitle || ''} onChange={(v) => handleChange('subtitle', v)} />
-          <Input label="Email" value={content.email || ''} onChange={(v) => handleChange('email', v)} />
-          <Input label="Téléphone" value={content.phone || ''} onChange={(v) => handleChange('phone', v)} />
-          <Input label="Adresse" value={content.address || ''} onChange={(v) => handleChange('address', v)} />
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={content.showMap || false} onChange={(e) => handleChange('showMap', e.target.checked)} />
-            Afficher carte
-          </label>
+          
+          <div>
+            <label className="block text-sm font-medium mb-2">Cartes</label>
+            {(content.cards || []).map((card, i) => (
+              <div key={i} className="p-4 bg-gray-50 rounded-lg mb-3 border border-gray-200">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-gray-600">Carte {i + 1}</span>
+                  {(content.cards || []).length > 1 && (
+                    <button type="button" onClick={() => removeItem('cards', i)} className="text-red-500 text-sm hover:text-red-700">Supprimer</button>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Input label="Titre" value={card.title || ''} onChange={(v) => handleNestedChange('cards', i, 'title', v)} />
+                  <Input label="Icône" value={card.icon || ''} onChange={(v) => handleNestedChange('cards', i, 'icon', v)} />
+                </div>
+                <div className="mt-3">
+                  <label className="block text-sm text-gray-600 mb-1">Sous-titre</label>
+                  <input
+                    type="text"
+                    value={card.subtitle || ''}
+                    onChange={(e) => handleNestedChange('cards', i, 'subtitle', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-yellow-400"
+                    placeholder="Sous-titre optionnel"
+                  />
+                </div>
+                <div className="mt-3">
+                  <label className="block text-sm font-medium mb-2">Points de liste</label>
+                  {(card.bulletPoints || ['']).map((point, idx) => (
+                    <div key={idx} className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={point}
+                        onChange={(e) => {
+                          const newPoints = [...(card.bulletPoints || [])];
+                          newPoints[idx] = e.target.value;
+                          handleNestedChange('cards', i, 'bulletPoints', newPoints);
+                        }}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded"
+                        placeholder={`Point ${idx + 1}`}
+                      />
+                      {(card.bulletPoints || []).length > 1 && (
+                        <button type="button" onClick={() => {
+                          const newPoints = card.bulletPoints.filter((_, pIdx) => pIdx !== idx);
+                          handleNestedChange('cards', i, 'bulletPoints', newPoints);
+                        }} className="text-red-500 px-2">✕</button>
+                      )}
+                    </div>
+                  ))}
+                  <button type="button" onClick={() => {
+                    const newPoints = [...(card.bulletPoints || []), ''];
+                    handleNestedChange('cards', i, 'bulletPoints', newPoints);
+                  }} className="text-blue-500 text-sm">+ Ajouter un point</button>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-3">
+                  <Input label="Texte bouton" value={card.buttonText || ''} onChange={(v) => handleNestedChange('cards', i, 'buttonText', v)} />
+                  <Input label="Lien bouton" value={card.buttonLink || ''} onChange={(v) => handleNestedChange('cards', i, 'buttonLink', v)} />
+                </div>
+              </div>
+            ))}
+            <button onClick={() => addItem('cards', { title: '', subtitle: '', bulletPoints: [''], buttonText: '', buttonLink: '', icon: '' })} className="text-blue-500 text-sm">+ Ajouter une carte</button>
+          </div>
         </div>
       )}
 

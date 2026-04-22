@@ -19,13 +19,19 @@ export const DEFAULT_CONTENT = {
       { question: 'Question?', answer: 'Réponse...' }
     ]
   },
-  carte: {
-    title: 'Nous contacter',
-    subtitle: 'Retrouvez-nous à notre agence',
-    email: '',
-    phone: '',
-    address: '',
-    showMap: true
+  cards: {
+    title: 'Cartes',
+    subtitle: '',
+    cards: [
+      { 
+        title: 'Titre carte 1', 
+        subtitle: '',
+        bulletPoints: [''],
+        buttonText: '',
+        buttonLink: '',
+        icon: '' 
+      }
+    ]
   },
   cta: {
     title: 'Prêt à commencer?',
