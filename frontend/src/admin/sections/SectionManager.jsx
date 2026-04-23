@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { pagesApi, sectionsApi } from '../../api/cms';
 import { getDefaultContent, getSectionLabel, getSectionIcon, getAllSectionTypes } from '../../sections/registry';
-import SectionRenderer from '../../components/sections/SectionRenderer';
+import AdminSectionRenderer from '../../components/admin/SectionRenderer';
+import FrontendSectionRenderer from '../../components/sections/SectionRenderer';
 
 export default function SectionManager({ page, onBack }) {
   const [sections, setSections] = useState([]);
@@ -175,7 +176,7 @@ export default function SectionManager({ page, onBack }) {
               </h3>
             </div>
             <div className="p-6">
-              <SectionEditor
+              <AdminSectionRenderer
                 section={editingSection}
                 onSave={handleUpdate}
                 onCancel={() => setEditingSection(null)}
@@ -201,7 +202,7 @@ export default function SectionManager({ page, onBack }) {
             </div>
             <div className="p-4">
               <div className="border rounded-lg overflow-hidden">
-                <SectionRenderer section={previewSection} mode="admin" />
+                <FrontendSectionRenderer section={previewSection} mode="frontend" />
               </div>
             </div>
           </div>
@@ -306,226 +307,7 @@ function ContentPreview({ section }) {
   return null;
 }
 
-function SectionEditor({ section, onSave, onCancel }) {
-  const [content, setContent] = useState(section.content || {});
 
-  const handleChange = (key, value) => {
-    setContent({ ...content, [key]: value });
-  };
-
-  const handleNestedChange = (parentKey, index, key, value) => {
-    const items = [...(content[parentKey] || [])];
-    items[index] = { ...items[index], [key]: value };
-    setContent({ ...content, [parentKey]: items });
-  };
-
-  const addItem = (parentKey, defaultItem) => {
-    const items = [...(content[parentKey] || []), defaultItem];
-    setContent({ ...content, [parentKey]: items });
-  };
-
-  const removeItem = (parentKey, index) => {
-    const items = [...(content[parentKey] || [])];
-    items.splice(index, 1);
-    setContent({ ...content, [parentKey]: items });
-  };
-
-  const handleSave = () => onSave(content);
-
-  return (
-    <div>
-      {section.type === 'hero' && (
-        <div className="space-y-4">
-          <Input label="Titre" value={content.title || ''} onChange={(v) => handleChange('title', v)} />
-          <Input label="Sous-titre" value={content.subtitle || ''} onChange={(v) => handleChange('subtitle', v)} />
-          <Input label="Texte bouton" value={content.ctaText || ''} onChange={(v) => handleChange('ctaText', v)} />
-          <Input label="Lien bouton" value={content.ctaLink || ''} onChange={(v) => handleChange('ctaLink', v)} />
-          <Input label="Image fond (URL)" value={content.backgroundImage || ''} onChange={(v) => handleChange('backgroundImage', v)} />
-        </div>
-      )}
-
-      {section.type === 'content' && (
-        <div className="space-y-4">
-          <Input label="Titre" value={content.title || ''} onChange={(v) => handleChange('title', v)} />
-          <Textarea label="Introduction" value={content.introduction || ''} onChange={(v) => handleChange('introduction', v)} />
-          <div>
-            <label className="block text-sm font-medium mb-2">Sections</label>
-            {(content.sections || []).map((s, i) => (
-              <div key={i} className="p-3 bg-gray-50 rounded mb-2">
-                <Input label="Titre" value={s.title || ''} onChange={(v) => handleNestedChange('sections', i, 'title', v)} />
-                <Textarea label="Contenu" value={s.content || ''} onChange={(v) => handleNestedChange('sections', i, 'content', v)} />
-                <button onClick={() => removeItem('sections', i)} className="text-red-500 text-sm mt-2">Supprimer</button>
-              </div>
-            ))}
-            <button onClick={() => addItem('sections', { title: '', content: '' })} className="text-blue-500 text-sm">+ Ajouter</button>
-          </div>
-        </div>
-      )}
-
-      {section.type === 'faq' && (
-        <div>
-          <label className="block text-sm font-medium mb-2">Questions</label>
-          {(content.items || []).map((item, i) => (
-            <div key={i} className="p-3 bg-gray-50 rounded mb-2">
-              <Input label="Question" value={item.question || ''} onChange={(v) => handleNestedChange('items', i, 'question', v)} />
-              <Textarea label="Réponse" value={item.answer || ''} onChange={(v) => handleNestedChange('items', i, 'answer', v)} />
-              <button onClick={() => removeItem('items', i)} className="text-red-500 text-sm mt-2">Supprimer</button>
-            </div>
-          ))}
-          <button onClick={() => addItem('items', { question: '', answer: '' })} className="text-blue-500 text-sm">+ Ajouter</button>
-        </div>
-      )}
-
-      {section.type === 'cards' && (
-        <div className="space-y-4">
-          <Input label="Titre" value={content.title || ''} onChange={(v) => handleChange('title', v)} />
-          <Input label="Sous-titre" value={content.subtitle || ''} onChange={(v) => handleChange('subtitle', v)} />
-          
-          <div>
-            <label className="block text-sm font-medium mb-2">Cartes</label>
-            {(content.cards || []).map((card, i) => (
-              <div key={i} className="p-4 bg-gray-50 rounded-lg mb-3 border border-gray-200">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600">Carte {i + 1}</span>
-                  {(content.cards || []).length > 1 && (
-                    <button type="button" onClick={() => removeItem('cards', i)} className="text-red-500 text-sm hover:text-red-700">Supprimer</button>
-                  )}
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <Input label="Titre" value={card.title || ''} onChange={(v) => handleNestedChange('cards', i, 'title', v)} />
-                  <Input label="Icône" value={card.icon || ''} onChange={(v) => handleNestedChange('cards', i, 'icon', v)} />
-                </div>
-                <div className="mt-3">
-                  <label className="block text-sm text-gray-600 mb-1">Sous-titre</label>
-                  <input
-                    type="text"
-                    value={card.subtitle || ''}
-                    onChange={(e) => handleNestedChange('cards', i, 'subtitle', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-yellow-400"
-                    placeholder="Sous-titre optionnel"
-                  />
-                </div>
-                <div className="mt-3">
-                  <label className="block text-sm font-medium mb-2">Points de liste</label>
-                  {(card.bulletPoints || ['']).map((point, idx) => (
-                    <div key={idx} className="flex gap-2 mb-2">
-                      <input
-                        type="text"
-                        value={point}
-                        onChange={(e) => {
-                          const newPoints = [...(card.bulletPoints || [])];
-                          newPoints[idx] = e.target.value;
-                          handleNestedChange('cards', i, 'bulletPoints', newPoints);
-                        }}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded"
-                        placeholder={`Point ${idx + 1}`}
-                      />
-                      {(card.bulletPoints || []).length > 1 && (
-                        <button type="button" onClick={() => {
-                          const newPoints = card.bulletPoints.filter((_, pIdx) => pIdx !== idx);
-                          handleNestedChange('cards', i, 'bulletPoints', newPoints);
-                        }} className="text-red-500 px-2">✕</button>
-                      )}
-                    </div>
-                  ))}
-                  <button type="button" onClick={() => {
-                    const newPoints = [...(card.bulletPoints || []), ''];
-                    handleNestedChange('cards', i, 'bulletPoints', newPoints);
-                  }} className="text-blue-500 text-sm">+ Ajouter un point</button>
-                </div>
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <Input label="Texte bouton" value={card.buttonText || ''} onChange={(v) => handleNestedChange('cards', i, 'buttonText', v)} />
-                  <Input label="Lien bouton" value={card.buttonLink || ''} onChange={(v) => handleNestedChange('cards', i, 'buttonLink', v)} />
-                </div>
-              </div>
-            ))}
-            <button onClick={() => addItem('cards', { title: '', subtitle: '', bulletPoints: [''], buttonText: '', buttonLink: '', icon: '' })} className="text-blue-500 text-sm">+ Ajouter une carte</button>
-          </div>
-        </div>
-      )}
-
-      {section.type === 'cta' && (
-        <div className="space-y-4">
-          <Input label="Titre" value={content.title || ''} onChange={(v) => handleChange('title', v)} />
-          <Input label="Sous-titre" value={content.subtitle || ''} onChange={(v) => handleChange('subtitle', v)} />
-          <Input label="Texte bouton" value={content.buttonText || ''} onChange={(v) => handleChange('buttonText', v)} />
-          <Input label="Lien bouton" value={content.buttonLink || ''} onChange={(v) => handleChange('buttonLink', v)} />
-        </div>
-      )}
-
-      {section.type === 'steps' && (
-        <div>
-          <label className="block text-sm font-medium mb-2">Étapes</label>
-          {(content.steps || []).map((step, i) => (
-            <div key={i} className="p-3 bg-gray-50 rounded mb-2">
-              <Input label="Numéro" value={step.number || ''} onChange={(v) => handleNestedChange('steps', i, 'number', v)} />
-              <Input label="Titre" value={step.title || ''} onChange={(v) => handleNestedChange('steps', i, 'title', v)} />
-              <Textarea label="Description" value={step.description || ''} onChange={(v) => handleNestedChange('steps', i, 'description', v)} />
-              <button onClick={() => removeItem('steps', i)} className="text-red-500 text-sm mt-2">Supprimer</button>
-            </div>
-          ))}
-          <button onClick={() => addItem('steps', { number: '', title: '', description: '' })} className="text-blue-500 text-sm">+ Ajouter</button>
-        </div>
-      )}
-
-      {section.type === 'form' && (
-        <div className="space-y-4">
-          <Input label="Titre" value={content.title || ''} onChange={(v) => handleChange('title', v)} />
-          <Textarea label="Description" value={content.description || ''} onChange={(v) => handleChange('description', v)} />
-          <Input label="Texte du bouton" value={content.submitText || ''} onChange={(v) => handleChange('submitText', v)} />
-          <Input label="Email destinataire" value={content.email || ''} onChange={(v) => handleChange('email', v)} />
-          <div>
-            <label className="block text-sm font-medium mb-2">Champs du formulaire</label>
-            {(content.fields || []).map((field, i) => (
-              <div key={i} className="p-3 bg-gray-50 rounded mb-2">
-                <Input label="Nom du champ" value={field.name || ''} onChange={(v) => handleNestedChange('fields', i, 'name', v)} />
-                <Input label="Label" value={field.label || ''} onChange={(v) => handleNestedChange('fields', i, 'label', v)} />
-                <select value={field.type || 'text'} onChange={(e) => handleNestedChange('fields', i, 'type', e.target.value)} className="w-full px-3 py-2 border rounded">
-                  <option value="text">Texte</option>
-                  <option value="email">Email</option>
-                  <option value="tel">Téléphone</option>
-                  <option value="textarea">Zone de texte</option>
-                </select>
-                <label className="flex items-center gap-2 mt-2">
-                  <input type="checkbox" checked={field.required || false} onChange={(e) => handleNestedChange('fields', i, 'required', e.target.checked)} />
-                  Champ obligatoire
-                </label>
-                <button onClick={() => removeItem('fields', i)} className="text-red-500 text-sm mt-2">Supprimer</button>
-              </div>
-            ))}
-            <button onClick={() => addItem('fields', { name: '', label: '', type: 'text', required: false })} className="text-blue-500 text-sm">+ Ajouter un champ</button>
-          </div>
-        </div>
-      )}
-
-      {section.type === 'footer' && (
-        <div className="space-y-4">
-          <Textarea label="Texte du footer" value={content.text || ''} onChange={(v) => handleChange('text', v)} />
-          <div>
-            <label className="block text-sm font-medium mb-2">Liens</label>
-            {(content.links || []).map((link, i) => (
-              <div key={i} className="p-3 bg-gray-50 rounded mb-2 flex gap-2 items-center">
-                <div className="flex-1">
-                  <Input label="Label" value={link.label || ''} onChange={(v) => handleNestedChange('links', i, 'label', v)} />
-                </div>
-                <div className="flex-1">
-                  <Input label="URL" value={link.url || ''} onChange={(v) => handleNestedChange('links', i, 'url', v)} />
-                </div>
-                <button onClick={() => removeItem('links', i)} className="text-red-500 self-center mt-6">✕</button>
-              </div>
-            ))}
-            <button onClick={() => addItem('links', { label: '', url: '' })} className="text-blue-500 text-sm">+ Ajouter un lien</button>
-          </div>
-        </div>
-      )}
-
-      <div className="flex space-x-2 mt-6">
-        <button onClick={onCancel} className="flex-1 px-4 py-2 bg-gray-200 rounded">Annuler</button>
-        <button onClick={handleSave} className="flex-1 px-4 py-2 bg-yellow-400 rounded">Enregistrer</button>
-      </div>
-    </div>
-  );
-}
 
 function Input({ label, value, onChange }) {
   return (

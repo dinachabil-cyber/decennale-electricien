@@ -10,8 +10,7 @@ export default function AdminLayout({ children, activeTab, onTabChange, tabs }) 
     navigate('/login');
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
+  return (  <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
@@ -38,6 +37,5 @@ export default function AdminLayout({ children, activeTab, onTabChange, tabs }) 
       <div className="container mx-auto px-4 py-8">
         {children}
       </div>
-    </div>
-  );
+    </div>);
 }

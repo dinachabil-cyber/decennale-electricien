@@ -1,139 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { submitQuote } from '../services/api';
+import {
+  getFormSteps,
+  getFieldOptions,
+  initializeFormData,
+  canProceedToStep,
+  prepareSubmitData
+} from '../config/formConfig';
+import { StepRenderer, StepIndicator, StepContainer } from './forms';
 
-const LEGAL_STATUSES = [
-  { value: 'auto-entrepreneur', label: 'Auto-entrepreneur', icon: 'fa-user' },
-  { value: 'ei', label: 'Entreprise Individuelle', icon: 'fa-building' },
-  { value: 'eurl', label: 'EURL', icon: 'fa-building' },
-  { value: 'sarl', label: 'SARL', icon: 'fa-users' },
-  { value: 'sas', label: 'SAS', icon: 'fa-users' },
-];
+// Fallback to static config if no dynamic config available
+const DEFAULT_FORM_CONFIG = {
+  steps: getFormSteps(),
+  options: {
+    LEGAL_STATUSES: [
+      { value: 'auto-entrepreneur', label: 'Auto-entrepreneur', icon: 'fa-user' },
+      { value: 'ei', label: 'Entreprise Individuelle', icon: 'fa-building' },
+      { value: 'eurl', label: 'EURL', icon: 'fa-building' },
+      { value: 'sarl', label: 'SARL', icon: 'fa-users' },
+      { value: 'sas', label: 'SAS', icon: 'fa-users' },
+    ],
+    REVENUE_OPTIONS: [
+      { value: '0-30k', label: "Moins de 30,000€" },
+      { value: '30-60k', label: "30,000€ - 60,000€" },
+      { value: '60-100k', label: "60,000€ - 100,000€" },
+      { value: '100k+', label: "Plus de 100,000€" },
+    ]
+  }
+};
 
-const REVENUE_OPTIONS = [
-  { value: '0-30k', label: "Moins de 30,000€" },
-  { value: '30-60k', label: "30,000€ - 60,000€" },
-  { value: '60-100k', label: "60,000€ - 100,000€" },
-  { value: '100k+', label: "Plus de 100,000€" },
-];
-
-const STEPS = [
-  { key: 'nom', title: 'Nom' },
-  { key: 'entreprise', title: 'Entreprise' },
-  { key: 'statut', title: 'Statut' },
-  { key: 'revenue', title: 'Revenu' },
-  { key: 'telephone', title: 'Téléphone' },
-  { key: 'email', title: 'Email' },
-];
-
-function FormInput({ value, onChange, placeholder, icon, required, type = 'text', autoFocus }) {
-  return (
-    <div className="flex w-full min-w-0">
-      <span className="flex items-center px-4 py-4 bg-gray-50 border border-r-0 border-gray-200 rounded-l-xl shrink-0">
-        <i className={`fas ${icon} text-yellow-500`}></i>
-      </span>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        required={required}
-        autoFocus={autoFocus}
-        className="flex-1 min-w-0 w-full px-4 py-4 border border-gray-200 rounded-r-xl bg-light focus:ring-2 focus:ring-yellow-400 focus:outline-none transition-all duration-200"
-      />
-    </div>
-  );
-}
-
-function SelectCard({ options, value, onChange }) {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      {options.map((option) => (
-        <button
-          key={option.value}
-          type="button"
-          onClick={() => onChange(option.value)}
-          className={`p-4 rounded-xl border-2 transition-all duration-300 text-left flex items-center gap-3 ${
-            value === option.value
-              ? 'border-yellow-500 bg-yellow-50 shadow-md'
-              : 'border-gray-200 bg-light hover:border-yellow-300 hover:shadow-sm'
-          }`}
-        >
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
-            value === option.value ? 'bg-yellow-500 text-dark' : 'bg-gray-100 text-gray-500'
-          }`}>
-            <i className={`fas ${option.icon}`}></i>
-          </div>
-          <span className={`font-medium ${value === option.value ? 'text-dark' : 'text-gray-700'}`}>
-            {option.label}
-          </span>
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function StepIndicator({ steps, currentStep }) {
-  return (
-    <div className="mb-6">
-      <div className="flex justify-between mb-2">
-        {steps.map((step, index) => (
-          <div
-            key={step.key}
-            className={`text-xs font-medium ${
-              index <= currentStep ? 'text-yellow-600' : 'text-gray-400'
-            }`}
-          >
-            {step.title}
-          </div>
-        ))}
-      </div>
-      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function StepContainer({ children, isActive }) {
-  return (
-    <div
-      className={`transition-all duration-300 ${
-        isActive
-          ? 'opacity-100 translate-x-0'
-          : 'opacity-0 absolute -translate-x-4 pointer-events-none'
-      }`}
-      style={{ display: isActive ? 'block' : 'none' }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function Hero({ onSuccess }) {
+function Hero({ onSuccess, content }) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState({
-    nom: '',
-    entreprise: '',
-    statut: '',
-    chiffreAffaires: '',
-    tele: '',
-    email: ''
-  });
+  const [dynamicConfig, setDynamicConfig] = useState(null);
+  const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [agreedTele, setAgreedTele] = useState(false);
-  const [agreedEmail, setAgreedEmail] = useState(false);
+
+  // Load dynamic configuration from content or use defaults
+  useEffect(() => {
+    const formConfig = content?.formConfig;
+
+    if (formConfig && formConfig.steps) {
+      setDynamicConfig(formConfig);
+      // Initialize form data from dynamic config
+      const initialData = {};
+      formConfig.steps.forEach(step => {
+        initialData[step.key] = '';
+        // Handle consent fields
+        if (step.consentRequired) {
+          initialData[`agreed${step.key.charAt(0).toUpperCase() + step.key.slice(1)}`] = false;
+        }
+      });
+      setFormData(initialData);
+    } else {
+      // Use static config as fallback
+      setDynamicConfig(DEFAULT_FORM_CONFIG);
+      setFormData(initializeFormData());
+    }
+  }, [content]);
+
+  const steps = dynamicConfig?.steps || [];
+  const options = dynamicConfig?.options || DEFAULT_FORM_CONFIG.options;
 
   const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const nextStep = () => {
-    if (currentStep < STEPS.length - 1) {
+    if (currentStep < steps.length - 1) {
       setCurrentStep(prev => prev + 1);
     }
   };
@@ -145,40 +80,24 @@ function Hero({ onSuccess }) {
   };
 
   const canProceed = () => {
-    switch (currentStep) {
-      case 0:
-        return formData.nom.trim().length > 0;
-      case 1:
-        return true;
-      case 2:
-        return formData.statut.length > 0;
-      case 3:
-        return formData.chiffreAffaires.length > 0;
-      case 4:
-        return formData.tele.trim().length > 0 && agreedTele;
-      case 5:
-        return formData.email.trim().length > 0 && agreedEmail;
-      default:
-        return false;
-    }
+    return canProceedToStep(currentStep, formData);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!canProceed()) return;
-    
+
     setLoading(true);
     setError(null);
 
     try {
-      await submitQuote({
-        nom: formData.nom,
-        entreprise: formData.entreprise,
-        email: formData.email,
-        tele: formData.tele,
-        statut: formData.statut,
-        chiffreAffaires: formData.chiffreAffaires
-      });
+      // For dynamic forms, send all form data
+      // For static forms, use the prepared data mapping
+      const submitData = dynamicConfig !== DEFAULT_FORM_CONFIG
+        ? formData // Send all dynamic form data
+        : prepareSubmitData(formData); // Use static mapping
+
+      await submitQuote(submitData);
       setSuccess(true);
       onSuccess?.();
     } catch (err) {
@@ -216,6 +135,31 @@ function Hero({ onSuccess }) {
     );
   }
 
+  // Don't render form if disabled
+  if (content && content.showForm === false) {
+    return (
+      <section className="py-12 md:py-20 lg:py-32 bg-gradient-to-br from-light via-surfaceHover to-light hero-pattern relative overflow-hidden">
+        <div className="absolute inset-0 scanlines-bg opacity-30"></div>
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-dark mb-6">
+            {content.title || 'Bienvenue'}
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            {content.subtitle}
+          </p>
+          {content.ctaText && content.ctaLink && (
+            <a
+              href={content.ctaLink}
+              className="inline-block bg-yellow-400 hover:bg-yellow-500 text-dark font-bold py-4 px-8 rounded-xl transition-colors duration-200"
+            >
+              {content.ctaText}
+            </a>
+          )}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-12 md:py-20 lg:py-32 bg-gradient-to-br from-light via-surfaceHover to-light hero-pattern relative overflow-hidden">
       <div className="absolute inset-0 scanlines-bg opacity-30"></div>
@@ -235,7 +179,7 @@ function Hero({ onSuccess }) {
                   <i className="fas fa-calculator text-xl md:text-2xl text-dark"></i>
                 </div>
                 <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gradient mb-3 md:mb-4 px-2">
-                  Complétez ce formulaire pour obtenir un tarif
+                  {content?.title || 'Complétez ce formulaire pour obtenir un tarif'}
                 </h2>
                 <div className="w-16 md:w-20 h-1 bg-yellow-400 mx-auto rounded-full"></div>
               </div>
@@ -247,101 +191,22 @@ function Hero({ onSuccess }) {
               )}
 
               <form onSubmit={handleSubmit}>
-                <StepIndicator steps={STEPS} currentStep={currentStep} />
+                <StepIndicator steps={steps} currentStep={currentStep} />
 
                 <div className="relative min-h-[200px]">
-                  <StepContainer isActive={currentStep === 0}>
-                    <h3 className="text-lg font-semibold text-dark mb-4">Quel est votre nom ?</h3>
-                    <FormInput
-                      value={formData.nom}
-                      onChange={(val) => updateField('nom', val)}
-                      placeholder="Votre Nom *"
-                      icon="fa-user"
-                      required
-                      autoFocus
-                    />
-                  </StepContainer>
-
-                  <StepContainer isActive={currentStep === 1}>
-                    <h3 className="text-lg font-semibold text-dark mb-4">Quel est le nom de votre entreprise ?</h3>
-                    <FormInput
-                      value={formData.entreprise}
-                      onChange={(val) => updateField('entreprise', val)}
-                      placeholder="Entreprise / Nom"
-                      icon="fa-building"
-                      autoFocus
-                    />
-                  </StepContainer>
-
-                  <StepContainer isActive={currentStep === 2}>
-                    <h3 className="text-lg font-semibold text-dark mb-4">Statut Juridique</h3>
-                    <SelectCard
-                      options={LEGAL_STATUSES}
-                      value={formData.statut}
-                      onChange={(val) => updateField('statut', val)}
-                    />
-                  </StepContainer>
-
-                  <StepContainer isActive={currentStep === 3}>
-                    <h3 className="text-lg font-semibold text-dark mb-4">Chiffre d'affaires</h3>
-                    <SelectCard
-                      options={REVENUE_OPTIONS}
-                      value={formData.chiffreAffaires}
-                      onChange={(val) => updateField('chiffreAffaires', val)}
-                    />
-                  </StepContainer>
-
-                  <StepContainer isActive={currentStep === 4}>
-                    <h3 className="text-lg font-semibold text-dark mb-4">Numéro</h3>
-                    <div>
-                      <FormInput
-                        value={formData.tele}
-                        onChange={(val) => updateField('tele', val)}
-                        placeholder="Téléphone *"
-                        icon="fa-phone"
-                        required
-                        type="tel"
-                        autoFocus
+                  {steps.map((step, index) => (
+                    <StepContainer key={step.key} isActive={currentStep === index}>
+                      <StepRenderer
+                        step={{
+                          ...step,
+                          options: step.options ? options[step.options] : undefined
+                        }}
+                        formData={formData}
+                        onFieldChange={updateField}
+                        onConsentChange={(field, value) => updateField(field, value)}
                       />
-                    </div>
-                    <div className="mt-4 flex items-start gap-3 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
-                      <input 
-                        type="checkbox" 
-                        checked={agreedTele}
-                        onChange={(e) => setAgreedTele(e.target.checked)}
-                        className="mt-1 w-5 h-5 text-yellow-500 rounded focus:ring-yellow-400" 
-                      />
-                      <span className="text-xs md:text-sm text-gray-600">
-                        En cliquant sur "Suivant", vous acceptez d'être contacté par téléphone.
-                      </span>
-                    </div>
-                  </StepContainer>
-
-                  <StepContainer isActive={currentStep === 5}>
-                    <h3 className="text-lg font-semibold text-dark mb-4">Votre Email</h3>
-                    <div>
-                      <FormInput
-                        value={formData.email}
-                        onChange={(val) => updateField('email', val)}
-                        placeholder="Email *"
-                        icon="fa-envelope"
-                        required
-                        type="email"
-                        autoFocus
-                      />
-                    </div>
-                    <div className="mt-4 flex items-start gap-3 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
-                      <input 
-                        type="checkbox" 
-                        checked={agreedEmail}
-                        onChange={(e) => setAgreedEmail(e.target.checked)}
-                        className="mt-1 w-5 h-5 text-yellow-500 rounded focus:ring-yellow-400" 
-                      />
-                      <span className="text-xs md:text-sm text-gray-600">
-                        En cliquant sur "Obtenir mon devis", vous acceptez d'être contacté par email.
-                      </span>
-                    </div>
-                  </StepContainer>
+                    </StepContainer>
+                  ))}
                 </div>
 
                 <div className="mt-6">
@@ -356,7 +221,7 @@ function Hero({ onSuccess }) {
                     </button>
                   )}
                   
-                  {currentStep < 5 ? (
+                  {currentStep < steps.length - 1 ? (
                     <button
                       type="button"
                       onClick={nextStep}
