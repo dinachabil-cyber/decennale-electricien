@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { pagesApi, sectionsApi } from '../../api/cms';
 import { getDefaultContent, getSectionLabel, getSectionIcon, getAllSectionTypes } from '../../sections/registry';
 import AdminSectionRenderer from '../../components/admin/SectionRenderer';
@@ -25,7 +25,9 @@ export default function SectionManager({ page, onBack }) {
     }
   };
 
-  useEffect(() => { loadSections(); }, [page.id]);
+  useEffect(() => {
+    loadSections();
+  }, [page.id]);
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -105,8 +107,11 @@ export default function SectionManager({ page, onBack }) {
         </div>
         <div className="flex flex-wrap gap-2 w-full md:w-auto">
           <button onClick={onBack} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">← Retour</button>
-          <button 
-            onClick={() => window.open(`/${page.slug}?preview=true`, '_blank')} 
+          <button
+            onClick={() => {
+              const frontendUrl = process.env.REACT_APP_FRONTEND_URL || window.location.origin;
+              window.open(`${frontendUrl}/${page.slug}?preview=true`, '_blank');
+            }}
             className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
           >
             👁️ Aperçu

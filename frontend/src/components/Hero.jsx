@@ -2,13 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { submitQuote } from '../services/api';
 import {
   getFormSteps,
-  getFieldOptions,
   initializeFormData,
   canProceedToStep,
   prepareSubmitData
 } from '../config/formConfig';
+import { FORM_SCHEMA } from '../config/formSchema';
 import { StepRenderer, StepIndicator, StepContainer } from './forms';
-import { FORM_CONFIG } from '../config/formConfig';
 
 // Extract and normalize hero content from potentially corrupted formats
 function getHeroContent(content) {
@@ -36,8 +35,8 @@ function getHeroContent(content) {
     normalized.formConfig = {
       steps: getFormSteps(),
       options: {
-        LEGAL_STATUSES: FORM_CONFIG.LEGAL_STATUSES,
-        REVENUE_OPTIONS: FORM_CONFIG.REVENUE_OPTIONS
+        LEGAL_STATUSES: FORM_SCHEMA.options.LEGAL_STATUSES,
+        REVENUE_OPTIONS: FORM_SCHEMA.options.REVENUE_OPTIONS
       }
     };
   }
@@ -49,19 +48,8 @@ function getHeroContent(content) {
 const DEFAULT_FORM_CONFIG = {
   steps: getFormSteps(),
   options: {
-    LEGAL_STATUSES: [
-      { value: 'auto-entrepreneur', label: 'Auto-entrepreneur', icon: 'fa-user' },
-      { value: 'ei', label: 'Entreprise Individuelle', icon: 'fa-building' },
-      { value: 'eurl', label: 'EURL', icon: 'fa-building' },
-      { value: 'sarl', label: 'SARL', icon: 'fa-users' },
-      { value: 'sas', label: 'SAS', icon: 'fa-users' },
-    ],
-    REVENUE_OPTIONS: [
-      { value: '0-30k', label: "Moins de 30,000€" },
-      { value: '30-60k', label: "30,000€ - 60,000€" },
-      { value: '60-100k', label: "60,000€ - 100,000€" },
-      { value: '100k+', label: "Plus de 100,000€" },
-    ]
+    LEGAL_STATUSES: FORM_SCHEMA.options.LEGAL_STATUSES,
+    REVENUE_OPTIONS: FORM_SCHEMA.options.REVENUE_OPTIONS
   }
 };
 
