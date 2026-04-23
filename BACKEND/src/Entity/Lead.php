@@ -34,6 +34,9 @@ class Lead
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTime $createdAt = null;
 
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $customFields = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -118,6 +121,17 @@ class Lead
     public function setCreatedAt(?\DateTime $createdAt): static
     {
         $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getCustomFields(): ?array
+    {
+        return $this->customFields;
+    }
+
+    public function setCustomFields(?array $customFields): static
+    {
+        $this->customFields = $customFields;
         return $this;
     }
 }

@@ -41,9 +41,11 @@ export default function SectionManager({ page, onBack }) {
     }
   };
 
-  const handleUpdate = async (content) => {
+  const handleUpdate = async (updatedContent) => {
     try {
-      await sectionsApi.update(editingSection.id, { content });
+      // SectionRenderer now passes only content directly
+      const contentToSave = updatedContent;
+      await sectionsApi.update(editingSection.id, { content: contentToSave });
       loadSections();
       setEditingSection(null);
     } catch (err) {

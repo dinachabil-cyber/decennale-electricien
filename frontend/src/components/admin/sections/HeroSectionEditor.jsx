@@ -2,31 +2,114 @@ import React, { useState, useEffect } from 'react';
 import { getFormSteps, FORM_CONFIG } from '../../../config/formConfig';
 import { getSectionConfig } from '../../../config/sectionConfig';
 
+// Extract actual hero data from potentially wrapped section object
+function extractHeroData(input) {
+  if (!input) return {};
+
+  // If it's a string, try to parse
+  if (typeof input === 'string') {
+    try {
+      input = JSON.parse(input);
+    } catch (e) {
+      console.error('Failed to parse hero content string', e);
+      return {};
+    }
+  }
+
+  // If the input looks like a full section object (has id/type/position/isEnabled and a nested 'content'), extract it
+  if (input && typeof input === 'object') {
+    if ('id' in input && 'type' in input && 'content' in input && 'position' in input && 'isEnabled' in input) {
+      console.log('🔍 Detected full section object, extracting inner content');
+      return input.content || {};
+    }
+  }
+
+  return input;
+}
+
+// Normalize legacy hero content to new format
+function normalizeHeroContent(content) {
+  // First extract the actual hero data if wrapped in section object
+  const extracted = extractHeroData(content);
+  console.log('✅ Extracted hero data:', extracted);
+
+  if (!extracted || typeof extracted !== 'object') return {};
+
+  const normalized = { ...extracted };
+
+  // Map old field names to new ones (only if target not already set)
+  if (normalized.formTitle && !normalized.title) {
+    normalized.title = normalized.formTitle;
+  }
+  if (normalized.buttonText && !normalized.ctaText) {
+    normalized.ctaText = normalized.buttonText;
+  }
+  if (normalized.image && !normalized.backgroundImage) {
+    normalized.backgroundImage = normalized.image;
+  }
+
+  // Ensure required fields have non-empty defaults
+  if (!normalized.ctaText || typeof normalized.ctaText !== 'string' || normalized.ctaText.trim() === '') {
+    normalized.ctaText = 'Contactez-nous';
+  }
+  if (!normalized.ctaLink || typeof normalized.ctaLink !== 'string' || normalized.ctaLink.trim() === '') {
+    normalized.ctaLink = '/contact';
+  }
+  if (!normalized.title || typeof normalized.title !== 'string' || normalized.title.trim() === '') {
+    normalized.title = 'Bienvenue';
+  }
+  if (typeof normalized.showForm === 'undefined') {
+    normalized.showForm = true;
+  }
+  if (!normalized.formConfig) {
+    normalized.formConfig = {
+      steps: getFormSteps(),
+      options: {
+        LEGAL_STATUSES: FORM_CONFIG.LEGAL_STATUSES,
+        REVENUE_OPTIONS: FORM_CONFIG.REVENUE_OPTIONS
+      }
+    };
+  }
+
+  return normalized;
+}
+
 export default function HeroSectionEditor({ content, onSave, onCancel }) {
   const [activeTab, setActiveTab] = useState('content');
 
-  // Hero content state - merge content with defaults
+  // Debug: Log incoming content prop
+  console.log('🏗️ HeroSectionEditor mounted/updated with raw content:', content);
+
+  // Normalize content (handle legacy formats)
+  const normalizedContent = normalizeHeroContent(content);
+  console.log('✅ Normalized content:', normalizedContent);
+
+  // Get defaults
+  const heroDefaults = getSectionConfig('hero')?.defaultContent || {
+    title: 'Bienvenue',
+    subtitle: 'Votre sous-titre ici',
+    ctaText: 'Contactez-nous',
+    ctaLink: '/contact',
+    backgroundImage: '',
+    showForm: true
+  };
+
+  // Hero content state - merge normalized content with defaults
   const [heroData, setHeroData] = useState(() => {
-    const defaults = getSectionConfig('hero')?.defaultContent || {
-      title: 'Bienvenue',
-      subtitle: 'Votre sous-titre ici',
-      ctaText: 'Contactez-nous',
-      ctaLink: '/contact',
-      backgroundImage: '',
-      showForm: true
-    };
+    console.log('🎯 Initializing heroData with normalizedContent:', normalizedContent);
     return {
-      title: content?.title ?? defaults.title,
-      subtitle: content?.subtitle ?? defaults.subtitle,
-      ctaText: content?.ctaText ?? defaults.ctaText,
-      ctaLink: content?.ctaLink ?? defaults.ctaLink,
-      backgroundImage: content?.backgroundImage ?? defaults.backgroundImage,
-      showForm: content?.showForm ?? defaults.showForm
+      title: normalizedContent?.title ?? heroDefaults.title,
+      subtitle: normalizedContent?.subtitle ?? heroDefaults.subtitle,
+      ctaText: normalizedContent?.ctaText ?? heroDefaults.ctaText,
+      ctaLink: normalizedContent?.ctaLink ?? heroDefaults.ctaLink,
+      backgroundImage: normalizedContent?.backgroundImage ?? heroDefaults.backgroundImage,
+      showForm: normalizedContent?.showForm ?? heroDefaults.showForm
     };
   });
 
-  // Form configuration state - always initialize with defaults
+  // Form configuration state - always initialize with defaults based on normalized content
   const [formConfig, setFormConfig] = useState(() => {
+    const normalized = normalizeHeroContent(content);
     const defaultSteps = getFormSteps();
     const defaultOptions = {
       LEGAL_STATUSES: FORM_CONFIG.LEGAL_STATUSES,
@@ -34,13 +117,14 @@ export default function HeroSectionEditor({ content, onSave, onCancel }) {
     };
 
     return {
-      steps: content?.formConfig?.steps || defaultSteps,
-      options: content?.formConfig?.options || defaultOptions
+      steps: normalized?.formConfig?.steps || defaultSteps,
+      options: normalized?.formConfig?.options || defaultOptions
     };
   });
 
   // Update state when content prop changes
   useEffect(() => {
+    const normalized = normalizeHeroContent(content);
     const defaults = getSectionConfig('hero')?.defaultContent || {
       title: 'Bienvenue',
       subtitle: 'Votre sous-titre ici',
@@ -50,18 +134,18 @@ export default function HeroSectionEditor({ content, onSave, onCancel }) {
       showForm: true
     };
     setHeroData({
-      title: content?.title ?? defaults.title,
-      subtitle: content?.subtitle ?? defaults.subtitle,
-      ctaText: content?.ctaText ?? defaults.ctaText,
-      ctaLink: content?.ctaLink ?? defaults.ctaLink,
-      backgroundImage: content?.backgroundImage ?? defaults.backgroundImage,
-      showForm: content?.showForm ?? defaults.showForm
+      title: normalized?.title ?? defaults.title,
+      subtitle: normalized?.subtitle ?? defaults.subtitle,
+      ctaText: normalized?.ctaText ?? defaults.ctaText,
+      ctaLink: normalized?.ctaLink ?? defaults.ctaLink,
+      backgroundImage: normalized?.backgroundImage ?? defaults.backgroundImage,
+      showForm: normalized?.showForm ?? defaults.showForm
     });
 
     setFormConfig(prev => ({
       ...prev,
-      steps: content?.formConfig?.steps || getFormSteps(),
-      options: content?.formConfig?.options || {
+      steps: normalized?.formConfig?.steps || getFormSteps(),
+      options: normalized?.formConfig?.options || {
         LEGAL_STATUSES: FORM_CONFIG.LEGAL_STATUSES,
         REVENUE_OPTIONS: FORM_CONFIG.REVENUE_OPTIONS
       }
@@ -71,20 +155,26 @@ export default function HeroSectionEditor({ content, onSave, onCancel }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Ensure we have the latest data
-    const combinedData = {
+    // Build the hero content object
+    const heroContent = {
       ...heroData,
       formConfig: formConfig
     };
 
+    // Keep formTitle in sync with title for backward compatibility with frontend
+    if (heroData.title) {
+      heroContent.formTitle = heroData.title;
+    }
+
     // Debug: Log the data being submitted
     console.group('🚀 Hero Section Submit');
     console.log('heroData:', heroData);
-    console.log('formConfig:', formConfig);
-    console.log('combinedData:', combinedData);
+    console.log('formConfig steps count:', formConfig?.steps?.length);
+    console.log('formConfig steps:', formConfig?.steps?.map(s => s.key));
+    console.log('heroContent:', heroContent);
     console.groupEnd();
 
-    onSave(combinedData);
+    onSave(heroContent);
   };
 
   // Form builder functions

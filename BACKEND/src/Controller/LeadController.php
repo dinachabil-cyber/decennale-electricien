@@ -32,12 +32,32 @@ class LeadController extends AbstractController
         }
 
         $lead = new Lead();
+        
+        // Standard fields (predefined columns)
         $lead->setNom($data['nom'] ?? null);
         $lead->setEmail($data['email'] ?? null);
         $lead->setTele($data['tele'] ?? null);
         $lead->setEntreprise($data['entreprise'] ?? null);
         $lead->setStatut($data['statut'] ?? null);
         $lead->setChiffreAffaires($data['chiffreAffaires'] ?? null);
+
+        // Custom fields (dynamic fields added via form builder) - store everything else except standard fields and consent flags
+        $customFields = $data;
+        // Remove standard fields from custom fields to avoid duplication
+        $standardFields = ['nom', 'email', 'tele', 'entreprise', 'statut', 'chiffreAffaires'];
+        foreach ($standardFields as $field) {
+            unset($customFields[$field]);
+        }
+        // Remove consent checkboxes (agreed* keys)
+        foreach ($customFields as $key => $value) {
+            if (str_starts_with($key, 'agreed')) {
+                unset($customFields[$key]);
+            }
+        }
+        // Only save custom_fields if there are any non-empty values
+        if (!empty($customFields)) {
+            $lead->setCustomFields($customFields);
+        }
 
         $em->persist($lead);
 
@@ -70,6 +90,7 @@ class LeadController extends AbstractController
                 'entreprise' => $lead->getEntreprise(),
                 'statut' => $lead->getStatut(),
                 'chiffreAffaires' => $lead->getChiffreAffaires(),
+                'customFields' => $lead->getCustomFields(),
                 'createdAt' => $lead->getCreatedAt()->format('Y-m-d H:i:s')
             ];
         }, $leads);

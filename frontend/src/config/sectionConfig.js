@@ -160,7 +160,7 @@ export const SECTION_CONFIG = {
       title: { required: true, minLength: 3 },
       subtitle: { required: false },
       ctaText: { required: true },
-      ctaLink: { required: true, pattern: /^\/.*/ },
+      ctaLink: { required: true }, // Allow any non-empty link (including #, /, or full URLs)
     }
   },
 

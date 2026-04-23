@@ -7,6 +7,9 @@ export default function SectionRenderer({ section, onSave, onCancel }) {
   const [error, setError] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
 
+  // Debug
+  console.log('🔄 SectionRenderer received section:', section);
+
   const config = getSectionConfig(section.type);
 
   useEffect(() => {
@@ -43,7 +46,8 @@ export default function SectionRenderer({ section, onSave, onCancel }) {
     }
 
     setValidationErrors({});
-    onSave({ ...section, content });
+    // Only pass the updated content to parent
+    onSave(content);
   };
 
   if (loading) {
@@ -88,6 +92,14 @@ export default function SectionRenderer({ section, onSave, onCancel }) {
       </div>
     );
   }
+
+  // Debug: inspect section and content before rendering
+  console.log('🔍 SectionRenderer render:', {
+    sectionId: section.id,
+    sectionType: section.type,
+    sectionContentKeys: Object.keys(section.content || {}),
+    contentToPass: section.content
+  });
 
   return (
     <div className="bg-white rounded-lg">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { submitQuote } from '../services/api';
 import {
   getFormSteps,
@@ -8,6 +8,42 @@ import {
   prepareSubmitData
 } from '../config/formConfig';
 import { StepRenderer, StepIndicator, StepContainer } from './forms';
+import { FORM_CONFIG } from '../config/formConfig';
+
+// Extract and normalize hero content from potentially corrupted formats
+function getHeroContent(content) {
+  if (!content) return {};
+
+  // If content is a full section object (corrupted from old save bug), extract its inner content
+  if (content && typeof content === 'object' && 'id' in content && 'type' in content && 'content' in content) {
+    content = content.content;
+  }
+
+  // Map legacy field names to new ones
+  const normalized = { ...content };
+  if (normalized.formTitle && !normalized.title) {
+    normalized.title = normalized.formTitle;
+  }
+  if (normalized.buttonText && !normalized.ctaText) {
+    normalized.ctaText = normalized.buttonText;
+  }
+  if (normalized.image && !normalized.backgroundImage) {
+    normalized.backgroundImage = normalized.image;
+  }
+
+  // Ensure formConfig exists
+  if (!normalized.formConfig) {
+    normalized.formConfig = {
+      steps: getFormSteps(),
+      options: {
+        LEGAL_STATUSES: FORM_CONFIG.LEGAL_STATUSES,
+        REVENUE_OPTIONS: FORM_CONFIG.REVENUE_OPTIONS
+      }
+    };
+  }
+
+  return normalized;
+}
 
 // Fallback to static config if no dynamic config available
 const DEFAULT_FORM_CONFIG = {
@@ -29,7 +65,7 @@ const DEFAULT_FORM_CONFIG = {
   }
 };
 
-function Hero({ onSuccess, content }) {
+function Hero({ onSuccess, content: rawContent }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [dynamicConfig, setDynamicConfig] = useState(null);
   const [formData, setFormData] = useState({});
@@ -37,9 +73,12 @@ function Hero({ onSuccess, content }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+  // Normalize hero content (handle legacy formats and corruption)
+  const hero = useMemo(() => getHeroContent(rawContent), [rawContent]);
+
   // Load dynamic configuration from content or use defaults
   useEffect(() => {
-    const formConfig = content?.formConfig;
+    const formConfig = hero?.formConfig;
 
     if (formConfig && formConfig.steps) {
       setDynamicConfig(formConfig);
@@ -58,10 +97,10 @@ function Hero({ onSuccess, content }) {
       setDynamicConfig(DEFAULT_FORM_CONFIG);
       setFormData(initializeFormData());
     }
-  }, [content]);
+  }, [hero]);
 
-  const steps = dynamicConfig?.steps || [];
-  const options = dynamicConfig?.options || DEFAULT_FORM_CONFIG.options;
+  const steps = hero?.formConfig?.steps || dynamicConfig?.steps || [];
+  const options = hero?.formConfig?.options || dynamicConfig?.options || DEFAULT_FORM_CONFIG.options;
 
   const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -136,23 +175,23 @@ function Hero({ onSuccess, content }) {
   }
 
   // Don't render form if disabled
-  if (content && content.showForm === false) {
+  if (hero.showForm === false) {
     return (
       <section className="py-12 md:py-20 lg:py-32 bg-gradient-to-br from-light via-surfaceHover to-light hero-pattern relative overflow-hidden">
         <div className="absolute inset-0 scanlines-bg opacity-30"></div>
         <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-dark mb-6">
-            {content.title || 'Bienvenue'}
+            {hero.title || 'Bienvenue'}
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            {content.subtitle}
+            {hero.subtitle}
           </p>
-          {content.ctaText && content.ctaLink && (
+          {hero.ctaText && hero.ctaLink && (
             <a
-              href={content.ctaLink}
+              href={hero.ctaLink}
               className="inline-block bg-yellow-400 hover:bg-yellow-500 text-dark font-bold py-4 px-8 rounded-xl transition-colors duration-200"
             >
-              {content.ctaText}
+              {hero.ctaText}
             </a>
           )}
         </div>
@@ -178,9 +217,9 @@ function Hero({ onSuccess, content }) {
                 <div className="w-12 h-12 md:w-16 md:h-16 bg-yellow-400 rounded-xl md:rounded-2xl mx-auto mb-3 md:mb-4 flex items-center justify-center">
                   <i className="fas fa-calculator text-xl md:text-2xl text-dark"></i>
                 </div>
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gradient mb-3 md:mb-4 px-2">
-                  {content?.title || 'Complétez ce formulaire pour obtenir un tarif'}
-                </h2>
+                 <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gradient mb-3 md:mb-4 px-2">
+                   {hero?.title || hero?.formTitle || 'Complétez ce formulaire pour obtenir un tarif'}
+                 </h2>
                 <div className="w-16 md:w-20 h-1 bg-yellow-400 mx-auto rounded-full"></div>
               </div>
 
