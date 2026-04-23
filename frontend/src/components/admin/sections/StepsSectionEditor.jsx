@@ -74,8 +74,8 @@ export default function StepsSectionEditor({ content, onSave, onCancel }) {
         <div className="space-y-3">
           {formData.steps.map((step, index) => (
             <div key={index} className="p-4 border border-gray-200 rounded-lg">
-              <div className="grid grid-cols-12 gap-3">
-                <div className="col-span-1">
+              <div className="flex flex-col md:flex-row md:items-end gap-3">
+                <div className="md:w-16">
                   <label className="block text-xs font-medium text-gray-600 mb-1">Numéro</label>
                   <input
                     type="text"
@@ -85,7 +85,7 @@ export default function StepsSectionEditor({ content, onSave, onCancel }) {
                     placeholder="1"
                   />
                 </div>
-                <div className="col-span-4">
+                <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-600 mb-1">Titre</label>
                   <input
                     type="text"
@@ -95,7 +95,7 @@ export default function StepsSectionEditor({ content, onSave, onCancel }) {
                     placeholder="Titre de l'étape"
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
                   <input
                     type="text"
@@ -105,7 +105,7 @@ export default function StepsSectionEditor({ content, onSave, onCancel }) {
                     placeholder="Description de l'étape"
                   />
                 </div>
-                <div className="col-span-1 flex items-end">
+                <div className="md:w-16">
                   <button
                     type="button"
                     onClick={() => removeStep(index)}

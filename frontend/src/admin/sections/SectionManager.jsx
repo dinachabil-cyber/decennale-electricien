@@ -98,24 +98,20 @@ export default function SectionManager({ page, onBack }) {
         </div>
       )}
 
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">Sections: {page.title}</h2>
           <p className="text-gray-500">/{page.slug}</p>
         </div>
-        <div className="flex space-x-2">
-          <button onClick={onBack} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
-            ← Retour
-          </button>
+        <div className="flex flex-wrap gap-2 w-full md:w-auto">
+          <button onClick={onBack} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">← Retour</button>
           <button 
             onClick={() => window.open(`/${page.slug}?preview=true`, '_blank')} 
             className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
           >
-            👁️ Aperçu Page
+            👁️ Aperçu
           </button>
-          <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-yellow-400 rounded hover:bg-yellow-500">
-            + Ajouter
-          </button>
+          <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-yellow-400 rounded hover:bg-yellow-500">+ Ajouter</button>
         </div>
       </div>
 
@@ -217,19 +213,19 @@ export default function SectionManager({ page, onBack }) {
 function SectionCard({ section, index, total, onMoveUp, onMoveDown, onToggle, onEdit, onDelete, onPreview }) {
   return (
     <div className={`bg-white rounded-lg shadow p-4 ${!section.isEnabled ? 'opacity-60' : ''}`}>
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <span className="text-gray-400">#{index + 1}</span>
-          <span className="font-medium">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="text-gray-400 flex-shrink-0">#{index + 1}</span>
+          <span className="font-medium truncate">
             {getSectionIcon(section.type)} {getSectionLabel(section.type)}
           </span>
-          <span className={`px-2 py-1 text-xs rounded ${section.isEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100'}`}>
+          <span className={`px-2 py-1 text-xs rounded flex-shrink-0 ${section.isEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100'}`}>
             {section.isEnabled ? 'Actif' : 'Désactivé'}
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={onMoveUp} disabled={index === 0} className="px-2 py-1 bg-gray-200 rounded disabled:opacity-50">↑</button>
-          <button onClick={onMoveDown} disabled={index === total - 1} className="px-2 py-1 bg-gray-200 rounded disabled:opacity-50">↓</button>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={onMoveUp} disabled={index === 0} className="px-2 py-1 bg-gray-200 rounded disabled:opacity-50 text-sm">↑</button>
+          <button onClick={onMoveDown} disabled={index === total - 1} className="px-2 py-1 bg-gray-200 rounded disabled:opacity-50 text-sm">↓</button>
           <button onClick={onToggle} className="px-3 py-1 text-sm rounded">
             {section.isEnabled ? 'Désactiver' : 'Activer'}
           </button>

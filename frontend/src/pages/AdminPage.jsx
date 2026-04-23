@@ -11,8 +11,15 @@ export default function AdminPage() {
     { id: 'pages', label: 'Pages' },
   ];
 
+  const handleTabChange = (tabId) => {
+    setTab(tabId);
+    if (tabId === 'pages') {
+      setSelectedPage(null);
+    }
+  };
+
   return (
-    <AdminLayout activeTab={tab} onTabChange={setTab} tabs={tabs}>
+    <AdminLayout activeTab={tab} onTabChange={handleTabChange} tabs={tabs}>
       {tab === 'pages' && !selectedPage && (
         <PageList
           onSelectPage={(page) => { setSelectedPage(page); setTab('sections'); }}

@@ -78,8 +78,8 @@ export default function FooterSectionEditor({ content, onSave, onCancel }) {
 
         <div className="space-y-3">
           {formData.links.map((link, index) => (
-            <div key={index} className="flex gap-3 items-end p-4 border border-gray-200 rounded-lg">
-              <div className="flex-1">
+            <div key={index} className="flex flex-col md:flex-row gap-3 items-end p-4 border border-gray-200 rounded-lg">
+              <div className="flex-1 w-full">
                 <label className="block text-xs font-medium text-gray-600 mb-1">Label</label>
                 <input
                   type="text"
@@ -89,7 +89,7 @@ export default function FooterSectionEditor({ content, onSave, onCancel }) {
                   placeholder="Mentions légales"
                 />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 w-full">
                 <label className="block text-xs font-medium text-gray-600 mb-1">URL</label>
                 <input
                   type="text"
@@ -102,7 +102,7 @@ export default function FooterSectionEditor({ content, onSave, onCancel }) {
               <button
                 type="button"
                 onClick={() => removeLink(index)}
-                className="px-2 py-2 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                className="px-2 py-2 bg-red-500 text-white rounded text-sm hover:bg-red-600 w-full md:w-auto"
               >
                 ×
               </button>
@@ -123,7 +123,7 @@ export default function FooterSectionEditor({ content, onSave, onCancel }) {
         </label>
 
         {formData.showSocialLinks && (
-          <div className="mt-4 grid grid-cols-2 gap-4">
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Facebook</label>
               <input

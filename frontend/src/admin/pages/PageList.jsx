@@ -86,59 +86,105 @@ export default function PageList({ onSelectPage, onRefresh }) {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Titre</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Slug</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Statut</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {pages.map(page => (
-              <tr key={page.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 font-medium">{page.title}</td>
-                <td className="px-6 py-4 text-gray-500">{page.slug === '/' ? '/' : `/${page.slug}`}</td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-1 text-xs rounded ${page.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                    {page.isPublished ? 'Publié' : 'Brouillon'}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleTogglePublish(page.id)}
-                      className={`px-3 py-1 text-sm rounded ${page.isPublished ? 'bg-gray-200' : 'bg-green-500 text-white'}`}
-                    >
-                      {page.isPublished ? 'Dépublier' : 'Publier'}
-                    </button>
-                    <button
-                      onClick={() => setEditingPage({ id: page.id, title: page.title, slug: page.slug })}
-                      className="px-3 py-1 text-sm bg-yellow-500 text-white rounded"
-                    >
-                      Modifier
-                    </button>
-                    <button
-                      onClick={() => onSelectPage(page)}
-                      className="px-3 py-1 text-sm bg-blue-500 text-white rounded"
-                    >
-                      Sections
-                    </button>
-                    <button
-                      onClick={() => handleDelete(page.id)}
-                      className="px-3 py-1 text-sm bg-red-500 text-white rounded"
-                    >
-                      Supprimer
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+       <div className="bg-white rounded-lg shadow overflow-hidden">
+         {/* Desktop table */}
+         <div className="hidden md:block overflow-x-auto">
+           <table className="min-w-full divide-y divide-gray-200">
+             <thead className="bg-gray-50">
+               <tr>
+                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Titre</th>
+                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Slug</th>
+                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Statut</th>
+                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Actions</th>
+               </tr>
+             </thead>
+             <tbody className="divide-y divide-gray-200">
+               {pages.map(page => (
+                 <tr key={page.id} className="hover:bg-gray-50">
+                   <td className="px-6 py-4 font-medium">{page.title}</td>
+                   <td className="px-6 py-4 text-gray-500">{page.slug === '/' ? '/' : `/${page.slug}`}</td>
+                   <td className="px-6 py-4">
+                     <span className={`px-2 py-1 text-xs rounded ${page.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                       {page.isPublished ? 'Publié' : 'Brouillon'}
+                     </span>
+                   </td>
+                   <td className="px-6 py-4">
+                     <div className="flex flex-wrap gap-2">
+                       <button
+                         onClick={() => handleTogglePublish(page.id)}
+                         className={`px-3 py-1 text-sm rounded ${page.isPublished ? 'bg-gray-200' : 'bg-green-500 text-white'}`}
+                       >
+                         {page.isPublished ? 'Dépublier' : 'Publier'}
+                       </button>
+                       <button
+                         onClick={() => setEditingPage({ id: page.id, title: page.title, slug: page.slug })}
+                         className="px-3 py-1 text-sm bg-yellow-500 text-white rounded"
+                       >
+                         Modifier
+                       </button>
+                       <button
+                         onClick={() => onSelectPage(page)}
+                         className="px-3 py-1 text-sm bg-blue-500 text-white rounded"
+                       >
+                         Sections
+                       </button>
+                       <button
+                         onClick={() => handleDelete(page.id)}
+                         className="px-3 py-1 text-sm bg-red-500 text-white rounded"
+                       >
+                         Supprimer
+                       </button>
+                     </div>
+                   </td>
+                 </tr>
+               ))}
+             </tbody>
+           </table>
+         </div>
+
+         {/* Mobile card list */}
+         <div className="md:hidden space-y-4 p-4">
+           {pages.map(page => (
+             <div key={page.id} className="border border-gray-200 rounded-lg p-4 space-y-3">
+               <div>
+                 <h3 className="font-medium text-gray-800">{page.title}</h3>
+                 <p className="text-sm text-gray-500">{page.slug === '/' ? '/' : `/${page.slug}`}</p>
+               </div>
+               <div className="flex items-center gap-2">
+                 <span className={`px-2 py-1 text-xs rounded ${page.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                   {page.isPublished ? 'Publié' : 'Brouillon'}
+                 </span>
+               </div>
+               <div className="grid grid-cols-2 gap-2">
+                 <button
+                   onClick={() => handleTogglePublish(page.id)}
+                   className={`px-3 py-2 text-sm rounded ${page.isPublished ? 'bg-gray-200' : 'bg-green-500 text-white'}`}
+                 >
+                   {page.isPublished ? 'Dépublier' : 'Publier'}
+                 </button>
+                 <button
+                   onClick={() => setEditingPage({ id: page.id, title: page.title, slug: page.slug })}
+                   className="px-3 py-2 text-sm bg-yellow-500 text-white rounded"
+                 >
+                   Modifier
+                 </button>
+                 <button
+                   onClick={() => onSelectPage(page)}
+                   className="px-3 py-2 text-sm bg-blue-500 text-white rounded col-span-2"
+                 >
+                   Sections
+                 </button>
+                 <button
+                   onClick={() => handleDelete(page.id)}
+                   className="px-3 py-2 text-sm bg-red-500 text-white rounded col-span-2"
+                 >
+                   Supprimer
+                 </button>
+               </div>
+             </div>
+           ))}
+         </div>
+       </div>
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

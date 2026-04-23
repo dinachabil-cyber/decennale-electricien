@@ -26,7 +26,7 @@ export default function FAQSectionEditor({ content, onSave, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
         <h4 className="font-medium text-gray-800">Questions/Réponses</h4>
         <button
           type="button"
@@ -39,7 +39,7 @@ export default function FAQSectionEditor({ content, onSave, onCancel }) {
 
       {items.map((item, index) => (
         <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-          <div className="flex justify-between items-start mb-3">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
             <span className="text-sm font-medium text-gray-600">Question {index + 1}</span>
             {items.length > 1 && (
               <button

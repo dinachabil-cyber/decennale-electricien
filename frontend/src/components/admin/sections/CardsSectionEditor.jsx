@@ -114,7 +114,7 @@ export default function CardsSectionEditor({ content, onSave, onCancel }) {
                 </button>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-3">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Titre</label>
                 <input
@@ -178,7 +178,7 @@ export default function CardsSectionEditor({ content, onSave, onCancel }) {
               </button>
             </div>
 
-            <div className="mt-3 grid grid-cols-2 gap-3">
+            <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Texte bouton</label>
                 <input

@@ -229,11 +229,11 @@ export default function HeroSectionEditor({ content, onSave, onCancel }) {
 
       {/* Tab Navigation */}
       <div className="border-b border-gray-200">
-        <nav className="flex space-x-8">
+        <nav className="flex overflow-x-auto -mx-4 px-4 scrollbar-hide">
           <button
             type="button"
             onClick={() => setActiveTab('content')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap flex-shrink-0 ${
               activeTab === 'content'
                 ? 'border-yellow-500 text-yellow-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -244,10 +244,7 @@ export default function HeroSectionEditor({ content, onSave, onCancel }) {
           <button
             type="button"
             onClick={() => setActiveTab('form')}
- 
- 
- 
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap flex-shrink-0 ${
               activeTab === 'form'
                 ? 'border-yellow-500 text-yellow-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -380,7 +377,7 @@ export default function HeroSectionEditor({ content, onSave, onCancel }) {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Clé du champ
@@ -420,7 +417,7 @@ export default function HeroSectionEditor({ content, onSave, onCancel }) {
                     />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4 mt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Type

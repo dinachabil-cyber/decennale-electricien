@@ -122,7 +122,7 @@ export default function FormBuilderEditor({ content, onSave, onCancel }) {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Clé du champ
@@ -162,7 +162,7 @@ export default function FormBuilderEditor({ content, onSave, onCancel }) {
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Type
