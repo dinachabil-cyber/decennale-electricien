@@ -96,13 +96,18 @@ export function canProceedToStep(stepIndex, formData) {
 }
 
 export function prepareSubmitData(formData) {
-  // Map form data to API expected format
+  // Map form data to API expected format - clean naming
   return {
-    nom: formData.nom,
-    entreprise: formData.entreprise,
+    firstname: formData.firstname,
+    company: formData.company,
+    status: formData.status,
+    turnover: formData.turnover,
+    phone: formData.phone,
     email: formData.email,
-    tele: formData.tele,
-    statut: formData.statut,
-    chiffreAffaires: formData.chiffreAffaires
+    start_activity: formData.start_activity,
+    insured_currently: formData.insured_currently,
+    previous_resiliation: formData.previous_resiliation,
+    resiliation_reason: formData.resiliation_reason,
+    postcode: formData.postcode,
   };
 }

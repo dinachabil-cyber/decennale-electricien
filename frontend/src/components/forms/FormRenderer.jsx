@@ -1,11 +1,12 @@
 import React from 'react';
-import { FormInput, SelectCard, ConsentCheckbox } from './';
+import { FormInput, SelectCard, ConsentCheckbox, FormTextarea } from './';
 
 // Registry of field renderers
 const FIELD_RENDERERS = {
   input: FormInput,
   select: SelectCard,
   consent: ConsentCheckbox,
+  textarea: FormTextarea,
 };
 
 // Generic field renderer that delegates to specific components
@@ -50,6 +51,17 @@ export function FieldRenderer({ field, value, onChange, formData, onConsentChang
         />
       );
 
+    case 'textarea':
+      return (
+        <Renderer
+          key={field.key}
+          value={value}
+          onChange={onChange}
+          placeholder={field.placeholder}
+          required={field.required}
+        />
+      );
+
     case 'consent':
       return (
         <ConsentCheckbox
@@ -82,6 +94,15 @@ export function StepRenderer({ step, formData, onFieldChange, onConsentChange })
       )}
 
       {step.type === 'select' && (
+        <FieldRenderer
+          field={step}
+          value={formData[step.key]}
+          onChange={(val) => onFieldChange(step.key, val)}
+          formData={formData}
+        />
+      )}
+
+      {step.type === 'textarea' && (
         <FieldRenderer
           field={step}
           value={formData[step.key]}

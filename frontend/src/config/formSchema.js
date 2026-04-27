@@ -1,13 +1,15 @@
 // Unified form schema - Single source of truth for form configuration
+// Clean naming - NO duplicates, one field per database column
+// Correct field types matching FieldRenderer: 'input', 'select', 'textarea', 'date'
 export const FORM_SCHEMA = {
   // Global form options referenced by steps
   options: {
     LEGAL_STATUSES: [
-      { value: 'auto-entrepreneur', label: 'Auto-entrepreneur', icon: 'fa-user' },
-      { value: 'ei', label: 'Entreprise Individuelle', icon: 'fa-building' },
-      { value: 'eurl', label: 'EURL', icon: 'fa-building' },
-      { value: 'sarl', label: 'SARL', icon: 'fa-users' },
-      { value: 'sas', label: 'SAS', icon: 'fa-users' },
+      { value: 'auto-entrepreneur', label: 'Auto-entrepreneur' },
+      { value: 'ei', label: 'Entreprise Individuelle' },
+      { value: 'eurl', label: 'EURL' },
+      { value: 'sarl', label: 'SARL' },
+      { value: 'sas', label: 'SAS' },
     ],
 
     REVENUE_OPTIONS: [
@@ -15,116 +17,238 @@ export const FORM_SCHEMA = {
       { value: '30-60k', label: "30,000€ - 60,000€" },
       { value: '60-100k', label: "60,000€ - 100,000€" },
       { value: '100k+', label: "Plus de 100,000€" },
+    ],
+
+    INSURED_OPTIONS: [
+      { value: 'yes', label: 'Oui' },
+      { value: 'no', label: 'Non' },
+    ],
+
+    RESILIATION_OPTIONS: [
+      { value: 'yes', label: 'Oui' },
+      { value: 'no', label: 'Non' },
+    ],
+
+    RESILIATION_REASONS: [
+      { value: 'sinistre', label: 'Sinistre' },
+      { value: 'non_paiement', label: 'Non paiement' },
+      { value: 'suspension_paiement', label: 'Suspension de paiement' },
+      { value: 'fausse_declaration', label: 'Fausse déclaration' },
+      { value: 'echeance', label: 'Échéance' },
+      { value: 'autre', label: 'Autre' }
+    ],
+
+    YES_NO_OPTIONS: [
+      { value: 'oui', label: 'Oui' },
+      { value: 'non', label: 'Non' }
     ]
   },
   
   // Form steps with full configuration
+  // Type must match FieldRenderer: 'input', 'select', 'textarea', 'date', 'consent'
   steps: [
     {
-      key: 'nom',
-      title: 'Nom',
-      label: 'Quel est votre nom ?',
+      key: 'firstname',
+      label: 'Prénom',
       type: 'input',
       required: true,
-      placeholder: 'Votre Nom *',
+      visible: true,
+      placeholder: 'Votre prénom',
       icon: 'fa-user',
-      autoFocus: true,
+      inputType: 'text',
+      order: 1,
       validation: {
         required: true,
-        minLength: 1,
-        custom: (value) => value.trim().length > 0
+        minLength: 1
       }
     },
     {
-      key: 'entreprise',
-      title: 'Entreprise',
-      label: 'Quel est le nom de votre entreprise ?',
+      key: 'company',
+      label: 'Entreprise',
       type: 'input',
       required: false,
-      placeholder: 'Entreprise / Nom',
+      visible: true,
+      placeholder: 'Nom de votre entreprise',
       icon: 'fa-building',
-      autoFocus: true,
+      inputType: 'text',
+      order: 2,
       validation: {
         required: false
       }
     },
     {
-      key: 'statut',
-      title: 'Statut',
+      key: 'status',
       label: 'Statut Juridique',
       type: 'select',
       required: true,
-      options: 'LEGAL_STATUSES', // Reference to options array
+      visible: true,
+      options: 'LEGAL_STATUSES',
+      placeholder: 'Sélectionnez un statut',
+      icon: 'fa-balance-scale',
+      order: 3,
       validation: {
-        required: true,
-        minLength: 1
+        required: true
       }
     },
     {
-      key: 'chiffreAffaires',
-      title: 'Revenu',
+      key: 'turnover',
       label: 'Chiffre d\'affaires',
       type: 'select',
       required: true,
-      options: 'REVENUE_OPTIONS', // Reference to options array
+      visible: true,
+      options: 'REVENUE_OPTIONS',
+      placeholder: 'Sélectionnez une tranche',
+      icon: 'fa-euro-sign',
+      order: 4,
       validation: {
-        required: true,
-        minLength: 1
+        required: true
       }
     },
     {
-      key: 'tele',
-      title: 'Téléphone',
-      label: 'Numéro',
+      key: 'phone',
+      label: 'Téléphone',
       type: 'input',
-      inputType: 'tel',
       required: true,
-      placeholder: 'Téléphone *',
+      visible: true,
+      placeholder: 'Votre numéro',
       icon: 'fa-phone',
-      autoFocus: true,
+      inputType: 'tel',
       consentRequired: true,
-      consentText: 'En cliquant sur "Suivant", vous acceptez d\'être contacté par téléphone.',
+      consentText: 'J\'accepte d\'être contacté par téléphone.',
+      order: 5,
       validation: {
         required: true,
-        pattern: /^[+]?[0-9\s\-()]+$/,
-        minLength: 10
+        pattern: /^[\d\s\+\-\(\)]{8,20}$/,
+        minLength: 8
       }
     },
     {
       key: 'email',
-      title: 'Email',
-      label: 'Votre Email',
+      label: 'Email',
       type: 'input',
-      inputType: 'email',
       required: true,
-      placeholder: 'Email *',
+      visible: true,
+      placeholder: 'Votre email',
       icon: 'fa-envelope',
-      autoFocus: true,
+      inputType: 'email',
       consentRequired: true,
-      consentText: 'En cliquant sur "Obtenir mon devis", vous acceptez d\'être contacté par email.',
+      consentText: 'J\'accepte d\'être contacté par email.',
+      order: 6,
       validation: {
         required: true,
         pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      }
+    },
+    {
+      key: 'demaree_activite',
+      label: 'Démarrée activité ?',
+      type: 'select',
+      required: false,
+      visible: true,
+      options: 'YES_NO_OPTIONS',
+      placeholder: 'Sélectionnez une option',
+      icon: 'fa-calendar',
+      order: 7,
+      validation: {
+        required: false
+      }
+    },
+    {
+      key: 'insured_currently',
+      label: 'Êtes-vous actuellement assuré ?',
+      type: 'select',
+      required: false,
+      visible: true,
+      options: 'INSURED_OPTIONS',
+      placeholder: 'Sélectionnez une option',
+      icon: 'fa-shield-alt',
+      order: 8,
+      validation: {
+        required: false
+      }
+    },
+    {
+      key: 'previous_resiliation',
+      label: 'Avez-vous déjà résilié une assurance ?',
+      type: 'select',
+      required: false,
+      visible: true,
+      options: 'RESILIATION_OPTIONS',
+      placeholder: 'Sélectionnez une option',
+      icon: 'fa-history',
+      order: 9,
+      validation: {
+        required: false
+      }
+    },
+    {
+      key: 'resiliation_reason',
+      label: 'Motif de résiliation',
+      type: 'select',
+      required: false,
+      visible: true,
+      options: 'RESILIATION_REASONS',
+      placeholder: 'Sélectionnez un motif',
+      icon: 'fa-comment',
+      order: 10,
+      validation: {
+        required: false
+      }
+    },
+    {
+      key: 'postcode',
+      label: 'Code postal',
+      type: 'input',
+      required: false,
+      visible: true,
+      placeholder: 'Votre code postal',
+      icon: 'fa-map-marker-alt',
+      inputType: 'text',
+      order: 11,
+      validation: {
+        required: false,
+        pattern: /^[0-9]{5}$/
+      }
+    },
+    // System field - hidden from form
+    {
+      key: 'created_at',
+      label: 'Date de création',
+      type: 'datetime',
+      required: false,
+      visible: false,
+      order: 12,
+      validation: {
+        required: false
       }
     }
   ]
 };
 
-// Helper functions exported for backward compatibility
-export function getFormSteps() {
+// Export helper functions
+export function getVisibleFields() {
+  return FORM_SCHEMA.steps
+    .filter(step => step.visible)
+    .sort((a, b) => (a.order || 999) - (b.order || 999));
+}
+
+export function getAllFields() {
   return FORM_SCHEMA.steps;
 }
 
 export function getFieldOptions(fieldKey) {
   const step = FORM_SCHEMA.steps.find(step => step.key === fieldKey);
   if (!step || !step.options) return [];
-
-  // If options is a string, reference the options array in FORM_SCHEMA
+  
   if (typeof step.options === 'string') {
     return FORM_SCHEMA.options[step.options] || [];
   }
-
+  
   return step.options || [];
+}
+
+export function getFieldConfig(key) {
+  return FORM_SCHEMA.steps.find(step => step.key === key);
 }
 
 export function initializeFormData() {
@@ -141,17 +265,17 @@ export function validateField(stepIndex, value, formData = {}) {
 
   const validation = step.validation || {};
 
-  // Check required fields
+  // Required check
   if (validation.required && (!value || (typeof value === 'string' && value.trim().length === 0))) {
-    return { isValid: false, error: 'Ce champ est obligatoire' };
+    return { isValid: false, error: `${step.label} est obligatoire` };
   }
 
-  // Check minimum length
+  // Min length
   if (validation.minLength && value && value.length < validation.minLength) {
     return { isValid: false, error: `Minimum ${validation.minLength} caractères requis` };
   }
 
-  // Check pattern (for email, phone, etc.)
+  // Pattern matching
   if (validation.pattern && value && !validation.pattern.test(value)) {
     if (step.inputType === 'email') {
       return { isValid: false, error: 'Adresse email invalide' };
@@ -162,15 +286,7 @@ export function validateField(stepIndex, value, formData = {}) {
     return { isValid: false, error: 'Format invalide' };
   }
 
-  // Custom validation
-  if (validation.custom && typeof validation.custom === 'function') {
-    const customResult = validation.custom(value, formData);
-    if (!customResult) {
-      return { isValid: false, error: 'Valeur invalide' };
-    }
-  }
-
-  // Check consent requirements
+  // Consent check
   if (step.consentRequired) {
     const consentKey = `agreed${step.key.charAt(0).toUpperCase() + step.key.slice(1)}`;
     if (!formData[consentKey]) {
@@ -192,13 +308,18 @@ export function canProceedToStep(stepIndex, formData) {
 }
 
 export function prepareSubmitData(formData) {
-  // Map form data to API expected format
+  // Map form data directly to database columns
   return {
-    nom: formData.nom,
-    entreprise: formData.entreprise,
+    firstname: formData.firstname,
+    company: formData.company,
+    status: formData.status,
+    turnover: formData.turnover,
+    phone: formData.phone,
     email: formData.email,
-    tele: formData.tele,
-    statut: formData.statut,
-    chiffreAffaires: formData.chiffreAffaires
+    demaree_activite: formData.demaree_activite,
+    insured_currently: formData.insured_currently,
+    previous_resiliation: formData.previous_resiliation,
+    resiliation_reason: formData.resiliation_reason,
+    postcode: formData.postcode,
   };
 }

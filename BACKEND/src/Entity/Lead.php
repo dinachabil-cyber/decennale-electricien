@@ -6,6 +6,7 @@ use App\Repository\LeadRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LeadRepository::class)]
+#[ORM\Table(name: 'lead')]
 class Lead
 {
     #[ORM\Id]
@@ -14,32 +15,44 @@ class Lead
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $nom = null;
+    private ?string $firstname = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $tele = null;
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $entreprise = null;
+    private ?string $company = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $statut = null;
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $status = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $chiffreAffaires = null;
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $turnover = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $demaree_activite = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $insured_currently = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $previous_resiliation = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $resiliation_reason = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $postcode = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $createdAt = null;
-
-    #[ORM\Column(type: 'json', nullable: true)]
-    private ?array $customFields = null;
+    private ?\DateTime $created_at = null;
 
     public function __construct()
     {
-        $this->createdAt = new \DateTime();
+        $this->created_at = new \DateTime();
     }
 
     public function getId(): ?int
@@ -47,14 +60,14 @@ class Lead
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getFirstname(): ?string
     {
-        return $this->nom;
+        return $this->firstname;
     }
 
-    public function setNom(?string $nom): static
+    public function setFirstname(?string $firstname): static
     {
-        $this->nom = $nom;
+        $this->firstname = $firstname;
         return $this;
     }
 
@@ -69,69 +82,113 @@ class Lead
         return $this;
     }
 
-    public function getTele(): ?string
+    public function getPhone(): ?string
     {
-        return $this->tele;
+        return $this->phone;
     }
 
-    public function setTele(?string $tele): static
+    public function setPhone(?string $phone): static
     {
-        $this->tele = $tele;
+        $this->phone = $phone;
         return $this;
     }
 
-    public function getEntreprise(): ?string
+    public function getCompany(): ?string
     {
-        return $this->entreprise;
+        return $this->company;
     }
 
-    public function setEntreprise(?string $entreprise): static
+    public function setCompany(?string $company): static
     {
-        $this->entreprise = $entreprise;
+        $this->company = $company;
         return $this;
     }
 
-    public function getStatut(): ?string
+    public function getStatus(): ?string
     {
-        return $this->statut;
+        return $this->status;
     }
 
-    public function setStatut(?string $statut): static
+    public function setStatus(?string $status): static
     {
-        $this->statut = $statut;
+        $this->status = $status;
         return $this;
     }
 
-    public function getChiffreAffaires(): ?string
+    public function getTurnover(): ?string
     {
-        return $this->chiffreAffaires;
+        return $this->turnover;
     }
 
-    public function setChiffreAffaires(?string $chiffreAffaires): static
+    public function setTurnover(?string $turnover): static
     {
-        $this->chiffreAffaires = $chiffreAffaires;
+        $this->turnover = $turnover;
+        return $this;
+    }
+
+    public function getDemareeActivite(): ?string
+    {
+        return $this->demaree_activite;
+    }
+
+    public function setDemareeActivite(?string $demaree_activite): static
+    {
+        $this->demaree_activite = $demaree_activite;
+        return $this;
+    }
+
+    public function getInsuredCurrently(): ?string
+    {
+        return $this->insured_currently;
+    }
+
+    public function setInsuredCurrently(?string $insured_currently): static
+    {
+        $this->insured_currently = $insured_currently;
+        return $this;
+    }
+
+    public function getPreviousResiliation(): ?string
+    {
+        return $this->previous_resiliation;
+    }
+
+    public function setPreviousResiliation(?string $previous_resiliation): static
+    {
+        $this->previous_resiliation = $previous_resiliation;
+        return $this;
+    }
+
+    public function getResiliationReason(): ?string
+    {
+        return $this->resiliation_reason;
+    }
+
+    public function setResiliationReason(?string $resiliation_reason): static
+    {
+        $this->resiliation_reason = $resiliation_reason;
+        return $this;
+    }
+
+    public function getPostcode(): ?string
+    {
+        return $this->postcode;
+    }
+
+    public function setPostcode(?string $postcode): static
+    {
+        $this->postcode = $postcode;
         return $this;
     }
 
     public function getCreatedAt(): ?\DateTime
     {
-        return $this->createdAt;
+        return $this->created_at;
     }
 
-    public function setCreatedAt(?\DateTime $createdAt): static
+    public function setCreatedAt(?\DateTime $created_at): static
     {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function getCustomFields(): ?array
-    {
-        return $this->customFields;
-    }
-
-    public function setCustomFields(?array $customFields): static
-    {
-        $this->customFields = $customFields;
+        $this->created_at = $created_at;
         return $this;
     }
 }
