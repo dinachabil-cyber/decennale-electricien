@@ -24,7 +24,7 @@ class UpdateHeroFormConfigCommand extends Command
         parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+         protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         
@@ -48,14 +48,25 @@ class UpdateHeroFormConfigCommand extends Command
             foreach ($steps as $step) {
                 $oldKey = $step['key'] ?? '';
                 
-                // Map old keys to new ones
+                // Map old keys (English or legacy) to new French keys
                 $keyMap = [
-                    'nom' => 'firstname',
-                    'entreprise' => 'company',
-                    'statut' => 'status',
-                    'chiffreAffaires' => 'turnover',
-                    'tele' => 'phone',
-                    'resiliation_motif' => 'resiliation_reason',
+                    // English to French
+                    'firstname' => 'nom',
+                    'company' => 'raisonSociale',
+                    'phone' => 'tele',
+                    'resiliation_reason' => 'motifResiliation',
+                    'postcode' => 'codePostal',
+                    'start_activity' => 'demarrageActivite',
+                    'insured_currently' => 'activiteAssuree',
+                    'previous_resiliation' => 'assuranceResilie',
+                    // Legacy French (if any) to current French keys
+                    'nom' => 'nom', // already fine
+                    'raison_sociale' => 'raisonSociale',
+                    'demaree_activite' => 'demarrageActivite',
+                    'activite_assuree' => 'activiteAssuree',
+                    'assurance_resilie' => 'assuranceResilie',
+                    'motif_resiliation' => 'motifResiliation',
+                    'code_postal' => 'codePostal',
                 ];
                 
                 if (isset($keyMap[$oldKey])) {
@@ -63,20 +74,18 @@ class UpdateHeroFormConfigCommand extends Command
                     $needsUpdate = true;
                 }
                 
-                // Remove any completely unknown/custom field keys that don't match our schema
-                // Keep only keys that exist in our new FORM_SCHEMA
+                // Keep only valid French keys that exist in current schema
                 $validKeys = [
-                    'firstname', 'company', 'status', 'turnover', 'phone', 'email',
-                    'start_activity', 'insured_currently', 'previous_resiliation',
-                    'resiliation_reason', 'postcode'
+                    'nom', 'prenom', 'raisonSociale', 'demarrageActivite',
+                    'tele', 'email',
+                    'activiteAssuree', 'assuranceResilie', 'motifResiliation',
+                    'codePostal'
                 ];
                 
-                if (in_array($step['key'], $validKeys)) {
+                if (in_array($step['key'], $validKeys, true)) {
                     $newSteps[] = $step;
-                }
-                
-                // If we removed or changed something, mark as updated
-                if ($oldKey !== $step['key'] || !in_array($step['key'], $validKeys)) {
+                } else {
+                    // Key not valid after mapping, mark as updated (will be removed)
                     $needsUpdate = true;
                 }
             }
@@ -94,7 +103,7 @@ class UpdateHeroFormConfigCommand extends Command
         $this->em->flush();
         
         $io->progressFinish();
-        $io->success("Updated {$updated} hero section(s) with new field keys.");
+        $io->success("Updated {$updated} hero section(s) with new French field keys.");
         
         return Command::SUCCESS;
     }

@@ -1,23 +1,44 @@
 import React from 'react';
 
-function CTA({ content }) {
+const CTA = ({ content = {} }) => {
   const {
     title = 'Contactez-nous',
     subtitle = 'Une question? N\'hésitez pas à nous contacter.',
-    buttonText = 'Contactez-nous'
+    buttonText = 'Contactez-nous',
+    buttonLink = '#contact',
+    backgroundColor = 'yellow'
   } = content || {};
 
+  const bgClass = backgroundColor === 'yellow' 
+    ? 'bg-gradient-to-r from-yellow-400 to-yellow-500'
+    : 'bg-dark text-yellow-400';
+
   return (
-    <section className="py-20 bg-gradient-to-r from-yellow-400 to-yellow-500">
+    <section className={`py-20 ${bgClass}`}>
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-4xl font-bold text-dark mb-4">{title}</h2>
-        <p className="text-xl text-dark/80 mb-8 max-w-2xl mx-auto">{subtitle}</p>
-        <a href="#contact" className="inline-block bg-dark text-yellow-400 font-bold py-4 px-10 rounded-2xl hover:bg-primary transition-all transform hover:scale-105 shadow-2xl">
-          {buttonText}
-        </a>
+        <div className="reveal max-w-4xl mx-auto">
+          {title && (
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+              {title}
+            </h2>
+          )}
+          {subtitle && (
+            <p className="text-xl text-dark/80 mb-8 max-w-2xl mx-auto">
+              {subtitle}
+            </p>
+          )}
+          {buttonText && (
+            <a 
+              href={buttonLink} 
+              className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-500 text-dark font-bold py-4 px-10 rounded-2xl hover:shadow-lg transition-all transform hover:scale-105 gradient-shine"
+            >
+              {buttonText}
+            </a>
+          )}
+        </div>
       </div>
     </section>
   );
-}
+};
 
 export default CTA;

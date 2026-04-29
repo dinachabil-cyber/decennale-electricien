@@ -4,17 +4,28 @@ namespace App\Controller;
 
 use App\Entity\Page;
 use App\Entity\Section;
+use App\Controller\AdminController;
+use App\Middleware\AuthMiddleware;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-class PageController extends AbstractController
+class PageController extends AdminController
 {
+    public function __construct(AuthMiddleware $authMiddleware)
+    {
+        parent::__construct($authMiddleware);
+    }
+
     #[Route('/api/pages', name: 'create_page', methods: ['POST'])]
     public function createPage(Request $request, EntityManagerInterface $em): JsonResponse
     {
+        $authResult = $this->requireAdmin($request, $em);
+        if ($authResult instanceof JsonResponse) {
+            return $authResult;
+        }
+
         $data = json_decode($request->getContent(), true);
 
         if (!isset($data['title']) || !isset($data['slug'])) {
@@ -36,13 +47,20 @@ class PageController extends AbstractController
         return new JsonResponse([
             'id' => $page->getId(),
             'title' => $page->getTitle(),
-            'slug' => $page->getSlug()
+            'slug' => $page->getSlug(),
+            'createdAt' => $page->getCreatedAt()?->format('c'),
+            'updatedAt' => $page->getUpdatedAt()?->format('c'),
         ], 201);
     }
 
     #[Route('/api/pages', name: 'list_pages', methods: ['GET'])]
-    public function listPages(EntityManagerInterface $em): JsonResponse
+    public function listPages(Request $request, EntityManagerInterface $em): JsonResponse
     {
+        $authResult = $this->requireAdmin($request, $em);
+        if ($authResult instanceof JsonResponse) {
+            return $authResult;
+        }
+
         $pages = $em->getRepository(Page::class)->findAll();
         $result = [];
         foreach ($pages as $page) {
@@ -50,7 +68,9 @@ class PageController extends AbstractController
                 'id' => $page->getId(),
                 'title' => $page->getTitle(),
                 'slug' => $page->getSlug(),
-                'isPublished' => $page->isPublished()
+                'isPublished' => $page->isPublished(),
+                'createdAt' => $page->getCreatedAt()?->format('c'),
+                'updatedAt' => $page->getUpdatedAt()?->format('c'),
             ];
         }
         return new JsonResponse($result);
@@ -65,207 +85,23 @@ class PageController extends AbstractController
             $result[] = [
                 'id' => $page->getId(),
                 'title' => $page->getTitle(),
-                'slug' => $page->getSlug()
+                'slug' => $page->getSlug(),
+                'createdAt' => $page->getCreatedAt()?->format('c'),
+                'updatedAt' => $page->getUpdatedAt()?->format('c'),
             ];
         }
         return new JsonResponse($result);
     }
 
     #[Route('/api/pages/{id}', name: 'get_page', methods: ['GET'], requirements: ['id' => '\d+'])]
-    public function getPage(int $id, EntityManagerInterface $em): JsonResponse
+    public function getPage(int $id, Request $request, EntityManagerInterface $em): JsonResponse
     {
+        $authResult = $this->requireAdmin($request, $em);
+        if ($authResult instanceof JsonResponse) {
+            return $authResult;
+        }
+
         $page = $em->find(Page::class, $id);
-        if (!$page) {
-            return new JsonResponse(['error' => 'Page not found'], 404);
-        }
-
-$sections = [];
-        foreach ($page->getSections() as $section) {
-            $sections[] = [
-                'id' => $section->getId(),
-                'type' => $section->getType(),
-                'content' => $section->getContent(),
-                'position' => $section->getPosition(),
-                'isEnabled' => $section->isEnabled()
-            ];
-        }
-
-        return new JsonResponse([
-            'id' => $page->getId(),
-            'title' => $page->getTitle(),
-            'slug' => $page->getSlug(),
-            'isPublished' => $page->isPublished(),
-            'sections' => $sections
-        ]);
-    }
-
-    #[Route('/api/sections/{id}/toggle', name: 'toggle_section', methods: ['PATCH'])]
-    public function toggleSection(int $id, EntityManagerInterface $em): JsonResponse
-    {
-        $section = $em->find(Section::class, $id);
-        if (!$section) {
-            return new JsonResponse(['error' => 'Section not found'], 404);
-        }
-
-        $section->setIsEnabled(!$section->isEnabled());
-        $em->flush();
-
-        return new JsonResponse([
-            'id' => $section->getId(),
-            'isEnabled' => $section->isEnabled()
-        ]);
-    }
-
-    #[Route('/api/sections/{id}', name: 'update_section', methods: ['PUT'])]
-    public function updateSection(int $id, Request $request, EntityManagerInterface $em): JsonResponse
-    {
-        $section = $em->find(Section::class, $id);
-        if (!$section) {
-            return new JsonResponse(['error' => 'Section not found'], 404);
-        }
-
-        $data = json_decode($request->getContent(), true);
-
-        if (isset($data['type'])) {
-            $validTypes = ['hero', 'faq', 'content', 'cards', 'cta', 'form', 'steps', 'footer'];
-            if (!in_array($data['type'], $validTypes)) {
-                return new JsonResponse(['error' => 'Invalid section type'], 400);
-            }
-            $section->setType($data['type']);
-        }
-        if (isset($data['content'])) {
-            $section->setContent($data['content']);
-        }
-        if (isset($data['position'])) {
-            $section->setPosition($data['position']);
-        }
-        if (isset($data['isEnabled'])) {
-            $section->setIsEnabled($data['isEnabled']);
-        }
-
-        $em->flush();
-
-        return new JsonResponse([
-            'id' => $section->getId(),
-            'type' => $section->getType(),
-            'content' => $section->getContent(),
-            'position' => $section->getPosition(),
-            'isEnabled' => $section->isEnabled()
-        ]);
-    }
-
-    #[Route('/api/sections/{id}', name: 'delete_section', methods: ['DELETE'])]
-    public function deleteSection(int $id, EntityManagerInterface $em): JsonResponse
-    {
-        $section = $em->find(Section::class, $id);
-        if (!$section) {
-            return new JsonResponse(['error' => 'Section not found'], 404);
-        }
-
-        $em->remove($section);
-        $em->flush();
-
-        return new JsonResponse(['message' => 'Section deleted successfully']);
-    }
-
-    #[Route('/api/pages/{id}/reorder', name: 'reorder_sections', methods: ['PATCH'])]
-    public function reorderSections(int $id, Request $request, EntityManagerInterface $em): JsonResponse
-    {
-        $page = $em->find(Page::class, $id);
-        if (!$page) {
-            return new JsonResponse(['error' => 'Page not found'], 404);
-        }
-
-        $data = json_decode($request->getContent(), true);
-        if (!isset($data['sections']) || !is_array($data['sections'])) {
-            return new JsonResponse(['error' => 'Sections array is required'], 400);
-        }
-
-        foreach ($data['sections'] as $order => $sectionId) {
-            $section = $em->find(Section::class, $sectionId);
-            if ($section && $section->getPage()->getId() === $id) {
-                $section->setPosition($order);
-            }
-        }
-
-        $em->flush();
-
-        return new JsonResponse(['message' => 'Sections reordered successfully']);
-    }
-
-    #[Route('/api/pages/{id}', name: 'update_page', methods: ['PUT'])]
-    public function updatePage(int $id, Request $request, EntityManagerInterface $em): JsonResponse
-    {
-        $page = $em->find(Page::class, $id);
-        if (!$page) {
-            return new JsonResponse(['error' => 'Page not found'], 404);
-        }
-
-        $data = json_decode($request->getContent(), true);
-
-        if (isset($data['title'])) {
-            $page->setTitle($data['title']);
-        }
-        if (isset($data['slug'])) {
-            $existing = $em->getRepository(Page::class)->findOneBySlug($data['slug']);
-            if ($existing && $existing->getId() !== $id) {
-                return new JsonResponse(['error' => 'Page with this slug already exists'], 400);
-            }
-            $page->setSlug($data['slug']);
-        }
-
-        $em->flush();
-
-        return new JsonResponse([
-            'id' => $page->getId(),
-            'title' => $page->getTitle(),
-            'slug' => $page->getSlug(),
-            'isPublished' => $page->isPublished()
-        ]);
-    }
-
-    #[Route('/api/pages/{id}/publish', name: 'toggle_page_publish', methods: ['PATCH'])]
-    public function togglePagePublish(int $id, EntityManagerInterface $em): JsonResponse
-    {
-        $page = $em->find(Page::class, $id);
-        if (!$page) {
-            return new JsonResponse(['error' => 'Page not found'], 404);
-        }
-
-        $page->setIsPublished(!$page->isPublished());
-        $em->flush();
-
-        return new JsonResponse([
-            'id' => $page->getId(),
-            'isPublished' => $page->isPublished()
-        ]);
-    }
-
-    #[Route('/api/pages/{id}', name: 'delete_page', methods: ['DELETE'])]
-    public function deletePage(int $id, EntityManagerInterface $em): JsonResponse
-    {
-        $page = $em->find(Page::class, $id);
-        if (!$page) {
-            return new JsonResponse(['error' => 'Page not found'], 404);
-        }
-
-        $em->remove($page);
-        $em->flush();
-
-        return new JsonResponse(['message' => 'Page deleted successfully']);
-    }
-
-    #[Route('/api/pages/slug', name: 'get_page_root', methods: ['GET'])]
-    public function getPageRoot(Request $request, EntityManagerInterface $em): JsonResponse
-    {
-        $preview = $request->query->get('preview') === 'true';
-        
-        if ($preview) {
-            $page = $em->getRepository(Page::class)->findOneBy(['slug' => '/']);
-        } else {
-            $page = $em->getRepository(Page::class)->findOneBy(['slug' => '/', 'isPublished' => true]);
-        }
-        
         if (!$page) {
             return new JsonResponse(['error' => 'Page not found'], 404);
         }
@@ -277,7 +113,9 @@ $sections = [];
                 'type' => $section->getType(),
                 'content' => $section->getContent(),
                 'position' => $section->getPosition(),
-                'isEnabled' => $section->isEnabled()
+                'isEnabled' => $section->isEnabled(),
+                'createdAt' => $section->getCreatedAt()?->format('c'),
+                'updatedAt' => $section->getUpdatedAt()?->format('c'),
             ];
         }
 
@@ -286,8 +124,16 @@ $sections = [];
             'title' => $page->getTitle(),
             'slug' => $page->getSlug(),
             'isPublished' => $page->isPublished(),
+            'createdAt' => $page->getCreatedAt()?->format('c'),
+            'updatedAt' => $page->getUpdatedAt()?->format('c'),
             'sections' => $sections
         ]);
+    }
+
+    #[Route('/api/pages/slug', name: 'get_page_by_slug_root', methods: ['GET'])]
+    public function getPageBySlugRoot(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        return $this->getPageBySlug('', $request, $em);
     }
 
     #[Route('/api/pages/slug/{slug}', name: 'get_page_by_slug', methods: ['GET'])]
@@ -313,7 +159,9 @@ $sections = [];
                 'type' => $section->getType(),
                 'content' => $section->getContent(),
                 'position' => $section->getPosition(),
-                'isEnabled' => $section->isEnabled()
+                'isEnabled' => $section->isEnabled(),
+                'createdAt' => $section->getCreatedAt()?->format('c'),
+                'updatedAt' => $section->getUpdatedAt()?->format('c'),
             ];
         }
 
@@ -322,6 +170,8 @@ $sections = [];
             'title' => $page->getTitle(),
             'slug' => $page->getSlug(),
             'isPublished' => $page->isPublished(),
+            'createdAt' => $page->getCreatedAt()?->format('c'),
+            'updatedAt' => $page->getUpdatedAt()?->format('c'),
             'sections' => $sections
         ]);
     }
@@ -329,6 +179,11 @@ $sections = [];
     #[Route('/api/pages/{pageId}/sections', name: 'add_section', methods: ['POST'])]
     public function addSection(int $pageId, Request $request, EntityManagerInterface $em): JsonResponse
     {
+        $authResult = $this->requireAdmin($request, $em);
+        if ($authResult instanceof JsonResponse) {
+            return $authResult;
+        }
+
         $page = $em->find(Page::class, $pageId);
         if (!$page) {
             return new JsonResponse(['error' => 'Page not found'], 404);
@@ -349,16 +204,7 @@ $sections = [];
         $section->setType($data['type']);
         $section->setContent($data['content'] ?? []);
         $section->setIsEnabled(true);
-
-        // Set position to the next available position
-        $maxPosition = $em->getRepository(Section::class)
-            ->createQueryBuilder('s')
-            ->select('MAX(s.position)')
-            ->where('s.page = :page')
-            ->setParameter('page', $page)
-            ->getQuery()
-            ->getSingleScalarResult() ?? 0;
-        $section->setPosition($maxPosition + 1);
+        $section->setPosition($data['position'] ?? 0);
 
         $em->persist($section);
         $em->flush();
@@ -368,7 +214,118 @@ $sections = [];
             'type' => $section->getType(),
             'content' => $section->getContent(),
             'position' => $section->getPosition(),
-            'isEnabled' => $section->isEnabled()
+            'isEnabled' => $section->isEnabled(),
+            'createdAt' => $section->getCreatedAt()?->format('c'),
+            'updatedAt' => $section->getUpdatedAt()?->format('c'),
         ], 201);
+    }
+
+    #[Route('/api/pages/{id}/reorder-sections', name: 'reorder_sections', methods: ['POST'])]
+    public function reorderSections(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $authResult = $this->requireAdmin($request, $em);
+        if ($authResult instanceof JsonResponse) {
+            return $authResult;
+        }
+
+        $page = $em->find(Page::class, $id);
+        if (!$page) {
+            return new JsonResponse(['error' => 'Page not found'], 404);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        if (!isset($data['sections']) || !is_array($data['sections'])) {
+            return new JsonResponse(['error' => 'Sections array is required'], 400);
+        }
+
+        foreach ($data['sections'] as $order => $sectionId) {
+            $section = $em->find(Section::class, $sectionId);
+            if ($section && $section->getPage()?->getId() === $id) {
+                $section->setPosition($order);
+            }
+        }
+
+        $em->flush();
+
+        return new JsonResponse(['message' => 'Sections reordered successfully']);
+    }
+
+    #[Route('/api/pages/{id}', name: 'update_page', methods: ['PUT'])]
+    public function updatePage(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $authResult = $this->requireAdmin($request, $em);
+        if ($authResult instanceof JsonResponse) {
+            return $authResult;
+        }
+
+        $page = $em->find(Page::class, $id);
+        if (!$page) {
+            return new JsonResponse(['error' => 'Page not found'], 404);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (isset($data['title'])) {
+            $page->setTitle($data['title']);
+        }
+        if (isset($data['slug'])) {
+            $existing = $em->getRepository(Page::class)->findOneBySlug($data['slug']);
+            if ($existing && $existing->getId() !== $id) {
+                return new JsonResponse(['error' => 'Page with this slug already exists'], 400);
+            }
+            $page->setSlug($data['slug']);
+        }
+
+        $em->flush();
+
+        return new JsonResponse([
+            'id' => $page->getId(),
+            'title' => $page->getTitle(),
+            'slug' => $page->getSlug(),
+            'isPublished' => $page->isPublished(),
+            'createdAt' => $page->getCreatedAt()?->format('c'),
+            'updatedAt' => $page->getUpdatedAt()?->format('c'),
+        ]);
+    }
+
+    #[Route('/api/pages/{id}/publish', name: 'toggle_page_publish', methods: ['PATCH'])]
+    public function togglePagePublish(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $authResult = $this->requireAdmin($request, $em);
+        if ($authResult instanceof JsonResponse) {
+            return $authResult;
+        }
+
+        $page = $em->find(Page::class, $id);
+        if (!$page) {
+            return new JsonResponse(['error' => 'Page not found'], 404);
+        }
+
+        $page->setIsPublished(!$page->isPublished());
+        $em->flush();
+
+        return new JsonResponse([
+            'id' => $page->getId(),
+            'isPublished' => $page->isPublished()
+        ]);
+    }
+
+    #[Route('/api/pages/{id}', name: 'delete_page', methods: ['DELETE'])]
+    public function deletePage(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $authResult = $this->requireAdmin($request, $em);
+        if ($authResult instanceof JsonResponse) {
+            return $authResult;
+        }
+
+        $page = $em->find(Page::class, $id);
+        if (!$page) {
+            return new JsonResponse(['error' => 'Page not found'], 404);
+        }
+
+        $em->remove($page);
+        $em->flush();
+
+        return new JsonResponse(['message' => 'Page deleted successfully']);
     }
 }

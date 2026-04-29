@@ -70,10 +70,16 @@ const SECTION_REGISTRY = {
     icon: '🎯',
     defaultContent: {
       title: 'Prêt à commencer?',
-      subtitle: 'Contactez-nous dès aujourd\'hui',
+      subtitle: 'Contactez-nous dès aujourd\'aujourd\'hui',
       buttonText: 'Contactez-nous',
-      buttonLink: '/contact'
-    }
+      buttonLink: '/contact',
+      backgroundColor: 'yellow'
+    },
+    fieldGroups: [
+      { id: 'content', label: 'Contenu', fields: ['title', 'subtitle'] },
+      { id: 'button', label: 'Bouton', fields: ['buttonText', 'buttonLink'] },
+      { id: 'design', label: 'Design', fields: ['backgroundColor'] }
+    ]
   },
   form: {
     label: 'Formulaire',

@@ -62,13 +62,13 @@ class LeadController extends AbstractController
             $errors[] = 'Email invalide';
         }
 
-        // Special validation for phone
-        if (!empty($leadData['phone']) && !preg_match('/^[\d\s\+\-\(\)]{8,20}$/', $leadData['phone'])) {
+        // Special validation for phone (tele)
+        if (!empty($leadData['tele']) && !preg_match('/^[\d\s\+\-\(\)]{8,20}$/', $leadData['tele'])) {
             $errors[] = 'Numéro de téléphone invalide';
         }
 
         // Check if at least one contact field is provided
-        $contactFields = ['firstname', 'email', 'phone', 'company'];
+        $contactFields = ['nom', 'prenom', 'email', 'tele', 'raison_sociale'];
         $hasContactInfo = false;
         foreach ($contactFields as $field) {
             if (!empty($leadData[$field])) {
@@ -123,17 +123,16 @@ class LeadController extends AbstractController
         $data = array_map(function ($lead) {
             return [
                 'id' => $lead->getId(),
-                'firstname' => $lead->getFirstname(),
-                'company' => $lead->getCompany(),
-                'status' => $lead->getStatus(),
-                'turnover' => $lead->getTurnover(),
-                'phone' => $lead->getPhone(),
+                'nom' => $lead->getNom(),
+                'prenom' => $lead->getPrenom(),
+                'raisonSociale' => $lead->getRaisonSociale(),
+                'tele' => $lead->getTele(),
                 'email' => $lead->getEmail(),
-                'demaree_activite' => $lead->getDemareeActivite(),
-                'insured_currently' => $lead->getInsuredCurrently(),
-                'previous_resiliation' => $lead->getPreviousResiliation(),
-                'resiliation_reason' => $lead->getResiliationReason(),
-                'postcode' => $lead->getPostcode(),
+                'demarrageActivite' => $lead->getDemareeActivite(),
+                'activiteAssuree' => $lead->getInsuredCurrently(),
+                'assuranceResilie' => $lead->getPreviousResiliation(),
+                'motifResiliation' => $lead->getResiliationReason(),
+                'codePostal' => $lead->getCodePostal(),
                 'created_at' => $lead->getCreatedAt() ? $lead->getCreatedAt()->format('Y-m-d H:i:s') : null
             ];
         }, $leads);
@@ -193,32 +192,31 @@ class LeadController extends AbstractController
         ]);
     }
 
-    /**
-     * Map form data to Lead entity dynamically
-     */
+     /**
+      * Map form data to Lead entity dynamically
+      */
     private function mapDataToLead(Lead $lead, array $data): void
     {
         $setters = [
-            'firstname' => 'setFirstname',
+            'nom' => 'setNom',
+            'prenom' => 'setPrenom',
+            'raisonSociale' => 'setRaisonSociale',
+            'demarrageActivite' => 'setDemareeActivite',
+            'activiteAssuree' => 'setInsuredCurrently',
+            'assuranceResilie' => 'setPreviousResiliation',
+            'motifResiliation' => 'setResiliationReason',
+            'codePostal' => 'setCodePostal',
             'email' => 'setEmail',
-            'phone' => 'setPhone',
-            'company' => 'setCompany',
-            'status' => 'setStatus',
-            'turnover' => 'setTurnover',
-            'demaree_activite' => 'setDemareeActivite',
-            'insured_currently' => 'setInsuredCurrently',
-            'previous_resiliation' => 'setPreviousResiliation',
-            'resiliation_reason' => 'setResiliationReason',
-            'postcode' => 'setPostcode',
-            'created_at' => 'setCreatedAt',
+            'tele' => 'setTele',
+            'createdAt' => 'setCreatedAt',
         ];
-
+        
         foreach ($setters as $field => $setter) {
             if (array_key_exists($field, $data)) {
                 $value = $data[$field];
                 
                 // Handle date/datetime fields
-                if (in_array($field, ['created_at']) && $value) {
+                if (in_array($field, ['createdAt']) && $value) {
                     if (is_string($value)) {
                         try {
                             $value = new \DateTime($value);

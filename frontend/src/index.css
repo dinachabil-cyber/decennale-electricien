@@ -61,6 +61,31 @@
   100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
 }
 
+.gradient-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.6s;
+}
+
+.gradient-shine:hover::before {
+  left: 100%;
+}
+
 .text-gradient {
   background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
   -webkit-background-clip: text;

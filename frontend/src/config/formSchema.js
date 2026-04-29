@@ -48,7 +48,21 @@ export const FORM_SCHEMA = {
   // Type must match FieldRenderer: 'input', 'select', 'textarea', 'date', 'consent'
   steps: [
     {
-      key: 'firstname',
+      key: 'nom',
+      label: 'Nom',
+      type: 'input',
+      required: false,
+      visible: true,
+      placeholder: 'Votre nom',
+      icon: 'fa-user',
+      inputType: 'text',
+      order: 1,
+      validation: {
+        required: false
+      }
+    },
+    {
+      key: 'prenom',
       label: 'Prénom',
       type: 'input',
       required: true,
@@ -56,56 +70,42 @@ export const FORM_SCHEMA = {
       placeholder: 'Votre prénom',
       icon: 'fa-user',
       inputType: 'text',
-      order: 1,
+      order: 2,
       validation: {
         required: true,
         minLength: 1
       }
     },
     {
-      key: 'company',
-      label: 'Entreprise',
+      key: 'raisonSociale',
+      label: 'Raison Sociale',
       type: 'input',
       required: false,
       visible: true,
-      placeholder: 'Nom de votre entreprise',
+      placeholder: 'Raison sociale',
       icon: 'fa-building',
       inputType: 'text',
-      order: 2,
+      order: 3,
       validation: {
         required: false
       }
     },
     {
-      key: 'status',
-      label: 'Statut Juridique',
+      key: 'demarrageActivite',
+      label: 'Démarrée activité ?',
       type: 'select',
-      required: true,
+      required: false,
       visible: true,
-      options: 'LEGAL_STATUSES',
-      placeholder: 'Sélectionnez un statut',
-      icon: 'fa-balance-scale',
-      order: 3,
-      validation: {
-        required: true
-      }
-    },
-    {
-      key: 'turnover',
-      label: 'Chiffre d\'affaires',
-      type: 'select',
-      required: true,
-      visible: true,
-      options: 'REVENUE_OPTIONS',
-      placeholder: 'Sélectionnez une tranche',
-      icon: 'fa-euro-sign',
+      options: 'YES_NO_OPTIONS',
+      placeholder: 'Sélectionnez une option',
+      icon: 'fa-calendar',
       order: 4,
       validation: {
-        required: true
+        required: false
       }
     },
     {
-      key: 'phone',
+      key: 'tele',
       label: 'Téléphone',
       type: 'input',
       required: true,
@@ -140,21 +140,7 @@ export const FORM_SCHEMA = {
       }
     },
     {
-      key: 'demaree_activite',
-      label: 'Démarrée activité ?',
-      type: 'select',
-      required: false,
-      visible: true,
-      options: 'YES_NO_OPTIONS',
-      placeholder: 'Sélectionnez une option',
-      icon: 'fa-calendar',
-      order: 7,
-      validation: {
-        required: false
-      }
-    },
-    {
-      key: 'insured_currently',
+      key: 'activiteAssuree',
       label: 'Êtes-vous actuellement assuré ?',
       type: 'select',
       required: false,
@@ -162,27 +148,27 @@ export const FORM_SCHEMA = {
       options: 'INSURED_OPTIONS',
       placeholder: 'Sélectionnez une option',
       icon: 'fa-shield-alt',
-      order: 8,
+      order: 7,
       validation: {
         required: false
       }
     },
     {
-      key: 'previous_resiliation',
+      key: 'assuranceResilie',
       label: 'Avez-vous déjà résilié une assurance ?',
       type: 'select',
       required: false,
       visible: true,
       options: 'RESILIATION_OPTIONS',
       placeholder: 'Sélectionnez une option',
-      icon: 'fa-history',
-      order: 9,
+      icon: 'fa-file-alt',
+      order: 8,
       validation: {
         required: false
       }
     },
     {
-      key: 'resiliation_reason',
+      key: 'motifResiliation',
       label: 'Motif de résiliation',
       type: 'select',
       required: false,
@@ -190,13 +176,13 @@ export const FORM_SCHEMA = {
       options: 'RESILIATION_REASONS',
       placeholder: 'Sélectionnez un motif',
       icon: 'fa-comment',
-      order: 10,
+      order: 9,
       validation: {
         required: false
       }
     },
     {
-      key: 'postcode',
+      key: 'codePostal',
       label: 'Code postal',
       type: 'input',
       required: false,
@@ -204,20 +190,19 @@ export const FORM_SCHEMA = {
       placeholder: 'Votre code postal',
       icon: 'fa-map-marker-alt',
       inputType: 'text',
-      order: 11,
+      order: 10,
       validation: {
-        required: false,
-        pattern: /^[0-9]{5}$/
+        required: false
       }
     },
     // System field - hidden from form
     {
-      key: 'created_at',
+      key: 'createdAt',
       label: 'Date de création',
       type: 'datetime',
       required: false,
       visible: false,
-      order: 12,
+      order: 11,
       validation: {
         required: false
       }
@@ -308,18 +293,17 @@ export function canProceedToStep(stepIndex, formData) {
 }
 
 export function prepareSubmitData(formData) {
-  // Map form data directly to database columns
+  // Map form data directly to database columns (using French field names)
   return {
-    firstname: formData.firstname,
-    company: formData.company,
-    status: formData.status,
-    turnover: formData.turnover,
-    phone: formData.phone,
+    nom: formData.nom,
+    prenom: formData.prenom,
+    raisonSociale: formData.raisonSociale,
+    demarrageActivite: formData.demarrageActivite,
+    activiteAssuree: formData.activiteAssuree,
+    assuranceResilie: formData.assuranceResilie,
+    motifResiliation: formData.motifResiliation,
+    codePostal: formData.codePostal,
     email: formData.email,
-    demaree_activite: formData.demaree_activite,
-    insured_currently: formData.insured_currently,
-    previous_resiliation: formData.previous_resiliation,
-    resiliation_reason: formData.resiliation_reason,
-    postcode: formData.postcode,
+    tele: formData.tele,
   };
 }

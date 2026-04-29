@@ -36,6 +36,12 @@ export function initializeFormData() {
   FORM_CONFIG.steps.forEach(step => {
     formData[step.key] = '';
   });
+  // Add consent fields
+  FORM_CONFIG.steps.forEach(step => {
+    if (step.consentRequired) {
+      formData[`agreed${step.key.charAt(0).toUpperCase() + step.key.slice(1)}`] = false;
+    }
+  });
   return formData;
 }
 
@@ -96,18 +102,17 @@ export function canProceedToStep(stepIndex, formData) {
 }
 
 export function prepareSubmitData(formData) {
-  // Map form data to API expected format - clean naming
+  // Map form data directly to database columns (using French field names)
   return {
-    firstname: formData.firstname,
-    company: formData.company,
-    status: formData.status,
-    turnover: formData.turnover,
-    phone: formData.phone,
+    nom: formData.nom,
+    prenom: formData.prenom,
+    raisonSociale: formData.raisonSociale,
+    demarrageActivite: formData.demarrageActivite,
+    activiteAssuree: formData.activiteAssuree,
+    assuranceResilie: formData.assuranceResilie,
+    motifResiliation: formData.motifResiliation,
+    codePostal: formData.codePostal,
     email: formData.email,
-    start_activity: formData.start_activity,
-    insured_currently: formData.insured_currently,
-    previous_resiliation: formData.previous_resiliation,
-    resiliation_reason: formData.resiliation_reason,
-    postcode: formData.postcode,
+    tele: formData.tele,
   };
 }

@@ -15,37 +15,34 @@ class Lead
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $firstname = null;
+    private ?string $nom = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $prenom = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $phone = null;
-
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $company = null;
-
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $status = null;
-
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $turnover = null;
+    private ?string $raison_sociale = null;
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $demaree_activite = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
+    #[ORM\Column(name: 'activite_assuree', length: 255, nullable: true)]
     private ?string $insured_currently = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
+    #[ORM\Column(name: 'assurance_resilie', length: 255, nullable: true)]
     private ?string $previous_resiliation = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(name: 'motif_resiliation', type: 'string', length: 255, nullable: true)]
     private ?string $resiliation_reason = null;
 
-    #[ORM\Column(length: 20, nullable: true)]
-    private ?string $postcode = null;
+    #[ORM\Column(name: 'code_postal', length: 255, nullable: true)]
+    private ?string $code_postal = null;
+
+    #[ORM\Column(name: 'tele', length: 50, nullable: true)]
+    private ?string $tele = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTime $created_at = null;
@@ -60,14 +57,25 @@ class Lead
         return $this->id;
     }
 
-    public function getFirstname(): ?string
+    public function getNom(): ?string
     {
-        return $this->firstname;
+        return $this->nom;
     }
 
-    public function setFirstname(?string $firstname): static
+    public function setNom(?string $nom): static
     {
-        $this->firstname = $firstname;
+        $this->nom = $nom;
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(?string $prenom): static
+    {
+        $this->prenom = $prenom;
         return $this;
     }
 
@@ -82,47 +90,25 @@ class Lead
         return $this;
     }
 
-    public function getPhone(): ?string
+    public function getTele(): ?string
     {
-        return $this->phone;
+        return $this->tele;
     }
 
-    public function setPhone(?string $phone): static
+    public function setTele(?string $tele): static
     {
-        $this->phone = $phone;
+        $this->tele = $tele;
         return $this;
     }
 
-    public function getCompany(): ?string
+    public function getRaisonSociale(): ?string
     {
-        return $this->company;
+        return $this->raison_sociale;
     }
 
-    public function setCompany(?string $company): static
+    public function setRaisonSociale(?string $raison_sociale): static
     {
-        $this->company = $company;
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(?string $status): static
-    {
-        $this->status = $status;
-        return $this;
-    }
-
-    public function getTurnover(): ?string
-    {
-        return $this->turnover;
-    }
-
-    public function setTurnover(?string $turnover): static
-    {
-        $this->turnover = $turnover;
+        $this->raison_sociale = $raison_sociale;
         return $this;
     }
 
@@ -170,14 +156,14 @@ class Lead
         return $this;
     }
 
-    public function getPostcode(): ?string
+    public function getCodePostal(): ?string
     {
-        return $this->postcode;
+        return $this->code_postal;
     }
 
-    public function setPostcode(?string $postcode): static
+    public function setCodePostal(?string $code_postal): static
     {
-        $this->postcode = $postcode;
+        $this->code_postal = $code_postal;
         return $this;
     }
 

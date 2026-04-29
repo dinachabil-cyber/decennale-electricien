@@ -10,14 +10,18 @@ use Symfony\Contracts\Cache\ItemInterface;
  * Provides methods to get, update, and persist field configurations.
  * Configurations are cached for performance.
  * 
- * Clean naming - NO duplicates:
- * - firstname (not nom)
- * - phone (not tele)
- * - company (not entreprise)
- * - status (not statut)
- * - turnover (not chiffreAffaires)
- * - resiliation_reason (not resiliation_motif)
- * - demaree_activite (not start_activity)
+ * Field naming matches the lead database columns (French):
+ * - nom
+ * - prenom
+ * - raisonSociale
+ * - demarrageActivite (not start_activity)
+ * - tele (not phone)
+ * - email
+ * - activiteAssuree (not insured_currently)
+ * - assuranceResilie (not previous_resiliation)
+ * - motifResiliation (not resiliation_reason)
+ * - codePostal (not postcode)
+ * - createdAt (system field)
  */
 class FormConfig
 {
@@ -27,11 +31,22 @@ class FormConfig
     /**
      * Default form field configuration matching the lead table structure.
      * This serves as the base configuration that can be modified via admin UI.
-     * 13 fields total, no duplicates.
+     * 11 fields total, no duplicates.
      */
     private const DEFAULT_CONFIG = [
         [
-            'key' => 'firstname',
+            'key' => 'nom',
+            'label' => 'Nom',
+            'type' => 'input',
+            'required' => false,
+            'visible' => true,
+            'options' => null,
+            'placeholder' => 'Votre nom',
+            'inputType' => 'text',
+            'order' => 1,
+        ],
+        [
+            'key' => 'prenom',
             'label' => 'Prénom',
             'type' => 'input',
             'required' => true,
@@ -39,54 +54,35 @@ class FormConfig
             'options' => null,
             'placeholder' => 'Votre prénom',
             'inputType' => 'text',
-            'order' => 1,
+            'order' => 2,
         ],
         [
-            'key' => 'company',
-            'label' => 'Entreprise',
+            'key' => 'raisonSociale',
+            'label' => 'Raison Sociale',
             'type' => 'input',
             'required' => false,
             'visible' => true,
             'options' => null,
-            'placeholder' => 'Nom de votre entreprise',
+            'placeholder' => 'Raison sociale de l\'entreprise',
             'inputType' => 'text',
-            'order' => 2,
-        ],
-        [
-            'key' => 'status',
-            'label' => 'Statut Juridique',
-            'type' => 'select',
-            'required' => true,
-            'visible' => true,
-            'options' => [
-                ['value' => 'auto-entrepreneur', 'label' => 'Auto-entrepreneur'],
-                ['value' => 'ei', 'label' => 'Entreprise Individuelle'],
-                ['value' => 'eurl', 'label' => 'EURL'],
-                ['value' => 'sarl', 'label' => 'SARL'],
-                ['value' => 'sas', 'label' => 'SAS'],
-            ],
-            'placeholder' => 'Sélectionnez un statut',
-            'inputType' => null,
             'order' => 3,
         ],
         [
-            'key' => 'turnover',
-            'label' => 'Chiffre d\'affaires',
+            'key' => 'demarrageActivite',
+            'label' => 'Démarrée activité ?',
             'type' => 'select',
-            'required' => true,
+            'required' => false,
             'visible' => true,
             'options' => [
-                ['value' => '0-30k', 'label' => "Moins de 30,000€"],
-                ['value' => '30-60k', 'label' => "30,000€ - 60,000€"],
-                ['value' => '60-100k', 'label' => "60,000€ - 100,000€"],
-                ['value' => '100k+', 'label' => "Plus de 100,000€"],
+                ['value' => 'oui', 'label' => 'Oui'],
+                ['value' => 'non', 'label' => 'Non'],
             ],
-            'placeholder' => 'Sélectionnez une tranche',
+            'placeholder' => 'Sélectionnez une option',
             'inputType' => null,
             'order' => 4,
         ],
         [
-            'key' => 'phone',
+            'key' => 'tele',
             'label' => 'Téléphone',
             'type' => 'input',
             'required' => true,
@@ -112,22 +108,22 @@ class FormConfig
             'order' => 6,
         ],
         [
-            'key' => 'demaree_activite',
-            'label' => 'Démarrée activité ?',
+            'key' => 'activiteAssuree',
+            'label' => 'Êtes-vous actuellement assuré ?',
             'type' => 'select',
             'required' => false,
             'visible' => true,
             'options' => [
-                ['value' => 'oui', 'label' => 'Oui'],
-                ['value' => 'non', 'label' => 'Non'],
+                ['value' => 'yes', 'label' => 'Oui'],
+                ['value' => 'no', 'label' => 'Non'],
             ],
             'placeholder' => 'Sélectionnez une option',
             'inputType' => null,
             'order' => 7,
         ],
         [
-            'key' => 'insured_currently',
-            'label' => 'Êtes-vous actuellement assuré ?',
+            'key' => 'assuranceResilie',
+            'label' => 'Avez-vous déjà résilié une assurance ?',
             'type' => 'select',
             'required' => false,
             'visible' => true,
@@ -140,21 +136,7 @@ class FormConfig
             'order' => 8,
         ],
         [
-            'key' => 'previous_resiliation',
-            'label' => 'Avez-vous déjà résilié une assurance ?',
-            'type' => 'select',
-            'required' => false,
-            'visible' => true,
-            'options' => [
-                ['value' => 'yes', 'label' => 'Oui'],
-                ['value' => 'no', 'label' => 'Non'],
-            ],
-            'placeholder' => 'Sélectionnez une option',
-            'inputType' => null,
-            'order' => 9,
-        ],
-        [
-            'key' => 'resiliation_reason',
+            'key' => 'motifResiliation',
             'label' => 'Motif de résiliation',
             'type' => 'select',
             'required' => false,
@@ -169,10 +151,10 @@ class FormConfig
             ],
             'placeholder' => 'Sélectionnez un motif',
             'inputType' => null,
-            'order' => 10,
+            'order' => 9,
         ],
         [
-            'key' => 'postcode',
+            'key' => 'codePostal',
             'label' => 'Code postal',
             'type' => 'input',
             'required' => false,
@@ -180,10 +162,10 @@ class FormConfig
             'options' => null,
             'placeholder' => 'Votre code postal',
             'inputType' => 'text',
-            'order' => 11,
+            'order' => 10,
         ],
         [
-            'key' => 'created_at',
+            'key' => 'createdAt',
             'label' => 'Date de création',
             'type' => 'datetime',
             'required' => false,
@@ -191,7 +173,7 @@ class FormConfig
             'options' => null,
             'placeholder' => null,
             'inputType' => null,
-            'order' => 12,
+            'order' => 11,
         ],
     ];
 

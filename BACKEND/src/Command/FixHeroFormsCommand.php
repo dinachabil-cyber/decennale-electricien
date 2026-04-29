@@ -11,10 +11,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:set-homepage-hero-form',
-    description: 'Set homepage hero (ID 75) formConfig with complete French fields'
+    name: 'app:fix-hero-forms',
+    description: 'Fix all hero sections formConfig to complete French schema'
 )]
-class SetHomepageHeroFormConfigCommand extends Command
+class FixHeroFormsCommand extends Command
 {
     public function __construct(
         private SectionRepository $sectionRepository,
@@ -27,16 +27,9 @@ class SetHomepageHeroFormConfigCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         
-        $section = $this->sectionRepository->find(75);
+        $heroSections = $this->sectionRepository->findBy(['type' => 'hero']);
         
-        if (!$section) {
-            $io->error('Hero section ID 75 not found.');
-            return Command::FAILURE;
-        }
-        
-        $content = $section->getContent();
-        
-        $content['formConfig'] = [
+        $fixedFormConfig = [
             'steps' => [
                 [
                     'key' => 'nom',
@@ -192,11 +185,18 @@ class SetHomepageHeroFormConfigCommand extends Command
             ]
         ];
         
-        $section->setContent($content);
+        $updated = 0;
+        foreach ($heroSections as $section) {
+            $content = $section->getContent();
+            $content['formConfig'] = $fixedFormConfig;
+            $section->setContent($content);
+            $updated++;
+            $io->note("Updated hero section ID: {$section->getId()}");
+        }
+        
         $this->em->flush();
         
-        $io->success('Homepage hero (ID 75) formConfig updated successfully!');
-        $io->note('10 French fields: nom, prenom, raisonSociale, demarrageActivite, tele, email, activiteAssuree, assuranceResilie, motifResiliation, codePostal');
+        $io->success("Fixed {$updated} hero section(s).");
         
         return Command::SUCCESS;
     }

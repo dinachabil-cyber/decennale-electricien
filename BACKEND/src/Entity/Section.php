@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
 class Section
 {
     #[ORM\Id]
@@ -27,6 +28,32 @@ class Section
 
     #[ORM\Column(type: 'boolean')]
     private bool $isEnabled = true;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTime $createdAt = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTime $updatedAt = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $now = new \DateTime();
+        $this->createdAt = $now;
+        $this->updatedAt = $now;
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTime();
+    }
 
     public function getId(): ?int
     {
@@ -85,6 +112,28 @@ class Section
     public function setIsEnabled(bool $isEnabled): static
     {
         $this->isEnabled = $isEnabled;
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 }

@@ -85,53 +85,6 @@ class CmsApi {
   }
 
   async reorderSections(pageId, sectionIds) {
-    return this.request(`/pages/${pageId}/reorder`, {
-      method: 'PATCH',
-      body: JSON.stringify({ sections: sectionIds })
-    });
-  }
-
-  async savePageSections(pageId, sections) {
-    const sectionIds = sections.map(s => s.id);
-    return this.reorderSections(pageId, sectionIds);
-  }
-
-  // Settings
-  async fetchSettings() {
-    return this.request('/settings');
-  }
-
-  async updateSettings(data) {
-    return this.request('/settings', { method: 'PUT', body: JSON.stringify(data) });
-  }
-
-  // Media
-  async fetchMedia() {
-    return this.request('/media');
-  }
-
-  async uploadMedia(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    const token = localStorage.getItem('admin_token');
-    const response = await fetch(`${this.baseUrl}/media`, {
-      method: 'POST',
-      body: formData,
-      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to upload media');
-    }
-    return response.json();
-  }
-
-  async deleteMedia(filename) {
-    return this.request(`/media/${filename}`, { method: 'DELETE' });
-  }
-
-  // Auth
   async login(email, password) {
     const data = await this.request('/auth/login', {
       method: 'POST',

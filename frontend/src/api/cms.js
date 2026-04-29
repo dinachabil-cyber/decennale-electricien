@@ -48,23 +48,6 @@ export const sectionsApi = {
   reorder: (pageId, sectionIds) => request(`/pages/${pageId}/reorder`, { method: 'PATCH', body: JSON.stringify({ sections: sectionIds }) }),
 };
 
-export const settingsApi = {
-  get: () => request('/settings'),
-  update: (data) => request('/settings', { method: 'PUT', body: JSON.stringify(data) }),
-};
-
-export const mediaApi = {
-  getAll: () => request('/media'),
-  upload: async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    const response = await fetch(`${API_URL}/media`, { method: 'POST', body: formData, headers: authHeader() });
-    if (!response.ok) throw new Error('Upload failed');
-    return response.json();
-  },
-  delete: (filename) => request(`/media/${filename}`, { method: 'DELETE' }),
-};
-
 export const authApi = {
   login: async (email, password) => {
     const data = await request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
