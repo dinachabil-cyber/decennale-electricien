@@ -63,18 +63,9 @@ class LeadController extends AbstractController
             $errors[] = 'Numéro de téléphone invalide';
         }
 
-        // Check if at least one contact field is provided
-        $contactFields = ['nom', 'prenom', 'email', 'tele', 'raison_sociale'];
-        $hasContactInfo = false;
-        foreach ($contactFields as $field) {
-            if (!empty($leadData[$field])) {
-                $hasContactInfo = true;
-                break;
-            }
-        }
-        if (!$hasContactInfo) {
-            $errors[] = 'Veuillez fournir au moins une information de contact (nom, prénom, email, téléphone ou entreprise)';
-        }
+// Removed strict contact validation - allow any visible field config
+// Admin can control which fields are required/visible
+        $hasContactInfo = true; // Always pass when using field config
 
         if (!empty($errors)) {
             return new JsonResponse(['success' => false, 'errors' => $errors], 400);
@@ -194,9 +185,10 @@ class LeadController extends AbstractController
      */
     private function mapDataToLead(Lead $lead, array $data): void
     {
-        $setters = [
+$setters = [
             'nom' => 'setNom',
             'prenom' => 'setPrenom',
+            'raisonSociale' => 'setRaisonSociale',
             'raisonSociale' => 'setRaisonSociale',
             'demarrageActivite' => 'setDemareeActivite',
             'activiteAssuree' => 'setInsuredCurrently',
