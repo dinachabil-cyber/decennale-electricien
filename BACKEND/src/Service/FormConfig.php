@@ -6,32 +6,38 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Contracts\Cache\ItemInterface;
 
 /**
- * FormConfig manages the dynamic form field configurations.
- * Provides methods to get, update, and persist field configurations.
- * Configurations are cached for performance.
+ * FormConfig manages the controlled form field configurations.
+ * 
+ * STRICT REQUIREMENTS:
+ * - All fields are PREDEFINED in DEFAULT_CONFIG
+ * - NO adding new fields
+ * - NO deleting fields
+ * - Admin can ONLY toggle: visible, required, order
  * 
  * Field naming matches the lead database columns (French):
- * - nom
- * - prenom
- * - raisonSociale
- * - demarrageActivite (not start_activity)
- * - tele (not phone)
- * - email
- * - activiteAssuree (not insured_currently)
- * - assuranceResilie (not previous_resiliation)
- * - motifResiliation (not resiliation_reason)
- * - codePostal (not postcode)
- * - createdAt (system field)
+ * - nom, prenom, raisonSociale, demarrageActivite, tele
+ * - email, activiteAssuree, assuranceResilie, motifResiliation
+ * - codePostal, createdAt (system field)
  */
 class FormConfig
 {
     private const CACHE_KEY = 'form_field_config';
     private const CACHE_TTL = 3600; // 1 hour
+    
+/**
+     * STRICTLY ALLOWED KEYS - Only these properties can be updated via API
+     * LOCKED: type, options, inputType cannot be modified
+     */
+    private const ALLOWED_UPDATE_KEYS = [
+        'visible',
+        'required',
+        'order',
+        'label',
+        'placeholder',
+    ];
 
     /**
-     * Default form field configuration matching the lead table structure.
-     * This serves as the base configuration that can be modified via admin UI.
-     * 11 fields total, no duplicates.
+     * Default form field configuration - 11 predefined fields
      */
     private const DEFAULT_CONFIG = [
         [
@@ -169,7 +175,7 @@ class FormConfig
             'label' => 'Date de création',
             'type' => 'datetime',
             'required' => false,
-            'visible' => false, // System field - hidden from forms
+            'visible' => false,
             'options' => null,
             'placeholder' => null,
             'inputType' => null,
@@ -224,16 +230,29 @@ class FormConfig
     }
 
     /**
-     * Update field configuration
+     * Get allowed update keys (security: prevent mass assignment)
+     * @return string[]
+     */
+    public function getAllowedUpdateKeys(): array
+    {
+        return self::ALLOWED_UPDATE_KEYS;
+    }
+
+    /**
+     * Update field configuration - filters to only allowed keys
+     * STRICT: Only updates visible, required, order
      */
     public function updateField(string $key, array $updates): bool
     {
         $fields = $this->getFields();
         $updated = false;
 
+        // FILTER: Only allow specific keys to be updated
+        $allowedUpdates = array_intersect_key($updates, array_flip(self::ALLOWED_UPDATE_KEYS));
+
         foreach ($fields as &$field) {
             if ($field['key'] === $key) {
-                $field = array_merge($field, $updates);
+                $field = array_merge($field, $allowedUpdates);
                 $updated = true;
                 break;
             }
@@ -247,16 +266,20 @@ class FormConfig
     }
 
     /**
-     * Update multiple fields at once
+     * Update multiple fields at once - filters to only allowed keys
+     * STRICT: Only updates visible, required, order
      */
     public function updateFields(array $updates): bool
     {
         $fields = $this->getFields();
         
         foreach ($updates as $key => $fieldUpdates) {
+            // FILTER: Only allow specific keys to be updated
+            $allowedUpdates = array_intersect_key($fieldUpdates, array_flip(self::ALLOWED_UPDATE_KEYS));
+            
             foreach ($fields as &$field) {
                 if ($field['key'] === $key) {
-                    $field = array_merge($field, $fieldUpdates);
+                    $field = array_merge($field, $allowedUpdates);
                     break;
                 }
             }
@@ -333,17 +356,15 @@ class FormConfig
         // Type-specific validation
         if (!empty($value)) {
             switch ($field['type']) {
-                case 'email':
-                    if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                case 'input':
+                    if ($field['inputType'] === 'email' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
                         return ['valid' => false, 'error' => "Invalid email format"];
                     }
-                    break;
-                case 'tel':
-                    if (!preg_match('/^[\d\s\+\-\(\)]{8,20}$/', $value)) {
+                    if ($field['inputType'] === 'tel' && !preg_match('/^[\d\s\+\-\(\)]{8,20}$/', $value)) {
                         return ['valid' => false, 'error' => "Invalid phone number format"];
                     }
                     break;
-                case 'date':
+                case 'datetime':
                     if (!strtotime($value)) {
                         return ['valid' => false, 'error' => "Invalid date format"];
                     }

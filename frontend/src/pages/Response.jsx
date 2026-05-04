@@ -6,9 +6,9 @@ const Response = () => {
       {/* Animated background orbs */}
       <div className="absolute inset-0 scanlines-bg opacity-30"></div>
       
-      <div className={`bg-orb w-96 h-96 bg-yellow-300 top-20 left-10 transition-all duration-1000 opacity-30 translate-y-0`} style={{ animationDelay: '0s' }}></div>
-      <div className={`bg-orb w-80 h-80 bg-blue-300 bottom-20 right-10 transition-all duration-1000 delay-300 opacity-25 translate-y-0`} style={{ animationDelay: '-5s' }}></div>
-      <div className={`bg-orb w-60 h-60 bg-green-300 top-1/2 left-1/3 transition-all duration-1000 delay-500 opacity-20 translate-y-0`} style={{ animationDelay: '-10s' }}></div>
+      <div className="absolute w-96 h-96 bg-yellow-300/25 rounded-full blur-3xl top-20 left-10 animate-float-slow"></div>
+      <div className="absolute w-80 h-80 bg-blue-300/20 rounded-full blur-3xl bottom-20 right-10 animate-float-medium" style={{ animationDelay: '-2.5s' }}></div>
+      <div className="absolute w-60 h-60 bg-green-300/15 rounded-full blur-2xl top-1/2 left-1/3 animate-float-fast" style={{ animationDelay: '-1.8s' }}></div>
       
       {/* Floating decorative elements */}
       <div className="absolute top-10 left-10 transition-all duration-1000 delay-200 opacity-30">

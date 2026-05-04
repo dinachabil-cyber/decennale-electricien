@@ -153,7 +153,17 @@ class PageController extends AdminController
         }
 
         $sections = [];
-        foreach ($page->getSections() as $section) {
+        $sectionQuery = $em->getRepository(Section::class)->createQueryBuilder('s')
+            ->where('s.page = :page')
+            ->orderBy('s.position', 'ASC');
+        
+        if (!$preview) {
+            $sectionQuery->andWhere('s.isEnabled = :enabled')
+                         ->setParameter('enabled', true);
+        }
+        $sectionQuery->setParameter('page', $page);
+        
+        foreach ($sectionQuery->getQuery()->getResult() as $section) {
             $sections[] = [
                 'id' => $section->getId(),
                 'type' => $section->getType(),

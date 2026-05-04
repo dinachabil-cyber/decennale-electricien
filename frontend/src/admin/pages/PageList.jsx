@@ -13,7 +13,6 @@ export default function PageList({ onSelectPage, onRefresh }) {
     try {
       setLoading(true);
       const data = await pagesApi.getAll();
-      console.log('Pages API response:', data);
       // Ensure we always set an array
       const pagesArray = Array.isArray(data) ? data : [];
       setPages(pagesArray);
@@ -115,6 +114,15 @@ export default function PageList({ onSelectPage, onRefresh }) {
                          className={`px-3 py-1 text-sm rounded ${page.isPublished ? 'bg-gray-200' : 'bg-green-500 text-white'}`}
                        >
                          {page.isPublished ? 'Dépublier' : 'Publier'}
+                       </button>
+                       <button
+                         onClick={() => {
+                           const frontendUrl = process.env.REACT_APP_FRONTEND_URL || window.location.origin;
+                           window.open(`${frontendUrl}${page.slug === '/' ? '/' : `/${page.slug}`}?preview=true`, '_blank');
+                         }}
+                         className="px-3 py-1 text-sm bg-purple-500 text-white rounded"
+                       >
+                         👁️ Aperçu
                        </button>
                        <button
                          onClick={() => setEditingPage({ id: page.id, title: page.title, slug: page.slug })}

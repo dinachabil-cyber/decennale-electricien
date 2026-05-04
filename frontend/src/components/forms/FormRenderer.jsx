@@ -9,8 +9,13 @@ const FIELD_RENDERERS = {
   textarea: FormTextarea,
 };
 
-// Generic field renderer that delegates to specific components
+/**
+ * Generic FieldRenderer - renders any field type dynamically
+ * Uses field config from API, no hardcoded logic
+ */
 export function FieldRenderer({ field, value, onChange, formData, onConsentChange }) {
+  if (!field) return null;
+
   const Renderer = FIELD_RENDERERS[field.type];
 
   if (!Renderer) {
@@ -26,7 +31,7 @@ export function FieldRenderer({ field, value, onChange, formData, onConsentChang
     onChange,
   };
 
-  // Type-specific props
+  // Render based on field type
   switch (field.type) {
     case 'input':
       return (
@@ -37,17 +42,15 @@ export function FieldRenderer({ field, value, onChange, formData, onConsentChang
           icon={field.icon}
           required={field.required}
           type={field.inputType || 'text'}
-          autoFocus={field.autoFocus}
         />
       );
 
     case 'select':
-      const options = field.options || [];
       return (
         <Renderer
           key={field.key}
           {...commonProps}
-          options={options}
+          options={field.options || []}
         />
       );
 
@@ -76,7 +79,9 @@ export function FieldRenderer({ field, value, onChange, formData, onConsentChang
   }
 }
 
-// Step renderer that renders all fields for a step
+/**
+ * StepRenderer - renders a single step with its field
+ */
 export function StepRenderer({ step, formData, onFieldChange, onConsentChange }) {
   if (!step) return null;
 
@@ -84,45 +89,25 @@ export function StepRenderer({ step, formData, onFieldChange, onConsentChange })
     <div>
       <h3 className="text-lg font-semibold text-dark mb-4">{step.label}</h3>
 
-      {step.type === 'input' && (
-        <FieldRenderer
-          field={step}
-          value={formData[step.key]}
-          onChange={(val) => onFieldChange(step.key, val)}
-          formData={formData}
-        />
-      )}
+      <FieldRenderer
+        field={step}
+        value={formData[step.key]}
+        onChange={(val) => onFieldChange(step.key, val)}
+        formData={formData}
+        onConsentChange={onConsentChange}
+      />
 
-      {step.type === 'select' && (
-        <FieldRenderer
-          field={step}
-          value={formData[step.key]}
-          onChange={(val) => onFieldChange(step.key, val)}
-          formData={formData}
-        />
-      )}
-
-      {step.type === 'textarea' && (
-        <FieldRenderer
-          field={step}
-          value={formData[step.key]}
-          onChange={(val) => onFieldChange(step.key, val)}
-          formData={formData}
-        />
-      )}
-
-      {/* Handle special cases like phone/email with consent */}
-      {(step.consentRequired) && (
+      {/* Handle consent fields */}
+      {step.consentRequired && (
         <div className="mt-4">
           <FieldRenderer
             field={{
-              ...step,
               type: 'consent',
-              consentText: step.consentText,
-              key: `agreed${step.key.charAt(0).toUpperCase() + step.key.slice(1)}`
+              key: `agreed${step.key.charAt(0).toUpperCase() + step.key.slice(1)}`,
+              label: step.consentText || `J'accepte d'être contacté pour ${step.key}`,
             }}
             value={formData[`agreed${step.key.charAt(0).toUpperCase() + step.key.slice(1)}`]}
-            onChange={onFieldChange}
+            onChange={(val) => onFieldChange(`agreed${step.key.charAt(0).toUpperCase() + step.key.slice(1)}`, val)}
             onConsentChange={onConsentChange}
             formData={formData}
           />

@@ -1,41 +1,27 @@
 import React, { useState } from 'react';
 
 export default function FormSectionEditor({ content, onSave, onCancel }) {
-  const [formData, setFormData] = useState({
-    title: content?.title || '',
-    description: content?.description || '',
-    submitText: content?.submitText || 'Envoyer',
-    email: content?.email || '',
-    fields: content?.fields || [{ name: '', label: '', type: 'text', required: false }],
-  });
+   const [formData, setFormData] = useState({
+     title: content?.title || '',
+     description: content?.description || '',
+     submitText: content?.submitText || 'Envoyer',
+     email: content?.email || '',
+     fields: content?.fields || [{ name: '', label: '', type: 'text', required: false, visible: true }],
+   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(formData);
-  };
+   const handleSubmit = (e) => {
+     e.preventDefault();
+     onSave(formData);
+   };
 
-  const addField = () => {
-    setFormData(prev => ({
-      ...prev,
-      fields: [...prev.fields, { name: '', label: '', type: 'text', required: false }]
-    }));
-  };
+   const updateField = (index, field) => {
+     setFormData(prev => ({
+       ...prev,
+       fields: prev.fields.map((f, i) => i === index ? { ...f, ...field } : f)
+     }));
+   };
 
-  const updateField = (index, field) => {
-    setFormData(prev => ({
-      ...prev,
-      fields: prev.fields.map((f, i) => i === index ? { ...f, ...field } : f)
-    }));
-  };
-
-  const removeField = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      fields: prev.fields.filter((_, i) => i !== index)
-    }));
-  };
-
-  return (
+   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Titre</label>
@@ -82,76 +68,62 @@ export default function FormSectionEditor({ content, onSave, onCancel }) {
         </div>
       </div>
 
-      <div>
-        <div className="flex justify-between items-center mb-3">
-          <label className="block text-sm font-medium text-gray-700">Champs du formulaire</label>
-          <button
-            type="button"
-            onClick={addField}
-            className="px-3 py-1 bg-yellow-400 text-dark rounded-lg hover:bg-yellow-500 text-sm font-medium"
-          >
-            + Ajouter un champ
-          </button>
-        </div>
+       <div>
+         <div className="flex justify-between items-center mb-3">
+           <label className="block text-sm font-medium text-gray-700">Champs du formulaire</label>
+         </div>
 
-        <div className="space-y-3">
-          {formData.fields.map((field, index) => (
-            <div key={index} className="flex gap-3 items-end p-4 border border-gray-200 rounded-lg">
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Nom du champ</label>
-                <input
-                  type="text"
-                  value={field.name}
-                  onChange={(e) => updateField(index, { name: e.target.value })}
-                  className="w-full px-2 py-2 border border-gray-300 rounded text-sm"
-                  placeholder="name"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Label</label>
-                <input
-                  type="text"
-                  value={field.label}
-                  onChange={(e) => updateField(index, { label: e.target.value })}
-                  className="w-full px-2 py-2 border border-gray-300 rounded text-sm"
-                  placeholder="Votre nom"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
-                <select
-                  value={field.type}
-                  onChange={(e) => updateField(index, { type: e.target.value })}
-                  className="w-full px-2 py-2 border border-gray-300 rounded text-sm"
-                >
-                  <option value="text">Texte</option>
-                  <option value="email">Email</option>
-                  <option value="tel">Téléphone</option>
-                  <option value="textarea">Zone de texte</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="flex items-center gap-1 text-xs">
-                  <input
-                    type="checkbox"
-                    checked={field.required}
-                    onChange={(e) => updateField(index, { required: e.target.checked })}
-                    className="w-3 h-3"
-                  />
-                  Req.
-                </label>
-                <button
-                  type="button"
-                  onClick={() => removeField(index)}
-                  className="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+         <div className="space-y-3">
+           {formData.fields.map((field, index) => (
+             <div key={index} className="flex gap-3 items-end p-4 border border-gray-200 rounded-lg">
+               <div className="flex-1">
+                 <label className="block text-xs font-medium text-gray-600 mb-1">Nom du champ</label>
+                 <input
+                   type="text"
+                   value={field.name}
+                   onChange={(e) => updateField(index, { name: e.target.value })}
+                   className="w-full px-2 py-2 border border-gray-300 rounded text-sm"
+                   placeholder="name"
+                 />
+               </div>
+               <div className="flex-1">
+                 <label className="block text-xs font-medium text-gray-600 mb-1">Label</label>
+                 <input
+                   type="text"
+                   value={field.label}
+                   onChange={(e) => updateField(index, { label: e.target.value })}
+                   className="w-full px-2 py-2 border border-gray-300 rounded text-sm"
+                   placeholder="Votre nom"
+                 />
+               </div>
+               <div className="flex-1">
+                 <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
+                 <select
+                   value={field.type}
+                   onChange={(e) => updateField(index, { type: e.target.value })}
+                   className="w-full px-2 py-2 border border-gray-300 rounded text-sm"
+                 >
+                   <option value="text">Texte</option>
+                   <option value="email">Email</option>
+                   <option value="tel">Téléphone</option>
+                   <option value="textarea">Zone de texte</option>
+                 </select>
+               </div>
+               <div className="flex items-center gap-2">
+                 <label className="flex items-center gap-1 text-xs">
+                   <input
+                     type="checkbox"
+                     checked={field.required}
+                     onChange={(e) => updateField(index, { required: e.target.checked })}
+                     className="w-3 h-3"
+                   />
+                   Req.
+                 </label>
+               </div>
+             </div>
+           ))}
+         </div>
+       </div>
 
       <div className="flex justify-end space-x-2 pt-4">
         <button

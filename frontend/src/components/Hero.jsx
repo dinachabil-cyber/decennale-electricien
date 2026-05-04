@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { submitQuote } from '../services/api';
-import {
+import { submitLead } from '../api/leadsApi';
+import { 
+  getFormConfig, 
   getFormSteps,
-  initializeFormData,
-  canProceedToStep,
-  prepareSubmitData
+  initializeFormData, 
+  canProceedToStep, 
+  prepareSubmitData,
+  validateField 
 } from '../config/formConfig';
-import { FORM_SCHEMA } from '../config/formSchema';
 import { StepRenderer, StepIndicator, StepContainer } from './forms';
 
 // Extract and normalize hero content from potentially corrupted formats
 function getHeroContent(content) {
   if (!content) return {};
 
-  // If content is a full section object (corrupted from old save bug), extract its inner content
+  // If content is a full section object, extract its inner content
   if (content && typeof content === 'object' && 'id' in content && 'type' in content && 'content' in content) {
     content = content.content;
   }
@@ -30,65 +31,62 @@ function getHeroContent(content) {
     normalized.backgroundImage = normalized.image;
   }
 
-  // Ensure formConfig exists
-  if (!normalized.formConfig) {
-    normalized.formConfig = {
-      steps: getFormSteps(),
-      options: {
-        LEGAL_STATUSES: FORM_SCHEMA.options.LEGAL_STATUSES,
-        REVENUE_OPTIONS: FORM_SCHEMA.options.REVENUE_OPTIONS
-      }
-    };
-  }
-
   return normalized;
 }
 
-// Fallback to static config if no dynamic config available
-const DEFAULT_FORM_CONFIG = {
-  steps: getFormSteps(),
-  options: {
-    LEGAL_STATUSES: FORM_SCHEMA.options.LEGAL_STATUSES,
-    REVENUE_OPTIONS: FORM_SCHEMA.options.REVENUE_OPTIONS
-  }
-};
-
 function Hero({ onSuccess, content: rawContent }) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [dynamicConfig, setDynamicConfig] = useState(null);
+  const [steps, setSteps] = useState([]);
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [configLoaded, setConfigLoaded] = useState(false);
 
-  // Normalize hero content (handle legacy formats and corruption)
+  // Normalize hero content
   const hero = useMemo(() => getHeroContent(rawContent), [rawContent]);
 
-  // Load dynamic configuration from content or use defaults
+// Load configuration from section content (formConfig stored in section)
   useEffect(() => {
-    const formConfig = hero?.formConfig;
-
-    if (formConfig && formConfig.steps) {
-      setDynamicConfig(formConfig);
-      // Initialize form data from dynamic config
-      const initialData = {};
-      formConfig.steps.forEach(step => {
-        initialData[step.key] = '';
-        // Handle consent fields
-        if (step.consentRequired) {
-          initialData[`agreed${step.key.charAt(0).toUpperCase() + step.key.slice(1)}`] = false;
+    function loadConfig() {
+      try {
+        // Use formConfig from section content if available
+        let configFields = [];
+        
+        if (hero?.formConfig?.steps && hero.formConfig.steps.length > 0) {
+          // Use the config stored in section content
+          configFields = hero.formConfig.steps;
+        } else {
+          // Fallback to static config
+          configFields = getFormSteps();
         }
-      });
-      setFormData(initialData);
-    } else {
-      // Use static config as fallback
-      setDynamicConfig(DEFAULT_FORM_CONFIG);
-      setFormData(initializeFormData());
+        
+        // Filter to visible fields only
+        const visibleFields = configFields.filter(f => f.visible !== false);
+        
+        // Sort by order
+        visibleFields.sort((a, b) => (a.order || 999) - (b.order || 999));
+        
+        setSteps(visibleFields);
+        
+        // Initialize form data
+        const initialData = {};
+        visibleFields.forEach(field => {
+          initialData[field.key] = '';
+          if (field.consentRequired) {
+            initialData[`agreed${field.key.charAt(0).toUpperCase() + field.key.slice(1)}`] = false;
+          }
+        });
+        setFormData(initialData);
+        setConfigLoaded(true);
+      } catch (err) {
+        console.error('Failed to load form config:', err);
+        setError('Erreur lors du chargement de la configuration');
+      }
     }
+    
+    loadConfig();
   }, [hero]);
-
-  const steps = hero?.formConfig?.steps || dynamicConfig?.steps || [];
-  const options = hero?.formConfig?.options || dynamicConfig?.options || DEFAULT_FORM_CONFIG.options;
 
   const updateField = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -107,10 +105,11 @@ function Hero({ onSuccess, content: rawContent }) {
   };
 
   const canProceed = () => {
+    if (!configLoaded) return false;
     return canProceedToStep(currentStep, formData);
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     if (!canProceed()) return;
 
@@ -118,17 +117,20 @@ function Hero({ onSuccess, content: rawContent }) {
     setError(null);
 
     try {
-      // For dynamic forms, send all form data
-      // For static forms, use the prepared data mapping
-      const submitData = dynamicConfig !== DEFAULT_FORM_CONFIG
-        ? formData // Send all dynamic form data
-        : prepareSubmitData(formData); // Use static mapping
-
-      await submitQuote(submitData);
-      setSuccess(true);
-      onSuccess?.();
+      const submitData = prepareSubmitData(formData);
+      console.log('Submitting lead data:', submitData);
+      
+      const response = await submitLead(submitData);
+      console.log('Lead submission response:', response);
+      
+      if (response && response.success) {
+        setSuccess(true);
+        onSuccess?.();
+      } else {
+        setError(response?.message || response?.errors?.[0] || 'Erreur lors de l\'envoi du formulaire');
+      }
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Erreur lors de l\'envoi du formulaire');
     } finally {
       setLoading(false);
     }
@@ -137,7 +139,6 @@ function Hero({ onSuccess, content: rawContent }) {
   if (success) {
     return (
       <section className="py-12 md:py-20 lg:py-32 bg-gradient-to-br from-light via-surfaceHover to-light hero-pattern relative overflow-hidden">
-        <div className="absolute inset-0 scanlines-bg opacity-30"></div>
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-16 items-center">
             <div className="w-full lg:flex-1 order-1 lg:order-2">
@@ -166,7 +167,6 @@ function Hero({ onSuccess, content: rawContent }) {
   if (hero.showForm === false) {
     return (
       <section className="py-12 md:py-20 lg:py-32 bg-gradient-to-br from-light via-surfaceHover to-light hero-pattern relative overflow-hidden">
-        <div className="absolute inset-0 scanlines-bg opacity-30"></div>
         <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-dark mb-6">
             {hero.title || 'Bienvenue'}
@@ -187,9 +187,33 @@ function Hero({ onSuccess, content: rawContent }) {
     );
   }
 
+  // Loading state
+  if (!configLoaded) {
+    return (
+      <section className="py-12 md:py-20 lg:py-32 bg-gradient-to-br from-light via-surfaceHover to-light hero-pattern relative overflow-hidden">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-16 items-center">
+            <div className="w-full lg:flex-1 order-1 lg:order-2">
+              <div className="bg-surface rounded-2xl md:rounded-3xl shadow-xl md:shadow-2xl p-6 md:p-8 lg:p-10 border border-gray-100">
+                <div className="text-center py-12">
+                  <i className="fas fa-spinner fa-spin text-3xl text-yellow-400"></i>
+                  <p className="mt-4 text-gray-600">Chargement du formulaire...</p>
+                </div>
+              </div>
+            </div>
+            <div className="w-full lg:flex-1 order-2 lg:order-1">
+              <div className="w-full aspect-[4/3] md:aspect-[3/4] lg:aspect-[4/5] rounded-2xl md:rounded-3xl shadow-xl overflow-hidden">
+                <img src="/images/img.png" alt="Assurance Décennale Électricien" className="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-12 md:py-20 lg:py-32 bg-gradient-to-br from-light via-surfaceHover to-light hero-pattern relative overflow-hidden">
-      <div className="absolute inset-0 scanlines-bg opacity-30"></div>
       <div className="absolute top-10 left-10 floating-animation">
         <i className="fas fa-shield-alt text-yellow-500 text-6xl opacity-30"></i>
       </div>
@@ -220,21 +244,18 @@ function Hero({ onSuccess, content: rawContent }) {
               <form onSubmit={handleSubmit}>
                 <StepIndicator steps={steps} currentStep={currentStep} />
 
-                <div className="relative min-h-[200px]">
-                  {steps.map((step, index) => (
-                    <StepContainer key={step.key} isActive={currentStep === index}>
-                      <StepRenderer
-                        step={{
-                          ...step,
-                          options: step.options ? options[step.options] : undefined
-                        }}
-                        formData={formData}
-                        onFieldChange={updateField}
-                        onConsentChange={(field, value) => updateField(field, value)}
-                      />
-                    </StepContainer>
-                  ))}
-                </div>
+                 <div className="relative min-h-[200px]">
+                   {steps.map((step, index) => (
+                     <StepContainer key={step.key} isActive={currentStep === index}>
+                       <StepRenderer
+                         step={step}
+                         formData={formData}
+                         onFieldChange={updateField}
+                         onConsentChange={(field, value) => updateField(`agreed${field.key.charAt(0).toUpperCase() + field.key.slice(1)}`, value)}
+                       />
+                     </StepContainer>
+                   ))}
+                 </div>
 
                 <div className="mt-6">
                   {currentStep > 0 && (

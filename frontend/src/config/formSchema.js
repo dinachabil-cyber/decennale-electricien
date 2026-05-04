@@ -1,6 +1,7 @@
-// Unified form schema - Single source of truth for form configuration
-// Clean naming - NO duplicates, one field per database column
-// Correct field types matching FieldRenderer: 'input', 'select', 'textarea', 'date'
+// DEPRECATED - This file is kept for backward compatibility
+// Use dynamic API configuration instead: src/api/leadsApi.js and src/config/formConfig.js
+// The form now fetches configuration from /api/leads/config
+
 export const FORM_SCHEMA = {
   // Global form options referenced by steps
   options: {

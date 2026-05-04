@@ -59,34 +59,36 @@ export default function FormSection({ content }) {
               </p>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {content.fields?.map((field, index) => (
-                <div key={index}>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {field.label} {field.required && <span className="text-red-500">*</span>}
-                  </label>
+             <form onSubmit={handleSubmit} className="space-y-6">
+               {content.fields
+                 ?.filter(field => field.visible !== false) // Only show visible fields
+                 .map((field, index) => (
+                   <div key={index}>
+                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                       {field.label} {field.required && <span className="text-red-500">*</span>}
+                     </label>
 
-                  {field.type === 'textarea' ? (
-                    <textarea
-                      value={formData[field.name] || ''}
-                      onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                      required={field.required}
-                      rows={4}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                      placeholder={`Votre ${field.label.toLowerCase()}`}
-                    />
-                  ) : (
-                    <input
-                      type={field.type || 'text'}
-                      value={formData[field.name] || ''}
-                      onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                      required={field.required}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                      placeholder={`Votre ${field.label.toLowerCase()}`}
-                    />
-                  )}
-                </div>
-              ))}
+                     {field.type === 'textarea' ? (
+                       <textarea
+                         value={formData[field.name] || ''}
+                         onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                         required={field.required && field.visible !== false} // Only required if visible
+                         rows={4}
+                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                         placeholder={`Votre ${field.label.toLowerCase()}`}
+                       />
+                     ) : (
+                       <input
+                         type={field.type || 'text'}
+                         value={formData[field.name] || ''}
+                         onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                         required={field.required && field.visible !== false} // Only required if visible
+                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                         placeholder={`Votre ${field.label.toLowerCase()}`}
+                       />
+                     )}
+                   </div>
+                 ))}
 
               <div className="text-center">
                 <button

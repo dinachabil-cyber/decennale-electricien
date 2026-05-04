@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getFormSteps, FORM_CONFIG } from '../../../config/formConfig';
+import { getAllFields, getFormSteps, FORM_CONFIG } from '../../../config/formConfig';
 import { getSectionConfig } from '../../../config/sectionConfig';
 
 // Extract actual hero data from potentially wrapped section object
@@ -329,120 +329,62 @@ export default function HeroSectionEditor({ content, onSave, onCancel }) {
           </div>
         )}
 
-        {/* Form Configuration Tab */}
+{/* Form Configuration Tab - CONTROLLED: visibility + editable label/placeholder */}
         {activeTab === 'form' && (
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">Configuration du formulaire</h3>
-              <button
-                type="button"
-                onClick={addField}
-                className="px-4 py-2 bg-yellow-400 text-dark rounded-lg hover:bg-yellow-500 font-medium"
-              >
-                + Ajouter un champ
-              </button>
+              <span className="text-sm text-gray-500">
+                Champs fixes
+              </span>
             </div>
 
+            {/* Use local formConfig state - editable with working visibility toggle */}
             <div className="space-y-4">
               {formConfig.steps.map((field, index) => (
-                <div key={field.key} className="border border-gray-200 rounded-lg p-4">
+                <div key={field.key} className={`border rounded-lg p-4 ${field.visible ? 'border-green-300 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-gray-500">Étape {index + 1}</span>
-                      <div className="flex gap-1">
-                        <button
-                          type="button"
-                          onClick={() => index > 0 && moveField(index, index - 1)}
-                          disabled={index === 0}
-                          className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
-                        >
-                          <i className="fas fa-chevron-up"></i>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => index < formConfig.steps.length - 1 && moveField(index, index + 1)}
-                          disabled={index === formConfig.steps.length - 1}
-                          className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
-                        >
-                          <i className="fas fa-chevron-down"></i>
-                        </button>
-                      </div>
+                      <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+                        {field.key}
+                      </span>
                     </div>
+                    {/* Visibility Toggle - WORKS via local state */}
                     <button
                       type="button"
-                      onClick={() => removeField(index)}
-                      className="p-2 text-red-500 hover:text-red-700"
+                      onClick={() => {
+                        // Toggle visibility in local state - immediately effective
+                        setFormConfig(prev => ({
+                          ...prev,
+                          steps: prev.steps.map(s => s.key === field.key ? { ...s, visible: !s.visible } : s)
+                        }));
+                      }}
+                      className={`p-2 rounded-lg transition-colors ${
+                        field.visible ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                      }`}
+                      title={field.visible ? 'Masquer le champ' : 'Afficher le champ'}
                     >
-                      <i className="fas fa-trash"></i>
+                      <i className={`fas ${field.visible ? 'fa-eye' : 'fa-eye-slash'}`}></i>
                     </button>
                   </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Clé du champ
+                        Question
                       </label>
                       <input
                         type="text"
-                        value={field.key}
-                        onChange={(e) => updateField(index, { key: e.target.value })}
+                        value={field.label}
+                        onChange={(e) => {
+                          const newLabel = e.target.value;
+                          setFormConfig(prev => ({
+                            ...prev,
+                            steps: prev.steps.map(s => s.key === field.key ? { ...s, label: newLabel } : s)
+                          }));
+                        }}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                        placeholder="nom_du_champ"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Titre (progression)
-                      </label>
-                      <input
-                        type="text"
-                        value={field.title}
-                        onChange={(e) => updateField(index, { title: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                        placeholder="Nom"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Question
-                    </label>
-                    <input
-                      type="text"
-                      value={field.label}
-                      onChange={(e) => updateField(index, { label: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                      placeholder="Quelle est votre question ?"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Type
-                      </label>
-                      <select
-                        value={field.type}
-                        onChange={(e) => updateField(index, { type: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                      >
-                        <option value="input">Texte</option>
-                        <option value="select">Sélection</option>
-                        <option value="email">Email</option>
-                        <option value="tel">Téléphone</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Icône
-                      </label>
-                      <input
-                        type="text"
-                        value={field.icon}
-                        onChange={(e) => updateField(index, { icon: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                        placeholder="fa-user"
                       />
                     </div>
                     <div>
@@ -451,10 +393,16 @@ export default function HeroSectionEditor({ content, onSave, onCancel }) {
                       </label>
                       <input
                         type="text"
-                        value={field.placeholder}
-                        onChange={(e) => updateField(index, { placeholder: e.target.value })}
+                        value={field.placeholder || ''}
+                        onChange={(e) => {
+                          const newPlaceholder = e.target.value;
+                          setFormConfig(prev => ({
+                            ...prev,
+                            steps: prev.steps.map(s => s.key === field.key ? { ...s, placeholder: newPlaceholder } : s)
+                          }));
+                        }}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                        placeholder="Votre réponse"
+                        placeholder="Votre réponse..."
                       />
                     </div>
                   </div>
@@ -464,39 +412,21 @@ export default function HeroSectionEditor({ content, onSave, onCancel }) {
                       <input
                         type="checkbox"
                         checked={field.required}
-                        onChange={(e) => updateField(index, { required: e.target.checked })}
+                        onChange={(e) => {
+                          setFormConfig(prev => ({
+                            ...prev,
+                            steps: prev.steps.map(s => s.key === field.key ? { ...s, required: e.target.checked } : s)
+                          }));
+                        }}
                         className="w-4 h-4 text-yellow-500 rounded"
                       />
-                      <span className="text-sm text-gray-700">Champ obligatoire</span>
+                      <span className="text-sm text-gray-700">Obligatoire</span>
                     </label>
 
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={field.autoFocus}
-                        onChange={(e) => updateField(index, { autoFocus: e.target.checked })}
-                        className="w-4 h-4 text-yellow-500 rounded"
-                      />
-                      <span className="text-sm text-gray-700">Focus automatique</span>
-                    </label>
+                    <span className={`text-sm ${field.visible ? 'text-green-600' : 'text-gray-400'}`}>
+                      {field.visible ? '✓ Visible' : '✗ Masqué'}
+                    </span>
                   </div>
-
-                  {field.type === 'select' && (
-                    <div className="mt-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Options de sélection
-                      </label>
-                      <select
-                        value={field.options || ''}
-                        onChange={(e) => updateField(index, { options: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                      >
-                        <option value="">Sélectionner une liste d'options</option>
-                        <option value="LEGAL_STATUSES">Statuts juridiques</option>
-                        <option value="REVENUE_OPTIONS">Tranches de revenu</option>
-                      </select>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>

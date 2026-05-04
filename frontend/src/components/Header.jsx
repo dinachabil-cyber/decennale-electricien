@@ -6,19 +6,13 @@ const Header = () => {
       <header className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-dark py-4 sticky top-0 z-50 shadow-2xl border-b-2 border-yellow-600">
         <div className="container mx-auto px-2">
           <div className="flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0">
-            <div className="flex items-center space-x-4 slide-in-left">
+<div className="flex items-center space-x-4 slide-in-left">
               <div className="w-12 h-12 bg-dark/20 rounded-xl flex items-center justify-center shadow-lg">
                 <i className="fas fa-shield-alt text-2xl text-dark"></i>
               </div>
-              <div>
-                <div className="hidden lg:block">
-                  <h1 className="text-lg font-semibold text-dark">Assurance Décennale Électricien</h1>
-                  <p className="text-xs text-dark/80">Devis en quelques clics</p>
-                </div>
-                <div className="lg:hidden">
-                  <h1 className="text-sm font-semibold text-dark">Devis Décennale Électricien</h1>
-                  <p className="text-xs text-dark/80">Devis gratuit</p>
-                </div>
+              <div className="hidden lg:block">
+                <h1 className="text-lg font-semibold text-dark">Assurance Décennale Électricien</h1>
+                <p className="text-xs text-dark/80">Devis en quelques clics</p>
               </div>
             </div>
 

@@ -79,48 +79,16 @@ export default function FormBuilderEditor({ content, onSave, onCancel }) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Configuration du formulaire</h3>
-        <button
-          type="button"
-          onClick={addField}
-          className="px-4 py-2 bg-yellow-400 text-dark rounded-lg hover:bg-yellow-500 font-medium"
-        >
-          + Ajouter un champ
-        </button>
       </div>
 
       <div className="space-y-4">
         {formConfig.steps.map((field, index) => (
           <div key={field.key} className="border border-gray-200 rounded-lg p-4">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-500">Étape {index + 1}</span>
-                <div className="flex gap-1">
-                  <button
-                    type="button"
-                    onClick={() => index > 0 && moveField(index, index - 1)}
-                    disabled={index === 0}
-                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
-                  >
-                    <i className="fas fa-chevron-up"></i>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => index < formConfig.steps.length - 1 && moveField(index, index + 1)}
-                    disabled={index === formConfig.steps.length - 1}
-                    className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
-                  >
-                    <i className="fas fa-chevron-down"></i>
-                  </button>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => removeField(index)}
-                className="p-2 text-red-500 hover:text-red-700"
-              >
-                <i className="fas fa-trash"></i>
-              </button>
-            </div>
+             <div className="flex justify-between items-start mb-4">
+               <div className="flex items-center gap-2">
+                 <span className="text-sm font-medium text-gray-500">Étape {index + 1}</span>
+               </div>
+             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>

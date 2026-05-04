@@ -25,10 +25,6 @@ class LeadController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        // Validate CSRF token if present
-        $csrfToken = $data['_token'] ?? $data['csrf_token'] ?? null;
-        // Add CSRF validation here if needed
-
         $errors = [];
         $leadData = [];
 
@@ -158,17 +154,18 @@ class LeadController extends AbstractController
             return new JsonResponse(['success' => false, 'message' => 'Invalid data format'], 400);
         }
 
-        // Update field configurations
+        // STRICT: Only allow updates to visible, required, order
+        // Block all structural changes (type, label, options, placeholder, inputType)
+        $allowedKeys = $this->formConfig->getAllowedUpdateKeys();
+        
         $updates = [];
         foreach ($data['fields'] as $fieldData) {
             if (!isset($fieldData['key'])) {
                 continue;
             }
             $key = $fieldData['key'];
-            $updates[$key] = array_intersect_key($fieldData, array_flip([
-                'label', 'type', 'required', 'visible', 'options', 
-                'placeholder', 'inputType', 'order'
-            ]));
+            // FILTER: Only allow visible, required, order to be updated
+            $updates[$key] = array_intersect_key($fieldData, array_flip($allowedKeys));
         }
 
         $this->formConfig->updateFields($updates);
@@ -192,9 +189,9 @@ class LeadController extends AbstractController
         ]);
     }
 
-     /**
-      * Map form data to Lead entity dynamically
-      */
+    /**
+     * Map form data to Lead entity dynamically
+     */
     private function mapDataToLead(Lead $lead, array $data): void
     {
         $setters = [

@@ -20,11 +20,8 @@ class AuthController extends AbstractController
         $data = json_decode($content, true);
 
         // Debug logging
-        error_log("Login attempt - Raw content: " . $content);
-        error_log("Login attempt - Decoded data: " . print_r($data, true));
-
         if (!isset($data['email']) || !isset($data['password'])) {
-            return new JsonResponse(['error' => 'Email and password are required', 'debug' => $data], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Email and password are required'], Response::HTTP_BAD_REQUEST);
         }
 
         $admin = $em->getRepository(Admin::class)->findOneByEmail($data['email']);

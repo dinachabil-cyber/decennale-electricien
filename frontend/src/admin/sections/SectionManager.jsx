@@ -110,7 +110,7 @@ export default function SectionManager({ page, onBack }) {
           <button
             onClick={() => {
               const frontendUrl = process.env.REACT_APP_FRONTEND_URL || window.location.origin;
-              window.open(`${frontendUrl}/${page.slug}?preview=true`, '_blank');
+              window.open(`${frontendUrl}${page.slug === '/' ? '/' : `/${page.slug}`}?preview=true`, '_blank');
             }}
             className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
           >

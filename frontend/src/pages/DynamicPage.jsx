@@ -55,7 +55,7 @@ export default function DynamicPage() {
         
         let data;
         if (isPreview) {
-          data = await pagesApi.getBySlug(pageSlug);
+          data = await pagesApi.getBySlugWithDraft(pageSlug);
         } else {
           data = await pagesApi.getBySlug(pageSlug);
         }
